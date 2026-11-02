@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" width="900" height="440" role="img" aria-labelledby="t d">
+  <title id="t">Hours with load shedding per year, 2015 to 2025</title>
+  <desc id="d">Bar chart. From 2015 to 2021 there were between 3 and 46 hours with load shedding per year. In 2022 there were 2,287, in 2023 5,012, in 2024 5,034 and in 2025 3,316.</desc>
+  <rect x="0.5" y="0.5" width="899" height="439" rx="10" fill="#f3f6f4" stroke="#d3ded8"/>
+
+  <text x="40" y="44" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#13201b">Hours with load shedding per year</text>
+  <text x="40" y="66" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#56675f">PGCB hourly grid data, 2015–2025 (rows where load shedding &gt; 0)</text>
+
+  <!-- gridlines every 1,000 h -->
+  <g stroke="#d3ded8" stroke-width="1">
+    <line x1="70" y1="360" x2="870" y2="360" stroke="#56675f"/>
+    <line x1="70" y1="306" x2="870" y2="306"/>
+    <line x1="70" y1="252" x2="870" y2="252"/>
+    <line x1="70" y1="198" x2="870" y2="198"/>
+    <line x1="70" y1="144" x2="870" y2="144"/>
+    <line x1="70" y1="90"  x2="870" y2="90"/>
+  </g>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#56675f" text-anchor="end">
+    <text x="62" y="364">0</text>
+    <text x="62" y="310">1,000</text>
+    <text x="62" y="256">2,000</text>
+    <text x="62" y="202">3,000</text>
+    <text x="62" y="148">4,000</text>
+    <text x="62" y="94">5,000</text>
+  </g>
+
+  <!-- bars: 2015-2021 (pre-crisis) -->
+  <g fill="#0a6b4f">
+    <rect x="84.4"  y="358.8" width="44" height="1.2"/>
+    <rect x="157.1" y="357.5" width="44" height="2.5"/>
+    <rect x="229.8" y="359"   width="44" height="1"/>
+    <rect x="302.5" y="359"   width="44" height="1"/>
+    <rect x="375.3" y="359"   width="44" height="1"/>
+    <rect x="448"   y="359"   width="44" height="1"/>
+    <rect x="520.7" y="359"   width="44" height="1"/>
+  </g>
+  <!-- bars: 2022-2025 (crisis) -->
+  <g fill="#c92a3a">
+    <rect x="593.5" y="236.5" width="44" height="123.5"/>
+    <rect x="666.2" y="89.4"  width="44" height="270.6"/>
+    <rect x="738.9" y="88.2"  width="44" height="271.8"/>
+    <rect x="811.6" y="180.9" width="44" height="179.1"/>
+  </g>
+
+  <!-- value labels -->
+  <g font-family="Consolas, 'Courier New', monospace" font-size="13" font-weight="700" fill="#13201b" text-anchor="middle">
+    <text x="106.4" y="350">22</text>
+    <text x="179.1" y="350">46</text>
+    <text x="251.8" y="350">7</text>
+    <text x="324.5" y="350">12</text>
+    <text x="397.3" y="350">12</text>
+    <text x="470"   y="350">6</text>
+    <text x="542.7" y="350">3</text>
+    <text x="615.5" y="228">2,287</text>
+    <text x="688.2" y="81">5,012</text>
+    <text x="760.9" y="80">5,034</text>
+    <text x="833.6" y="173">3,316</text>
+  </g>
+
+  <!-- year labels -->
+  <g font-family="Consolas, 'Courier New', monospace" font-size="13" fill="#56675f" text-anchor="middle">
+    <text x="106.4" y="380">2015</text>
+    <text x="179.1" y="380">2016</text>
+    <text x="251.8" y="380">2017</text>
+    <text x="324.5" y="380">2018</text>
+    <text x="397.3" y="380">2019</text>
+    <text x="470"   y="380">2020</text>
+    <text x="542.7" y="380">2021</text>
+    <text x="615.5" y="380">2022</text>
+    <text x="688.2" y="380">2023</text>
+    <text x="760.9" y="380">2024</text>
+    <text x="833.6" y="380">2025</text>
+  </g>
+
+  <!-- annotations -->
+  <text x="324.5" y="296" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0a6b4f" text-anchor="middle">Before 2022: 3 to 46 hours a year</text>
+  <path d="M106 306 H543" stroke="#0a6b4f" stroke-width="1.5" fill="none"/>
+  <path d="M106 301 V311 M543 301 V311" stroke="#0a6b4f" stroke-width="1.5" fill="none"/>
+
+  <text x="40" y="414" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#56675f">Counts as reported in docs/research/ideas-round-1.md. 2015 starts on 17 April; 2026 is left out because the file ends on 8 March 2026.</text>
+</svg>
