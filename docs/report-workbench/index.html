@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bangladesh DM Project Shortlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app shell — sticky left rail of views on desktop, horizontal tab strip on phones; content column max ~78rem. */
+:root{
+  --bg:#f3f6f4; --surface:#ffffff; --surface-2:#e8efeb; --fg:#13201b; --muted:#56675f; --line:#d3ded8;
+  --accent:#0a6b4f; --accent-fg:#ffffff; --accent-soft:#d6ebe2; --flag:#c92a3a; --flag-soft:#f8dfe1; --warn:#9a6a12; --warn-soft:#f6ead2;
+  --s1:#e3ece7; --s2:#c6ddd2; --s3:#97c6b1; --s4:#4fa283; --s5:#0a6b4f; --s-ink-hi:#ffffff;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1613; --surface:#15201b; --surface-2:#1c2a24; --fg:#e3ece7; --muted:#93a69d; --line:#2a3a33;
+  --accent:#55c99d; --accent-fg:#0c1a14; --accent-soft:#1b3a2e; --flag:#ff6f7a; --flag-soft:#3a1e22; --warn:#e2b45e; --warn-soft:#3a2f1a;
+  --s1:#1c2a24; --s2:#24443a; --s3:#2f6b55; --s4:#3d9a77; --s5:#55c99d; --s-ink-hi:#0c1a14;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0e1613; --surface:#15201b; --surface-2:#1c2a24; --fg:#e3ece7; --muted:#93a69d; --line:#2a3a33;
+  --accent:#55c99d; --accent-fg:#0c1a14; --accent-soft:#1b3a2e; --flag:#ff6f7a; --flag-soft:#3a1e22; --warn:#e2b45e; --warn-soft:#3a2f1a;
+  --s1:#1c2a24; --s2:#24443a; --s3:#2f6b55; --s4:#3d9a77; --s5:#55c99d; --s-ink-hi:#0c1a14;
+  color-scheme:dark; }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;margin:0}
+a{color:var(--accent);text-underline-offset:2px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15;letter-spacing:-.01em}
+code,.mono{font-family:var(--mono);font-size:.88em}
+.wrap{max-width:84rem;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:20px 64px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding-block:8px 20px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.top h1{font-size:clamp(28px,4.2vw,44px);font-weight:700;margin-top:6px}
+.top h1 .flagdot{display:inline-block;width:.42em;height:.42em;border-radius:50%;background:var(--flag);vertical-align:.18em;margin-left:.12em}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.facts b{font-family:var(--mono);font-weight:500;color:var(--fg);font-variant-numeric:tabular-nums}
+
+/* shell */
+.shell{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;margin-top:24px}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:flex;flex-direction:column;gap:2px}
+nav.rail button{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-weight:500;color:var(--muted)}
+nav.rail button .n{font-family:var(--mono);font-size:12px;color:var(--muted)}
+nav.rail button:hover{background:var(--surface-2);color:var(--fg)}
+nav.rail button[aria-selected="true"]{background:var(--accent-soft);color:var(--fg)}
+nav.rail button[aria-selected="true"] .n{color:var(--accent)}
+nav.rail button:focus-visible{outline:2px solid var(--accent)}
+.railnote{margin-top:16px;padding:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (max-width: 860px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:16px}
+  nav.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;flex-direction:row;overflow-x:auto;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-4px}
+  nav.rail button{white-space:nowrap;padding:8px 10px}
+  .railnote{display:none}
+}
+main{min-width:0}
+section.view{display:flex;flex-direction:column;gap:24px}
+section.view[hidden]{display:none!important}
+.vhead{display:flex;flex-direction:column;gap:6px}
+.vhead h2{font-size:clamp(22px,2.6vw,30px);font-weight:700}
+.vhead p{margin:0;color:var(--muted);max-width:68ch}
+.lead{max-width:68ch;margin:0}
+
+/* top-3 cards */
+.top3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:1100px){.top3{grid-template-columns:minmax(0,1fr)}}
+.pick{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pick .rank{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.pick .rank span:first-child{font-family:var(--display);font-weight:700;font-size:40px;line-height:1;color:var(--accent)}
+.pick h3{font-size:20px;font-weight:700}
+.pick p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--fg);max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.chip.acc{background:var(--accent-soft)}
+.chip.flag{background:var(--flag-soft);color:var(--flag)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-weight:600;font-size:14px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1px var(--line)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pick .actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px}
+
+/* callouts */
+.callouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.callouts{grid-template-columns:minmax(0,1fr)}}
+.callout{border-left:3px solid var(--warn);background:var(--surface);padding:14px 16px;border-radius:0 var(--r) var(--r) 0;min-width:0}
+.callout.bad{border-left-color:var(--flag)}
+.callout h4{font-size:15px;margin-bottom:6px}
+.callout p{margin:0;font-size:14px}
+h3.sub{font-size:18px;font-weight:700}
+
+/* score pips */
+.pips{display:inline-flex;gap:3px;vertical-align:middle}
+.pips i{width:9px;height:9px;border-radius:2px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--line)}
+.pips i.on{background:var(--accent);box-shadow:none}
+.scorelist{display:grid;grid-template-columns:auto auto auto;gap:4px 10px;align-items:center;font-size:12.5px}
+.scorelist .k{color:var(--muted)}
+.scorelist .v{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* shortlist controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:500;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);box-shadow:none}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.sel{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+select,input[type="search"]{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+input[type="search"]{min-width:0;width:min(320px,100%)}
+
+/* idea cards */
+.ideas{display:flex;flex-direction:column;gap:12px}
+details.idea{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+details.idea[open]{border-color:var(--s3)}
+details.idea>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:16px;align-items:start;padding:16px 18px}
+details.idea>summary::-webkit-details-marker{display:none}
+.inum{font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:3px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.inum .star{font-family:var(--body);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent-fg);background:var(--accent);padding:2px 6px;border-radius:4px}
+.ititle h3{font-size:18px;font-weight:700}
+.ititle p{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:80ch}
+.ititle .chips{margin-top:10px}
+.isum{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.total{font-family:var(--display);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.total small{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--muted)}
+.chev{font-size:12px;color:var(--muted)}
+details.idea[open] .chev{transform:rotate(180deg)}
+@media (max-width:640px){
+  details.idea>summary{grid-template-columns:minmax(0,1fr);gap:10px}
+  .inum{flex-direction:row;align-items:center}
+  .isum{flex-direction:row;align-items:center;justify-content:space-between}
+}
+.ibody{padding:4px 18px 20px;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;border-top:1px solid var(--line)}
+@media (max-width:900px){.ibody{grid-template-columns:minmax(0,1fr)}}
+.ibody .main{display:flex;flex-direction:column;gap:16px;min-width:0;padding-top:16px}
+.ibody .side{display:flex;flex-direction:column;gap:16px;padding-top:16px;min-width:0}
+.blk h4{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.blk p{margin:0}
+.blk ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.note{font-size:13.5px;background:var(--surface-2);padding:10px 12px;border-radius:8px}
+.note b{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:13.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+
+/* tables */
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+thead th{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);white-space:nowrap}
+td.num,th.num{text-align:center;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+.dtable td:first-child{min-width:200px}
+.dtable td{word-break:break-word}
+th button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+th button:focus-visible{outline:2px solid var(--accent)}
+th button .ar{opacity:.4}
+th[aria-sort] button .ar{opacity:1;color:var(--accent)}
+.heat{display:inline-grid;place-items:center;width:28px;height:24px;border-radius:5px;font-weight:500}
+.h1{background:var(--s1)}.h2{background:var(--s2)}.h3{background:var(--s3)}.h4{background:var(--s4);color:var(--s-ink-hi)}.h5{background:var(--s5);color:var(--s-ink-hi)}
+.sumbar{display:flex;align-items:center;gap:8px;min-width:120px}
+.sumbar .bar{flex:1;height:8px;border-radius:4px;background:var(--surface-2);position:relative;overflow:hidden}
+.sumbar .bar span{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.sumbar b{font-family:var(--mono);font-weight:500;width:2ch;text-align:right}
+tr.is-top td:nth-child(2){font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend .heat{width:22px;height:18px;font-size:11px}
+
+/* plans */
+.plantabs{display:flex;flex-wrap:wrap;gap:8px}
+.plantabs button{all:unset;cursor:pointer;padding:10px 14px;border-radius:8px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font-weight:600;font-size:14px;max-width:100%}
+.plantabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-fg);box-shadow:none}
+.plantabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plan{display:flex;flex-direction:column;gap:20px}
+.plan[hidden]{display:none!important}
+.plan .titlecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.plan .titlecard .ptitle{font-family:var(--display);font-size:clamp(18px,2.2vw,23px);font-weight:700;line-height:1.25}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.panel h4{font-size:15px;margin-bottom:8px}
+.panel ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.panel p{margin:0}
+.timeline{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+@media (max-width:1100px){.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.wk{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.wk .w{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.wk.cp{border-color:var(--accent);background:var(--accent-soft)}
+.wk.cp .w span:last-child{color:var(--accent);font-weight:500}
+.phase{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* lists */
+.srcgroup{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.srcgroup h3{font-size:16px;margin-bottom:8px}
+.srcgroup ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.srcgroup li{display:grid;grid-template-columns:minmax(0,1fr);gap:1px;font-size:13.5px}
+.srcgroup li a{word-break:break-all;font-family:var(--mono);font-size:12.5px}
+.srcgroup li span{color:var(--muted)}
+.srcgroup .kind{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+ol.check{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
+ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:84ch}
+.unv{font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:4px;background:var(--warn-soft);color:var(--warn);white-space:nowrap}
+@media (prefers-reduced-motion: no-preference){ details.idea .chev{transition:transform .15s} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Data mining semester project · Bangladesh focus · prepared 7 Oct 2026</div>
+      <h1>Project shortlist<span class="flagdot" aria-hidden="true"></span></h1>
+    </div>
+    <div class="facts" aria-label="Summary">
+      <span><b>~50</b> candidates logged</span>
+      <span><b>12</b> shortlisted</span>
+      <span><b>3</b> recommended</span>
+      <span><b>40+</b> papers checked</span>
+      <span><b>14</b>-week plans</span>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav class="rail" role="tablist" aria-label="Report sections" id="rail"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------- data */
+const L = (url, text) => '<a href="' + url + '" target="_blank" rel="noopener">' + (text || url) + '</a>';
+const UNV = '<span class="unv">unverified</span>';
+
+const IDEAS = [
+{ id:1, top:1, title:"Mining the load-shedding crisis in Bangladesh's hourly grid data (2015–2026)", short:"Load-shedding crisis mining (PGCB)",
+  family:"Time-series", tech:"change points, matrix profile, k-Shape, emerging patterns / ARM",
+  pitch:`Bangladesh went from almost no load shedding (2015–2021) to thousands of shedding hours a year (2022–2025) after the LNG and forex crisis. The Power Grid Company of Bangladesh (PGCB) publishes hourly generation, demand, load shedding and fuel mix, and two groups have scraped it into clean files. Published work uses it only to forecast demand or predict shedding. This project mines the structure of the crisis: when regimes changed, what a typical crisis day looks like, which fuel-mix conditions come before shedding, and how recurring motifs and rare discords (including data glitches) show up.`,
+  datasets:[
+    ["Hourly Electricity Generation, Demand, Load Shedding & Fuel Mix (2015–2026), BUET authors","https://data.mendeley.com/datasets/vpk8spw2mm/1","6.55 MB CSV; 94,934 rows × 15 cols, 2015-04-17 → 2026-03-08 (my check)","CC BY 4.0","v1, 30 Mar 2026"],
+    ["PGCB Hourly Generation Dataset (UCI mirror)","https://archive.ics.uci.edu/dataset/1175/pgcb+hourly+generation+dataset","6.8 MB XLSX, 92,650 × 14","CC BY 4.0","donated 17 Jun 2025"],
+    ["Daily electricity incl. division-level load shedding (BPDB PDFs, 2019-11-21 → 2024-12-30)","https://data.mendeley.com/datasets/x7r7wdb39k/1","2.07 MB, 5 XLSX versions + README","CC BY 4.0","v1, 19 Jun 2025"],
+    ["(optional) BMD daily weather, 35 stations, to 2023","https://data.mendeley.com/datasets/tbrhznpwg9/1","42 MB CSVs","CC BY 4.0","27 Jun 2024"]],
+  check:`Hours with load shedding per year: 22, 46, 7, 12, 12, 6, 3 (2015–2021), then 2,287 / 5,012 / 5,034 / 3,316 (2022–2025). Mean liquid-fuel generation jumped to 6,391 MW in 2022. Obvious glitches exist (max "generation" 64,526,500 MW in 2023; a load-shedding value of 65,359 MW in 2017). Solar is 22% missing and wind 74% missing.`,
+  techniques:`Change-point detection (PELT) on daily shedding energy and fuel shares. Matrix profile motif and discord discovery (STUMPY). k-Shape / DTW clustering of 24-hour profiles per regime. Association rules and emerging patterns (FP-Growth; rules whose support jumps between regimes) on discretised hourly states such as {season, hour-band, gas share low, liquid share high, import level} → {shedding high}. Sequential patterns (PrefixSpan) over shedding episodes. Isolation Forest / STL-residual anomaly detection to separate data errors from real events.`,
+  rq:`What operating regimes and recurring patterns characterise Bangladesh's 2022–2025 load-shedding crisis, and which fuel-mix conditions systematically come before shedding?`,
+  papers:[
+    ["Islam, Turja & Habib (2025), Enhanced power demand forecasting for Bangladesh…, J. Data, Information & Management","https://doi.org/10.1007/s42488-025-00140-9"],
+    ["Yeaser, Nafs & Hossain (2025), Comparative Analysis of Deep Learning Models for Long-Term Electricity Demand Forecasting in Bangladesh Using Web-Scraped Data, ECAI 2025","https://doi.org/10.1109/ECAI65401.2025.11095479"],
+    ["Arifuzzaman (2026), ML-based load shedding prediction and smart energy management framework, IEEE SPICSCON 2026 (RF/XGBoost prediction)","https://vu.edu.bd/publications/3168/an-intelligent-machine-learning-based-load-shedding-prediction-and-smart-energy-management-framework-for-power-grid-optimization-in-bangladesh"],
+    ["Method anchor: Yeh et al. (2016), Matrix Profile I, IEEE ICDM","https://doi.org/10.1109/ICDM.2016.0179"]],
+  gap:`Unsupervised, pattern-level analysis of the crisis: regimes, archetypal days, emerging fuel-mix rules, and discord-based data auditing.`,
+  difficulty:"Medium", cleaning:"Medium (half-hourly to hourly, glitch removal, censored demand)", compute:"Laptop",
+  risks:`"Demand" is censored during shedding (the dataset author says so), so use generation plus shedding. Some rules will be obvious ("summer evening → shedding"), so rank by lift, conviction and emerging-pattern growth rate, not confidence. Regime causes are policy events, so claim alignment with them, not causation.`,
+  s:{N:4,F:5,D:4,Demo:4,P:4} },
+
+{ id:2, top:2, title:"Congestion propagation and co-jam patterns across 81 Dhaka junctions, with an Eid-ul-Adha natural experiment", short:"Dhaka congestion propagation (81 junctions)",
+  family:"Spatiotemporal / graph", tech:"TS clustering, Granger graph + centrality, co-jam itemsets, Eid contrast",
+  pitch:`A University of Dhaka group published 60 days of Google-Maps-derived congestion at 81 named locations (Abdullahpur, Uttara, Airport, Mirpur-12 and more) every 10 minutes, with an 81×81 travel-time adjacency matrix. The window covers the Eid-ul-Adha 2026 holiday exodus. The project asks where congestion starts, how it spreads, which junctions jam together, and how Eid changes the network.`,
+  datasets:[
+    ["Dhaka_Traffic_Data (Sadia Tabassum, Univ. of Dhaka)","https://data.mendeley.com/datasets/phkvy2xwrt/1","7.70 MB: traffic_mci_2026.csv (8,640 × 84: timestamp, time, day + 81 locations), traffic_class_2026.csv, adjacency_matrix.csv (81×81 travel time), connectivity_matrix.csv, sample_points.json, 3 PNGs","CC BY 4.0","v1, 1 Jul 2026"],
+    ["(join) Hourly rainfall from the Open-Meteo historical API","https://open-meteo.com/","API","Open-Meteo terms (believed CC BY 4.0, "+UNV+")","live"]],
+  check:`2026-04-07 14:39 → 2026-06-06 14:29, exactly 10-minute steps, 0% missing. Daily mean index is about 1.45–1.64 on weekdays and 1.30–1.36 on Fridays, peaks at 1.638 on 21 May (pre-Eid), and drops to 1.17–1.27 from 27 May to 2 Jun. The dataset description is one sentence; the congestion index (MCI) definition is not documented.`,
+  techniques:`Time-series clustering of junction profiles (k-Shape, DTW-hierarchical). Lagged cross-correlation plus Granger tests restricted to adjacency neighbours, giving a directed propagation graph, then centrality (PageRank, out-strength) to find "source" junctions. Frequent co-jam itemsets (FP-Growth; transactions are 10-minute windows, items are junctions in a heavy class). Sequential patterns of jam-onset order in the morning peak (PrefixSpan). Change-point detection and contrast mining for pre-Eid, Eid and recovery. Rain-linked anomaly detection.`,
+  rq:`Which Dhaka junctions lead congestion and which follow, which jam together, and how did the Eid-ul-Adha exodus restructure these patterns?`,
+  papers:[
+    ["Rahman & Nower (2024), Inferring Traffic Patterns of Dhaka City: A Spatio-Temporal Analysis Over a Year, Transport & Telecommunication J. (10 zones)","https://doi.org/10.2478/ttj-2024-0030"],
+    ["Sarker, Sakib & Nower (2025), Identification of Traffic Bottlenecks in Central Dhaka Through Spreading Graph-Based Congestion Analysis, VEHITS 2025 (no lagged or Eid analysis in the abstract)","https://doi.org/10.5220/0013296200003941"],
+    ["Hasan & Sarker (2025), Unraveling Urban Traffic Congestion Patterns in Bangladesh, VEHITS 2025 (DTW clustering of 8 divisions, Jan–Jun 2023)","https://scitepress.org/publishedPapers/2025/131936/pdf/index.html"],
+    ["Pramanik et al. (2020), Modeling Traffic Congestion in Developing Countries using Google Maps Data, arXiv","https://arxiv.org/abs/2011.02359"]],
+  gap:`Junction-level (81 nodes) directed, lagged propagation, co-jam itemsets, and an Eid natural experiment. Clustering alone is not novel here, so keep it as a supporting step.`,
+  difficulty:"Medium", cleaning:"Low", compute:"Laptop",
+  risks:`Only 60 days. The MCI is undocumented and derived from Google typical-traffic colours. The same research group has published two related papers, so there is a scoop risk: move fast and cite them. Granger on 10-minute data is sensitive to lag choice, so validate out of sample.`,
+  s:{N:3,F:5,D:4,Demo:5,P:4} },
+
+{ id:3, top:3, title:"Weekly popularity rhythms of Bangladeshi restaurants (Google Maps \"popular times\")", short:"Restaurant popularity rhythms (BanglaDine)",
+  family:"Clustering / ARM / spatial", tech:"k-Shape, HDBSCAN / Gi*, FP-Growth, LOF",
+  pitch:`BanglaDine2024 scraped 58,376 restaurants from Google Maps in Nov 2024. Columns include the hourly "popular times" curve for each day of the week (168 columns), ratings, review counts, and list-valued attributes (service options, amenities, payments, crowd). The curves show how cities live: late-night Old Dhaka, Friday family brunches, office-lunch spots in Motijheel. The project clusters the rhythms, maps them, explains them with association rules, and flags suspicious rating profiles.`,
+  datasets:[
+    ["BanglaDine2024 (UIU)","https://data.mendeley.com/datasets/hxrmzggw5b/1","179.76 MB total: Restaurant_Spatial-Analytical.csv 62.05 MB, JSON 117.71 MB; 58,376 × 221","CC BY 4.0","v1, 8 Apr 2025 (scraped 14–21 Nov 2024)"]],
+  check:`From an 11,073-row sample taken from 3 parts of the file: 168 popular-times columns present (Sunday.12 AM … Saturday.11 PM). About 40% of rows have popular times, roughly 23k restaurants if that holds for the whole file. Rating present in 76.5% of rows, median 6 reviews. The division field says "India" for about 12% of sampled rows (border-area coordinates), so filter with a Bangladesh boundary polygon.`,
+  techniques:`Shape-based clustering (k-Shape / DTW) of z-normalised weekly curves into archetypes. Spatial hotspots per archetype (HDBSCAN, Getis-Ord Gi*, Moran's I). FP-Growth association rules with archetype or "high rating" as consequent and attributes as antecedents. Outlier detection (LOF / Isolation Forest on rating, review count and category) for suspicious ratings. Cross-city comparison (Dhaka, Chattogram, Sylhet, Rangpur).`,
+  rq:`What weekly activity archetypes exist among Bangladeshi restaurants, where are they located, and what attributes explain them?`,
+  papers:[
+    ["Barrena-Herrán, Modrego-Monforte & Grijalba (2025), Revealing Spatiotemporal Urban Activity Patterns: A Machine Learning Study Using Google Popular Times, ISPRS IJGI 14(6):221","https://doi.org/10.3390/ijgi14060221"],
+    ["Neves et al. (2016), Study of Google Popularity Times Series for Commercial Establishments of Curitiba and Chicago, WebMedia '16","https://doi.org/10.1145/2976796.2976862"],
+    ["Paparrizos & Gravano (2015), k-Shape, SIGMOD (method)","https://doi.org/10.1145/2723372.2737793"]],
+  gap:`No Popular-Times study for any South Asian city, and I found no analysis paper on this dataset. The Friday-weekend rhythm gives a culturally distinct contrast to Western results.`,
+  difficulty:"Medium", cleaning:"Medium (list-valued attributes, India rows, sparse curves)", compute:"Laptop / Colab",
+  risks:`Popular times are relative (0–100 per venue), not absolute counts. One snapshot (Nov 2024). The ~60% without curves are likely less popular venues, which biases the sample. It is scraped data, so check Google's terms before redistributing derived data (the dataset itself is CC BY on Mendeley).`,
+  s:{N:4,F:4,D:3,Demo:5,P:4} },
+
+{ id:4, title:"Does load shedding make the air dirtier? Joining grid outages with hourly air quality", short:"Load shedding × air quality",
+  family:"Contrast / subgroup mining", tech:"contrast / subgroup mining, event windows",
+  pitch:`When the grid sheds load, Dhaka switches on diesel generators. This is documented in Beirut and India, but I found no study for Bangladesh. Join hourly PGCB load shedding with the Department of Environment's continuous air monitoring (CAMS) stations for 2022–2024, then test whether shedding hours carry higher NOx, CO and PM2.5 than matched non-shedding hours (same station, month, hour, day-type and similar weather). Works well as the stretch goal of Idea 1.`,
+  datasets:[
+    ["CAMS-BD hourly air quality + meteorology, 15–16 stations, Nov 2012 → Jan 2025, >1.37M rows","https://data.mendeley.com/datasets/hwmzyh5w4w/1","108.12 MB ZIP of 4 Excel files","CC BY 4.0","v1, 23 Jul 2026"],
+    ["PGCB hourly (Idea 1)","https://data.mendeley.com/datasets/vpk8spw2mm/1","6.55 MB CSV","CC BY 4.0","30 Mar 2026"],
+    ["BPDB daily division-level shedding","https://data.mendeley.com/datasets/x7r7wdb39k/1","2.07 MB","CC BY 4.0","19 Jun 2025"]],
+  check:`Not downloaded (108 MB). The repository description warns of embedded header and unit rows inside station blocks, inconsistent station names, a confirmed solar-radiation/pressure column swap for Savar (2012–2021), and missing dates.`,
+  techniques:`Matched contrast mining and subgroup discovery (which station × season × hour subgroups show the largest pollution lift during shedding). Emerging-pattern mining. Event-window analysis around shedding onsets. Anomaly detection on pollutant ratios such as NOx/PM (a diesel signature). Distributed-lag association.`,
+  rq:`Are grid load-shedding hours associated with measurable increases in diesel-related pollutants at Bangladeshi monitoring stations?`,
+  papers:[
+    ["Al Hallak et al. (2024), When do science recommendations stop being effective? The case of the sprawl of diesel electricity generators in Beirut, PLOS ONE","https://doi.org/10.1371/journal.pone.0313341"],
+    ["Identifying urban air pollution hot-spots by dispersion modeling when data are scarce: diesel generators in Beirut, arXiv 2111.07635","https://arxiv.org/abs/2111.07635"],
+    ["Khan et al. (2023), Natural and anthropogenic effects on high air pollution loading in Dhaka…, Environ. Monit. Assess.","https://doi.org/10.1007/s10661-023-12046-3"]],
+  gap:`No Bangladesh study links grid shedding to ambient air quality; I found only news reports.`,
+  difficulty:"Hard", cleaning:"High (CAMS format)", compute:"Colab (108 MB is fine)",
+  risks:`Strong confounding: shedding peaks in hot, rainy months when PM is lowest, so careful matching is essential. Shedding is national while pollution is local. The effect may be small or null; a well-designed null result is still publishable. Heavy cleaning.`,
+  s:{N:5,F:3,D:3,Demo:4,P:5} },
+
+{ id:5, title:"Dengue onset rules and epidemic-curve clustering across 8 divisions (2022–2025 daily)", short:"Dengue onset rules & curve clustering",
+  family:"Time-series / temporal rules", tech:"DTW clustering, temporal rules, CUSUM",
+  pitch:`2023 was Bangladesh's worst dengue year on record. Daily division-level case counts from DGHS bulletins (2022–2025) now exist in clean form with weather. The project mines when and where seasons start, which climate conditions come before surges (lagged temporal rules), and whether divisions cluster into distinct epidemic-curve shapes.`,
+  datasets:[
+    ["Daily Dengue Data of Bangladesh 2022–2025 (DGHS + Open-Meteo/ERA5, 8 divisions, Jan 2022 → Oct 2025)","https://www.kaggle.com/datasets/brownsugar297/dengue-and-weather-data-bangladesh-20222025","0.42 MB","CC BY 4.0","11 May 2026 (3 notebooks)"],
+    ["Bangladesh Daily & Monthly Dengue Cases (DGHS daily Jan 2024 → Mar 2026 + OpenDengue monthly)","https://www.kaggle.com/datasets/jisangain/bangladesh-daily-and-searo-monthly-dengue-cases","0.03 MB","CC BY-SA 4.0","19 May 2026 (1 notebook)"],
+    ["Division-wise daily dengue + weather 2022–2024","https://data.mendeley.com/datasets/z5mvwrfgsz/1","1.17 MB, 8 CSVs (+ a PDF receipt); Dhaka file 1,096 rows","CC BY 4.0","26 May 2026"],
+    ["Monthly division dengue + climate 2020–2025","https://data.mendeley.com/datasets/cgwjshkx5k","0.04 MB XLSX, 576 rows; messy (forward-filled division, \"19 °C\" strings)","CC BY 4.0","v2, 11 Dec 2025"]],
+  check:`The Mendeley Dhaka file has 1,096 daily rows (2022-01-01 → 2024-12-31) with columns effected, Rainfall, Humidity, Temparature, Windspeed, Sunshine. The monthly XLSX needs cleaning.`,
+  techniques:`DTW / k-Shape clustering of division-season curves. Change-point detection of season onset. Lagged temporal association rules on discretised weather windows (e.g., "≥3 rainy days in week t−3 and mean T 27–30 °C → cases ×1.5 by week t"). Outbreak anomaly detection (CUSUM / EARS-style vs Isolation Forest). Optional visibility-graph features.`,
+  rq:`Which multi-week weather patterns reliably come before dengue onset in each division, and do divisions follow distinct epidemic shapes?`,
+  papers:[
+    ["Alam et al. (2025), Time series analysis of dengue incidence and its association with meteorological risk factors in Bangladesh, PLOS ONE","https://doi.org/10.1371/journal.pone.0323238"],
+    ["Hasan et al. (2024), Shifting Geographical Transmission Patterns: Characterizing the 2023 Fatal Dengue Outbreak in Bangladesh, medRxiv","https://doi.org/10.1101/2024.03.24.24304789"],
+    ["Tasnim et al. (2021), Observing the Unobserved: A Newspaper Based Dengue Surveillance System…, FLAIRS-34","https://doi.org/10.32473/flairs.v34i1.128552"]],
+  gap:`Interpretable onset rules at daily resolution through 2025. Climate-correlation studies are crowded.`,
+  difficulty:"Easy–Medium", cleaning:"Low–Medium", compute:"Laptop",
+  risks:`Crowded topic. Only 8 series. Counts are hospitalisations (Dhaka-hospital bias). Rules may restate known lags.`,
+  s:{N:3,F:5,D:4,Demo:4,P:4} },
+
+{ id:6, title:"Food-price shock networks across 100+ markets, including the Aug-2024 eastern floods", short:"Food-price shock networks (WFP)",
+  family:"Graph / anomaly", tech:"correlation networks, Louvain, lead–lag, co-spike itemsets",
+  pitch:`WFP's Bangladesh price database became dense in 2024–2026: 104 markets, 63 districts and 70 commodities, monthly. Build market co-movement networks per commodity, find communities and "leader" markets, detect price spikes, and test how shocks from the August 2024 Feni/Noakhali/Cumilla floods showed up across the network.`,
+  datasets:[
+    ["WFP Bangladesh – Food Prices (HDX)","https://data.humdata.org/dataset/wfp-food-prices-for-bangladesh","4.63 MB CSV; 35,326 rows, 1998-07 → 2026-08, 110 markets, 73 commodities, with lat/lon","CC BY-IGO","4 Oct 2026 (updated weekly)"],
+    ["Food Commodity Price (OHLC) Dataset of Bangladesh (76 markets, 4 staples, 2007–2024, + weather)","https://data.mendeley.com/datasets/dd58ks2p5y","5.84 MB CSV, 68,096 rows","CC BY 4.0","24 Sep 2026"],
+    ["Retail Wheat Flour Price + macro indicators 2007–2025","https://data.mendeley.com/datasets/5m4d33mxrs","1.97 MB CSV, 17,099 obs","CC BY 4.0","26 Jun 2026"],
+    ["AgriPriceBD daily prices, 5 commodities (garlic 2020-07-22 → 2025-06-04)","https://data.mendeley.com/datasets/bkmxnrn3hn","0.41 MB, 5 CSVs","CC BY 4.0","27 Mar 2026"]],
+  check:`2024+ data has 32 monthly observations (15th of each month). Coarse-rice completeness across 80 markets is 54%. Flood districts have 1–3 markets each.`,
+  techniques:`Correlation / co-movement networks with Louvain communities. Lead–lag (cross-correlation, Granger) for price-leader detection. STL + robust z / Isolation Forest spike detection. Frequent co-spike itemsets (which commodities spike together). Event-window contrast for the floods.`,
+  rq:`How are Bangladesh's food markets connected, which markets lead price movements, and how did the 2024 flood shock propagate?`,
+  papers:[
+    ["Siddique, Raha & Alam (2010), Market Integration… Rice Markets in Bangladesh, The Agriculturists","https://doi.org/10.3329/agric.v6i1.5219"],
+    ["Alam, McKenzie & Begum (2022), Spatial market integration of rice in Bangladesh in the presence of transaction cost, Agric. & Food Econ.","https://doi.org/10.1186/s40100-022-00228-5"],
+    ["Hossain et al. (2026), GRU-Based Time-Series Forecasting of Agricultural Commodity Prices Using Market and Climate Data, IEEE QPAIN 2026","https://doi.org/10.1109/QPAIN69676.2026.11546003"]],
+  gap:`Existing work is econometric and covers rice in a few markets. A network and pattern-mining view across 100+ markets and 70 commodities after 2024 is missing.`,
+  difficulty:"Medium", cleaning:"Medium (gaps, units, unbalanced panel)", compute:"Laptop",
+  risks:`Monthly data with only ~32 dense months, so correlation networks are noisy (use bootstrapped edges). Economists may expect cointegration tests. Flood attribution is confounded with the Jul–Aug 2024 political transition.`,
+  s:{N:4,F:4,D:3,Demo:3,P:4} },
+
+{ id:7, title:"What do food-delivery customers complain about? Aspect, time and reviewer-graph mining of 334k Foodpanda reviews", short:"Food-delivery complaint mining",
+  family:"Text / graph mining", tech:"NMF/LDA, ARM, bipartite graph, LOF",
+  pitch:`BDFoodSent has 334k Foodpanda Bangladesh reviews with separate food and rider ratings, timestamps (Nov 2022 → Nov 2023, covering Ramadan 2023), city and cuisine. All prior work does sentiment classification. This project mines the complaint structure: topics, food-vs-rider discrepancy rules, Ramadan and weather effects, and suspicious reviewer clusters.`,
+  datasets:[
+    ["BDFoodSent (BRAC Univ.), also on Zenodo 14259962","https://data.mendeley.com/datasets/532fxhnwbb/2","132.54 MB CSV, 334,119 × 19","CC BY 4.0","v2, 2 Dec 2024"]],
+  check:`From a 30.6k-row sample: createdAt 2022-11-10 → 2023-11-10. Dhaka is 82% of rows, then Chittagong, Sylhet, Narayanganj, Savar and Gazipur. Restaurants and reviewers are anonymised. The ratings field holds aspect scores (overall, restaurant_food, and rider in ~60% of rows). Ratings are bimodal (1★ 37%, 5★ 30%). Text is mostly English or Banglish; the description says it was translated to English, but much of it is not.`,
+  techniques:`NMF/LDA topic mining on TF-IDF after Banglish normalisation. Association rules {city, cuisine, hour, Ramadan, rainy day} → {rider ≤ 2, food ≥ 4}. Temporal pattern and burst mining. Reviewer–restaurant bipartite graph communities, plus LOF on reviewer behaviour for suspicious bursts. Rating–text mismatch outliers.`,
+  rq:`Which service failures (food vs delivery) dominate, and when and where do they cluster?`,
+  papers:[
+    ["BDFoodSent dataset record","https://data.mendeley.com/datasets/532fxhnwbb/2"],
+    ["Amin et al. (2024), Sentiment Polarity Analysis of Bangla Food Reviews Using Machine and Deep Learning Algorithms, ICAEEE 2024","https://doi.org/10.1109/icaeee62219.2024.10561876"],
+    ["BRAC Univ. thesis, Sentiment analysis of restaurant reviews from Bangladeshi food delivery apps","https://dspace.bracu.ac.bd/items/3a557973-d4a5-4df7-b641-33f390f832f0"]],
+  gap:`No aspect-discrepancy, temporal or reviewer-graph mining on this data.`,
+  difficulty:"Medium", cleaning:"Medium–High (Banglish)", compute:"Colab",
+  risks:`Graders may see it as "sentiment analysis again". Anonymisation limits interpretation. Only one year of data.`,
+  s:{N:3,F:4,D:3,Demo:4,P:3} },
+
+{ id:8, title:"When prices can't fall: network and regime mining of the Dhaka Stock Exchange floor-price period (2022–2024)", short:"DSE floor-price regime & networks",
+  family:"Graph / regime detection", tech:"change points, MST/PMFG, run patterns",
+  pitch:`From July 2022 to January 2024 the regulator imposed floor prices. Most stocks stopped moving, which breaks standard correlation-network analysis. Detect the regime from data, mine "frozen-stock" run patterns, and compare how network structure (MST communities) changed before, during and after. Descriptive analysis only; no investment advice.`,
+  datasets:[
+    ["Dhaka Stock Exchange Historical Data (1999–2025)","https://data.mendeley.com/datasets/5mww8rb9td/1","153.53 MB across 531 per-ticker CSVs (0.02–0.3 MB each); 1,684,249 rows; Jan 1999 → Apr 2025; code, date, OHLC, volume","CC BY 4.0","v1, 9 Apr 2025"],
+    ["(alt.) DSE historical data, older version","https://data.mendeley.com/datasets/23553sm4tn","–",UNV,"8 Mar 2024 (v1)"]],
+  check:`For ACI Ltd, the share of zero-return trading days was 0.0% (Jul 2021–Jun 2022), 82.8% (Aug 2022–Dec 2023) and 0.4% (Feb 2024–Apr 2025).`,
+  techniques:`Change points on market-wide zero-return share and turnover. Run-length and sequential patterns of frozen days. MST and PMFG networks plus Louvain per regime, comparing similarity measures that survive zero returns (rank-based, volume-based). Anomaly detection on volume.`,
+  rq:`How did the floor-price policy reshape trading-activity patterns and the co-movement network of DSE stocks?`,
+  papers:[
+    ["Rakib et al. (2024), Change in hierarchy of the financial networks: A study on firms of an emerging market in Bangladesh, PLOS ONE (2008–2020)","https://doi.org/10.1371/journal.pone.0301725"],
+    ["Muhammad et al. (2023), Utilizing Technical Data to Discover Similar Companies in Dhaka Stock Exchange, arXiv","https://arxiv.org/abs/2301.04455"],
+    ["Mantegna (1999), Hierarchical structure in financial markets, EPJ B","https://doi.org/10.1007/s100510050929"]],
+  gap:`The network literature stops at 2020. Nothing covers the floor-price regime or the methodological problem of zero returns.`,
+  difficulty:"Medium", cleaning:"Medium (ticker changes, halts; sector labels must be added)", compute:"Laptop",
+  risks:`No sector labels (collect them manually). Survivorship. Finance framing must stay descriptive.`,
+  s:{N:4,F:4,D:4,Demo:3,P:4} },
+
+{ id:9, title:"Trajectory mining at Dhaka intersections (DhaTraX vehicle tracks)", short:"DhaTraX trajectory mining",
+  family:"Trajectory mining", tech:"TRACLUS, trajectory outliers, PrefixSpan",
+  pitch:`DhaTraX (Sept 2026) releases tracked vehicle trajectories with class labels and metric ground-plane coordinates from fixed cameras at three Dhaka sites: non-lane-based, mixed traffic with rickshaws, CNGs and buses. Cluster movement patterns, find abnormal trajectories (wrong-way, U-turns, long stops), and mine class-wise interaction patterns.`,
+  datasets:[
+    ["DhaTraX (Arnob Roy)","https://zenodo.org/records/22157752","CSV in ZIPs: INT_realXY 438 MB, BS_realXY 456 MB, BM_realXY 553 MB, raw 1,099 MB, homography 5 MB, analysis 6.8 MB","CC BY 4.0","Sept 2026 (14 downloads when checked)"]],
+  check:`Not downloaded (about 1.5 GB). Read from the Zenodo record: per-observation rows with site, video, global track id, frame, class and ground-plane coordinates; frame-timing files; one quality-control summary.`,
+  techniques:`TRACLUS / DBSCAN on Fréchet or DTW distances. Isolation Forest / LOF on trajectory features. PrefixSpan over zone-transition sequences. Interaction (near-miss) pattern mining by vehicle class.`,
+  rq:`What movement patterns and anomalies characterise non-lane-based traffic at Dhaka intersections, by vehicle class?`,
+  papers:[
+    ["Lee, Han & Whang (2007), Trajectory clustering: a partition-and-group framework, SIGMOD","https://doi.org/10.1145/1247480.1247546"],
+    ["Ali, Rao & Bhaskar (2025), Microscopic Vehicle Trajectory Datasets from UAV-collected Video for Heterogeneous, Area-Based Urban Traffic, arXiv","https://arxiv.org/abs/2512.11898"],
+    ["Airport Highway (Dhaka) trajectory dataset, IEEE DataPort, 7,146 trajectories (download access unverified)","https://ieee-dataport.org/documents/airport-dataset"]],
+  gap:`Brand-new Dhaka intersection data with no analysis published yet.`,
+  difficulty:"Hard", cleaning:"Medium", compute:"Colab (1.5 GB of downloads)",
+  risks:`Large files. Sparse documentation (video durations unknown). Only 3 sites. Tracker noise.`,
+  s:{N:5,F:2,D:4,Demo:5,P:4} },
+
+{ id:10, title:"News as a sensor: burst and topic mining of 1.9M Bangla news articles against dengue and disaster records", short:"Bangla news burst mining",
+  family:"Text / event mining", tech:"Kleinberg bursts, NMF/LDA, co-occurrence networks",
+  pitch:`Use a large Bangla news corpus to detect bursts of dengue, flood, heatwave and fire coverage, and check whether news bursts lead or lag official counts (for example DGHS dengue, Idea 5). This extends a 2021 SUST study to a multi-year, multi-outlet setting.`,
+  datasets:[
+    ["BNAD: Bangla News Article Dataset (9 outlets), Zenodo / Hugging Face","https://zenodo.org/records/11111869","JSONL per outlet (e.g., DhakaTribuneBangla 387 MB, ekattorTv 297 MB, Ittefaq 4.3 GB); fields Title, Category, Time, Content, Meta, Tags (Bangla date strings)","CC BY 4.0 (Zenodo) / Apache-2.0 (HF)","2024 (HF last modified 24 Apr 2024)"],
+    ["(smaller alt.) Bangla Daily News Corpus","https://www.kaggle.com/datasets/shafin11027/bangla-daily-news-corpus","28.8 MB","CC0","6 Oct 2026 (3 notebooks)"]],
+  check:`Hugging Face first-rows API confirms the fields and that dates are Bangla strings such as "প্রকাশ : ১৮ মার্চ ২০২১, ২০:৩৫" that need parsing.`,
+  techniques:`Kleinberg burst detection. Per-month NMF/LDA. Keyword co-occurrence networks. Cross-correlation of burst series with official counts.`,
+  rq:`Do Bangla news bursts provide early signals of dengue and disaster events?`,
+  papers:[
+    ["Tasnim et al. (2021), local newspaper-based dengue surveillance in Bangladesh, arXiv 2107.14095 / FLAIRS","https://arxiv.org/abs/2107.14095"],
+    ["Alam et al. (2020), Bangla News Trend Observation using LDA Based Topic Modeling, ICCIT 2020","https://doi.org/10.1109/iccit51783.2020.9392719"],
+    ["GHTM: A Graph-based Hybrid Topic Modeling Approach for Bengali, arXiv 2508.00605","https://arxiv.org/abs/2508.00605"]],
+  gap:`Multi-year, multi-outlet burst detection compared against official dengue and disaster records.`,
+  difficulty:"Medium–Hard", cleaning:"High (Bangla dates and text)", compute:"Colab (choose 1–2 outlets)",
+  risks:`BNAD coverage dates are unclear and may stop in 2024. Bangla NLP preprocessing takes effort. The corpus is large.`,
+  s:{N:3,F:3,D:3,Demo:4,P:3} },
+
+{ id:11, title:"Spatial structure of a 600k-shop retail distribution network", short:"Retail network spatial mining",
+  family:"Spatial / itemsets", tech:"HDBSCAN, co-location, FP-Growth, LOF",
+  pitch:`A national FMCG distributor's outlet census: 719,817 outlets with GPS (per the Data in Brief paper) and per-shop targets for 17 products across 613,656 shops. Mine spatial clusters, co-location patterns of shop types, product-portfolio itemsets, and outlier shops.`,
+  datasets:[
+    ["Comprehensive Retail Network Dataset of Bangladesh (UIU)","https://data.mendeley.com/datasets/mgzvngzng2/1","205.87 MB: shop_info_with_geo.csv 116.97 MB, product_target_for_shop.csv 88.89 MB, product_info.csv","CC BY 4.0","v1, 7 Apr 2025"]],
+  check:`Header check: categorical fields are anonymised codes (shpt_1, plc_1, freq_1, shpi_1). Targets are fractional per product (prod_1…prod_17, Total). The sample has duplicate coordinates.`,
+  techniques:`HDBSCAN. Co-location pattern mining. FP-Growth on products with target > 0. LOF for shops whose targets are out of line with their neighbourhood. k-prototypes segmentation.`,
+  rq:`What spatial and product-portfolio structure does a national retail distribution network have, and which shops are outliers?`,
+  papers:[
+    ["Shahin, Swarna & Farid (2026), Comprehensive retail network dataset for Bangladesh, Data in Brief","https://doi.org/10.1016/j.dib.2025.112326"],
+    ["Huang, Shekhar & Xiong (2004), Discovering colocation patterns from spatial data sets, IEEE TKDE","https://doi.org/10.1109/TKDE.2004.90"]],
+  gap:`Only the dataset paper exists.`,
+  difficulty:"Medium", cleaning:"Medium", compute:"Colab",
+  risks:`Anonymised codes make findings hard to interpret. "Targets" are not sales. The company is unknown.`,
+  s:{N:3,F:4,D:2,Demo:3,P:3} },
+
+{ id:12, title:"Sequential pattern mining of Bangladesh Premier League ball-by-ball data", short:"BPL cricket sequential patterns",
+  family:"Sequential patterns", tech:"PrefixSpan, ARM, k-means",
+  pitch:`Cricsheet has ball-by-ball data for 469 BPL matches. Mine sequential patterns of deliveries (pressure build-up leading to a wicket), phase-wise rules, and batter archetypes, and compare BPL with IPL and PSL.`,
+  datasets:[
+    ["Cricsheet, Bangladesh Premier League","https://cricsheet.org/downloads/","JSON (CSV marked experimental); 469 matches","ODC-BY 1.0 (per Cricsheet register and McMaster library guide)","updated continuously (last blog post 10 Jun 2026)"]],
+  check:`Downloads page lists the BPL with 469 matches; the site holds 22,983 matches in total.`,
+  techniques:`GSP / PrefixSpan. Association rules by match phase. k-means batter profiles. Anomalous-over detection.`,
+  rq:`Which delivery sequences and match-phase conditions precede wickets and boundaries in the BPL, and how does it differ from other T20 leagues?`,
+  papers:[
+    ["Srikant & Agrawal (1996), Mining sequential patterns: Generalizations and performance improvements (GSP)","https://doi.org/10.1007/BFb0014140"],
+    ["NCI technical report on IPL data mining","https://norma.ncirl.ie/3475/1/kuldeeprawat.pdf"]],
+  gap:`Little BPL-specific pattern mining, but sports analytics is broad and findings may be obvious.`,
+  difficulty:"Easy", cleaning:"Low", compute:"Laptop",
+  risks:`Findings may be obvious. Low research impact and few suitable venues. Weak local-development relevance.`,
+  s:{N:2,F:5,D:5,Demo:5,P:2} }
+];
+IDEAS.forEach(i => i.sum = i.s.N + i.s.F + i.s.D + i.s.Demo + i.s.P);
+
+const CALLOUTS = [
+  {cls:"bad", h:"The 49k road-accident dataset looks largely synthetic", p:`Severity classes are about 25% each. The two weather columns are independent of each other, and so are the two lighting columns. Deaths are about 1.0 for every severity class, 99.3% of narratives are duplicates, and 96% of victims are "Motorcyclist". Association rules mined from it would be noise, so it is rejected.`},
+  {cls:"", h:"BanglaDine needs filtering", p:`About 12% of sampled rows are labelled division "India" (border-area coordinates), and only about 40% of rows have popular-times curves. Manageable, but plan for it in week 2.`},
+  {cls:"", h:"The DSE floor price is visible in raw data", p:`ACI Ltd had 82.8% zero-return trading days from Aug 2022 to Dec 2023, versus 0% the year before and 0.4% after Feb 2024. That signal is what makes Idea 8 work.`}
+];
+
+const PLANS = {
+1:{ ptitle:"Mining the Dark Hours: Regimes, Motifs and Emerging Fuel-Mix Rules in Bangladesh's Hourly Grid Data, 2015–2026",
+  venues:[ ["ICCIT 2027. ICCIT 2026 runs 18–20 Dec 2026 and its deadline passed in Aug 2026.","https://iccit.org.bd/"], ["IEEE Region 10 events (TENSYMP / R10-HTC 2027; check current CFPs)",""], ["Tackling Climate Change with ML workshop (NeurIPS 2026 edition announced; 2027 unverified)","https://www.climatechange.ai/events/neurips2026"], ["ICECE is biennial; the 14th is 10–12 Dec 2026, so the next is 2028","https://icece.buet.ac.bd/"] ],
+  rows:[ ["Regimes","Calendar split (pre-2022 vs 2022+)","PELT change points on daily shedding energy, liquid-fuel share and import share; compare to known events such as the mid-2022 spot-LNG halt"],
+         ["Typical days","k-means on raw 24-h vectors","k-Shape / DTW clustering per regime; matrix-profile motifs (recurring multi-day patterns)"],
+         ["Rules","Apriori support/confidence on all years","FP-Growth plus emerging patterns (Dong & Li 1999): rules whose support grows ≥k× between regimes, ranked by lift and conviction"],
+         ["Episodes","Count of shedding hours","PrefixSpan on episode sequences (e.g., gas↓ → liquid↑ → evening peak → shedding)"],
+         ["Glitches / events","Z-score outliers","Matrix-profile discords + Isolation Forest on STL residuals; label the top 50 as data error or real event"] ],
+  evaluation:[ "Clusters: silhouette, Davies–Bouldin, bootstrap ARI stability.", "Rules: lift, conviction, leverage, plus a temporal hold-out (mine 2022–2024, check whether rules still hold in 2025).", "Change points: alignment with documented events within ±7 days.", "Anomalies: precision@50 by manual labelling, and recall on synthetic glitches you inject at known positions." ],
+  figures:[ "Day-of-year × hour heatmap of shedding for every year (the crisis fingerprint).", "Regime timeline with change points over a stacked fuel-mix area chart.", "Cluster centroids of daily profiles per regime.", "Matrix profile with motifs and discords marked.", "Table of the top emerging rules.", "Stretch: matched NOx / PM2.5 contrast during shedding hours (Idea 4)." ],
+  hypotheses:`A sharp regime break in mid-2022 and partial recovery in 2025. Shedding concentrated in the evening peak and late night (Prothom Alo has reported midnight peaks). High-lift rules linking low gas share and high liquid-fuel generation to shedding. A cluster of obvious data-entry glitches.`,
+  weeks:[ "Read the 4 related papers; download both PGCB versions; reproduce the profile; set up repo and notebook template",
+    "Cleaning: half-hourly → hourly, impossible-value rules, merge UCI/Mendeley, missing solar/wind policy, document everything",
+    "EDA: yearly heatmaps, fuel-mix trends, shedding distributions|Checkpoint: data report",
+    "Change-point detection (PELT, several penalties) → regimes; event alignment table",
+    "Daily-profile clustering: k-means baseline vs k-Shape/DTW; choose k; stability",
+    "Matrix profile (STUMPY): motifs and discords; start labelling discords",
+    "Discretisation design for ARM (season, hour-band, fuel-share terciles, import levels); Apriori baseline",
+    "FP-Growth + emerging-pattern mining across regimes; interestingness ranking|Mid-term demo",
+    "PrefixSpan on shedding episodes; temporal hold-out validation of rules on 2025",
+    "Anomaly detection evaluation (injected glitches + labelled discords); optional division-level BPDB analysis",
+    "Stretch: download CAMS-BD, clean one Dhaka station, run the matched shedding / no-shedding contrast",
+    "Build Streamlit dashboard (year slider, regime view, rule explorer)",
+    "Write the paper (IEEE 6-page template): intro, related work, method, results",
+    "Final figures, limitations, polish demo, submit course report; prepare conference version|Submit" ] },
+2:{ ptitle:"Who Jams First? Mining Congestion Propagation and Co-Jam Patterns Across 81 Dhaka Junctions, with an Eid-ul-Adha Natural Experiment",
+  venues:[ ["ICCIT 2027","https://iccit.org.bd/"], ["VEHITS, where the two 2025 Dhaka papers appeared (check the 2027 CFP)",""], ["IEEE TENSYMP / R10-HTC",""], ["ACM SIGSPATIAL student research competition (check CFP)",""] ],
+  rows:[ ["Junction typology","k-means on mean daily profiles","k-Shape / DTW-hierarchical on weekday vs Friday profiles (division-level clustering already exists, so this is a supporting step)"],
+         ["Spread","Zero-lag Pearson network","Lagged cross-correlation + Granger tests only between adjacency neighbours (travel time < τ) → directed propagation graph; PageRank / out-strength sources"],
+         ["Co-occurrence","Pairwise correlation","FP-Growth co-jam itemsets over 10-minute windows (heavy class), maximal sets, lift vs independence"],
+         ["Order","–","PrefixSpan on jam-onset order, 7–11 am"],
+         ["Events","Daily averages","PELT change points + contrast mining of pre-Eid (≈20–26 May), Eid (27 May–2 Jun) and recovery; rain-day anomalies via Open-Meteo join"] ],
+  evaluation:[ "Predictive check of the propagation graph: does adding graph-parents' lagged values improve a 10–30-minute-ahead AR model over persistence and plain AR? Train weeks 1–5, test weeks 6–8; report MAE and the share of junctions improved.", "Compare identified sources with bottlenecks named by Sarker et al. 2025 (Kawran Bazar, Mohammadpur Bus Stand, Dhanmondi 32) where they exist among the 81.", "Itemsets: lift and temporal hold-out. Clusters: silhouette and stability.", "Eid: effect sizes with bootstrap confidence intervals." ],
+  figures:[ "Map of the 81 points coloured by cluster.", "Animated congestion map (the demo centrepiece).", "Directed propagation graph on the map, node size = PageRank.", "Time × junction heatmap with the Eid band.", "Top co-jam sets table.", "Propagation graph before, during and after Eid." ],
+  hypotheses:`North-corridor nodes (Abdullahpur–Uttara–Airport) act as morning sources toward the centre. Co-jam sets follow corridors more than geographic proximity. During Eid the graph thins out and loses most long-range edges, and pre-Eid days show the highest congestion of the window (consistent with the 21 May peak).`,
+  weeks:[ "Read the 4 Dhaka papers; download the dataset; reproduce the profile; geocode the 81 locations from sample_points.json",
+    "Understand MCI vs class files; email the dataset author via Mendeley for the MCI definition (you do this); build calendar features (Friday, Eid, holidays)",
+    "EDA: heatmaps, weekday / Friday curves, map|Checkpoint: data report",
+    "Junction clustering (baseline vs k-Shape / DTW); interpret clusters on the map",
+    "Pull Open-Meteo hourly rain for Dhaka; rain-day anomaly analysis",
+    "Lag analysis: cross-correlation per neighbour pair; choose lag window",
+    "Granger tests with false-discovery-rate control → propagation graph; centrality",
+    "Out-of-sample predictive validation of the graph|Mid-term demo",
+    "Co-jam itemsets (FP-Growth) + PrefixSpan on onset order",
+    "Eid natural experiment: change points, contrast, graph before/after comparison",
+    "Robustness: different thresholds and lags; weekday-only graphs",
+    "Streamlit / pydeck animated map + graph explorer",
+    "Write the paper",
+    "Final polish; course submission; conference version|Submit" ] },
+3:{ ptitle:"When Does Bangladesh Eat? Mining Weekly Popularity Rhythms of 20,000+ Restaurants from Google Maps",
+  venues:[ ["ICCIT 2027","https://iccit.org.bd/"], ["ACM COMPASS, poster or short paper (2027 CFP not yet seen)","https://compass.acm.org/"], ["IEEE R10 events",""], ["Urban-computing workshops at KDD / SIGSPATIAL (check current CFPs)",""] ],
+  rows:[ ["Rhythm types","k-means on raw 168-d vectors","z-normalise per venue → k-Shape / DTW clustering; also cluster day-of-week shape separately (Friday vs other days)"],
+         ["Where","Density map","HDBSCAN per archetype + Getis-Ord Gi* hotspots (Dhaka thana level); Moran's I"],
+         ["Why","Apriori on all attributes","FP-Growth with consequent constraints (archetype = X, rating ≥ 4.5); Fisher's exact test + Benjamini–Hochberg"],
+         ["Suspicious ratings","Rating > 4.8 and reviews < 5","LOF / Isolation Forest on rating, log reviews, category, archetype and attribute richness"],
+         ["Cities","–","Archetype mix per division; chi-square + contrast sets"] ],
+  evaluation:[ "Silhouette and bootstrap stability.", "Small human evaluation: classmates label 50 curves into the proposed archetypes; report agreement (Cohen's κ) with the clusters.", "Rule lift, conviction and adjusted p-values. Spatial autocorrelation significance.", "Manual inspection of the top 30 outliers." ],
+  figures:[ "Archetype centroids as 7×24 heatmaps.", "Dhaka map of archetypes.", "Friday vs weekday curve comparison.", "Rule table.", "City-mix bar chart.", "Outlier gallery." ],
+  hypotheses:`Distinct late-night (21:00–01:00) archetypes in Old Dhaka and Chattogram, Friday-lunch and evening family archetypes in Gulshan and Dhanmondi, weekday office-lunch archetypes near Motijheel and Karwan Bazar. Rules linking "Delivery / Takeaway only" to late-night profiles.`,
+  weeks:[ "Read related papers; download the 62 MB CSV; load in chunks",
+    "Cleaning: filter to a Bangladesh polygon (drop India rows), parse list attributes into items, keep rows with popular times",
+    "EDA: coverage, ratings, city counts, missingness bias check (with vs without curves)|Checkpoint",
+    "Baseline k-means; normalisation choices",
+    "k-Shape / DTW clustering; choose k; name archetypes",
+    "Human-label agreement study (50 curves)",
+    "Spatial: HDBSCAN, Gi* hotspots, Moran's I (Dhaka first, then other cities)",
+    "Map + archetypes|Mid-term demo",
+    "Transaction encoding; FP-Growth with archetype consequents; significance testing",
+    "Outlier detection for suspicious ratings; manual inspection",
+    "Cross-city contrast; Friday-weekend comparison with Western studies",
+    "Streamlit / folium dashboard (filter by archetype, hour slider)",
+    "Write the paper",
+    "Polish; submissions|Submit" ] }
+};
+
+const REJECTED = [
+ ["Bangladesh Road Traffic Accident Dataset 2007–2024 (49,566 rows)",["https://data.mendeley.com/datasets/p2kgkb5cd2"],"Appears largely synthetic or randomised: independent duplicate weather and light columns, uniform severity, deaths ≈1 for all severities, 99.3% duplicate narratives, 96% motorcyclists, 99.9% \"Urban\". Narratives contain personal names. The file has 47,680 rows covering 2007–2021, not 2024."],
+ ["Motorbike Accident Severity dataset",["https://data.mendeley.com/datasets/rm8t8kmhpj/3"],"Survey-based and small; classification-only use case."],
+ ["Flight Price Dataset of Bangladesh (Kaggle, 12 notebooks)",["https://www.kaggle.com/datasets/mahatiratusher/flight-price-dataset-of-bangladesh"],"Self-described synthetic."],
+ ["Dhaka Air Quality 2000–2025 – Synthetic",["https://www.kaggle.com/datasets/shakil10945/dhaka-air-quality-2000-2025-synthetic-dataset"],"Synthetic."],
+ ["Hourly AQI of Bangladesh, 103 cities (Kaggle, 359 MB)",["https://www.kaggle.com/datasets/shakilofficial0/hourly-air-quality-index-aqi-of-bangladesh"],"Values back to 2000 for 103 cities, including CO₂, point to modelled data rather than measurements (source unverified); CC BY-NC. CAMS-BD is the measured alternative."],
+ ["Diabetes datasets (DiaHealth, DiaBD)",["https://data.mendeley.com/datasets/7m7555vgrn","https://data.mendeley.com/datasets/m8cgwxs9s6/3"],"Generic binary classification; heavily overdone genre."],
+ ["Student Performance Bangladesh (SSC/HSC)",["https://data.mendeley.com/datasets/5nvsv7ypg4"],"Generic prediction survey; little novelty."],
+ ["University student mental health (USDI-30, BDI/PHQ, ONUBHOB-BD)",["https://data.mendeley.com/datasets/57yvy3gx8f","https://data.mendeley.com/datasets/f4z2bfv7vk","https://jhpn.biomedcentral.com/articles/10.1186/s41043-025-01095-8","https://research.daffodilvarsity.edu.bd/scopus-article/6581"],"Small surveys; ML risk-factor studies on Bangladeshi students are already published (JHPN 2025, QPAIN 2025). A search snippet described a regression + Apriori hybrid study on this topic (unverified)."],
+ ["Bangla cyberbullying / hate speech (multilabel, BOISHOMMO, BanCyB)",["https://data.mendeley.com/datasets/sz5558wrd4/3","https://data.mendeley.com/datasets/4tsb6tg9b2"],"NLP classification, crowded; little classic data mining."],
+ ["July-2024 uprising sentiment (4,200 comments)",["https://arxiv.org/abs/2507.11084"],"Generic sentiment; small; politically sensitive. Dataset DOI 10.5281/zenodo.15342899 unverified."],
+ ["Daraz review sentiment (EComReviews-BD, DarazMM, BECS, RevBangla)",["https://zenodo.org/records/22733565"],"Generic sentiment / ABSA, NLP-heavy. BDFoodSent (Idea 7) is the better review dataset."],
+ ["Bangladeshi tech jobs (Hugging Face, weekly)",["https://huggingface.co/datasets/swadhinbiswas/bangladeshi-jobs"],"Only 474 open postings (snapshot 4 Oct 2026); too small for skill-association mining today. Worth revisiting in a year."],
+ ["Medicinal products in Bangladesh",["https://data.mendeley.com/datasets/zhtvkny53n/1"],"Built for LLM fine-tuning; a flat brand/generic list with weak mining potential."],
+ ["AgriClimateBD (4,607 rows, 2022 only)",["https://data.mendeley.com/datasets/tb5x9gw2pt/2"],"Single year, small; fine as a side dataset, not a project."],
+ ["Bangladesh Agroclimatic Crop Yield 2000–2024 (Kaggle)",["https://www.kaggle.com/datasets/firozemaliha/bangladesh-agroclimatic-crop-yield-2000-2024"],"150 rows."],
+ ["BMD 35-station daily weather / 1901–2023 Kaggle weather",["https://data.mendeley.com/datasets/tbrhznpwg9/1","https://www.kaggle.com/datasets/yakinrubaiat/bangladesh-weather-dataset"],"Heavily explored (20 notebooks on the Kaggle version); useful only as a join table."],
+ ["IBTrACS Bay-of-Bengal cyclone track clustering",["https://www.ncei.noaa.gov/products/international-best-track-archive"],"Good data, but track clustering already done (FCM-firefly, standard-deviational-ellipse papers)."],
+ ["Arsenic (BGS/DPHE national survey)",["https://www.bgs.ac.uk/groundwater/?p=3986"],"1998–99 data; extensively studied."],
+ ["Ganges hydrology (3 stations)",["https://data.mendeley.com/datasets/sx4m6tdwb7"],"Too narrow for data mining."],
+ ["data.gov.bd Daily Water Levels",["https://data.gov.bd/dataset/daily-water-levels-data"],"Created 2018, never updated, \"License Not Specified\"."],
+ ["Lightning fatalities",["https://doi.org/10.1016/j.heliyon.2024.e28708"],"No open event-level dataset; papers only."],
+ ["Woman Harassment 2001–21 / crime statistics 2010–19 (Kaggle)",["https://www.kaggle.com/datasets/azminetoushikwasi/woman-harassment-dataset-200121-bangladesh"],"Yearly aggregates, tiny, sensitive."],
+ ["Garment worker productivity (UCI #597)",["https://archive.ics.uci.edu/dataset/597/productivity+prediction+of+garment+employees"],"1,197 rows (2020), 66k page views; overused."],
+ ["Mapped in Bangladesh / Open Supply Hub factories",["https://www.fibre2fashion.com/news/apparel-news/over-3-600-rmg-factories-in-bangladesh-now-digitally-mapped-278976-newsdetails.htm"],"Bulk download and licence not verified; may need an account."],
+ ["DHS / BDHS, MICS, ACLED",[],"Require registration or approval, against the no-special-approval rule."],
+ ["Image datasets (crop/leaf disease, license plates, rickshaw video)",[],"Deep-learning computer vision, not data mining."],
+ ["KrishiGyan / KrishokChat agricultural QA",["https://arxiv.org/pdf/2510.18355"],"LLM / RAG resources, not data mining."],
+ ["House rent / real estate (bproperty, Kaggle 12 notebooks)",["https://www.kaggle.com/datasets/durjoychandrapaul/house-price-bangladesh"],"Regression genre; overdone."],
+ ["South Asia WDI panels (World Bank)",["https://www.kaggle.com/datasets/rezwananik/south-asia-growth-and-development-data-2000-23"],"Country-level, tiny n; overdone clustering exercise."],
+ ["Dhaka local bus routes (Kaggle, 0.05 MB)",["https://www.kaggle.com/datasets/mahabub001cs/dhaka-local-bus-route"],"Interesting for graph mining but too small alone; possible add-on to Idea 2."],
+ ["PreEnvBD preterm birth (Zenodo)",["https://zenodo.org/records/19684670"],"No files visible in the record when checked; BDHS-derived."],
+ ["Net-Edu-BD (Zenodo, 4 Oct 2026)",["https://zenodo.org/records/23134442"],"No files visible in the record when checked."],
+ ["Dengue clinical / hematology datasets",["https://data.mendeley.com/datasets/673swz9tb4","https://www.kaggle.com/datasets/kawsarahmad/dengue-dataset-bangladesh"],"Small diagnostic classification (11 Kaggle notebooks on the latter)."]
+];
+
+const COVERAGE = [
+ ["Mendeley Data","~35 records read through the public API (title, version, publish date, files and sizes, licence)","Most of the shortlist"],
+ ["Kaggle","22 keyword searches via the public API, recording notebook counts to judge overuse; 10 dataset pages in detail","Daily dengue 2022–2025; flagged synthetic datasets"],
+ ["UCI ML Repository","Site search for \"bangladesh\" returned 0; found #1175 and #597 by web search","PGCB hourly mirror"],
+ ["OpenML","Name search for \"bangladesh\": no results","–"],
+ ["Hugging Face","API listing of 40 Bangladesh datasets; read the jobs card and BNAD first rows","BNAD news; jobs dataset too small"],
+ ["Zenodo","3 API searches (bangladesh / dhaka / bangla)","DhaTraX, BNAD, EComReviews-BD"],
+ ["Google Dataset Search","Dengue query","Confirmed the dengue landscape"],
+ ["Harvard Dataverse","API search: 1,152 Bangladesh datasets, mostly survey and replication packages","Nothing better than the shortlist"],
+ ["HDX (humdata)","API metadata + full CSV (4.6 MB)","WFP food prices, 110 markets"],
+ ["data.gov.bd","Opened Daily Water Levels","2018, no licence: rejected"],
+ ["BBS / DGHS / IEDCR","BBS yearbook is PDF tables; the DGHS press-release URL tried returned 404; DGHS data reached via Kaggle compilations","Used indirectly"],
+ ["World Bank / data.gov","WDI panels judged overdone; catalog.data.gov API query failed and it is US-centric","–"],
+ ["Literature","Semantic Scholar API (rate-limited, partial), arXiv API, Crossref, PubMed E-utilities, web search","40+ papers checked"]
+];
+
+const ASSUMPTIONS = [
+ "Timing: the semester runs roughly mid-October 2026 to late January 2027 (14 weeks), with about 8–10 hours a week for the project, working alone or in a pair.",
+ "Course scope: unsupervised learning, pattern mining, graph mining and anomaly detection all count as data mining. A small supervised component (for example predictive validation) is fine.",
+ "\"Publishable\" means a student or regional IEEE conference (ICCIT, TENSYMP, R10-HTC) or a workshop, not a top-tier venue.",
+ "Compute: Python on a laptop, with Colab for files over about 100 MB. No shortlisted idea needs GPU training.",
+ "Licences are as stated on the dataset pages on 7 Oct 2026. CC BY 4.0, CC BY-IGO and ODC-BY require attribution; CC BY-SA requires share-alike for derived data. This is not legal advice, especially for scraped sources (BanglaDine, Dhaka traffic).",
+ "Verification: no sign-ins or accounts. Only small files (≤7 MB) were downloaded; large files were sampled with byte-range reads (≤12 MB each). CAMS-BD (108 MB), DhaTraX (1.5 GB) and BNAD (several GB) were not downloaded, so their descriptions come from the repository pages.",
+ "Scores are judgement calls, explained in each idea. \"Last updated\" dates are the repository's publish or modified dates.",
+ "The Semantic Scholar API was rate-limited, so related work relied mainly on web search plus Crossref, arXiv and PubMed checks. The lists are representative, not exhaustive; do a Google Scholar pass on the chosen idea before writing.",
+ "Idea 8 is descriptive market-structure analysis only, not financial advice."
+];
+
+const CHECKLIST = [
+ "Download the dataset and re-run the quick checks (row counts, date range, missingness). Datasets get new versions.",
+ "Search Google Scholar for the dataset DOI to see whether a paper using it appeared after 7 Oct 2026.",
+ "Confirm with your instructor that unsupervised and pattern mining (not only classification) meets the course requirements.",
+ "Check the current call for papers and deadline before targeting a venue. ICCIT 2026 and ICECE 2026 dates were checked; 2027 calls were not yet available."
+];
+
+const SOURCES = [
+ {g:"Idea 1 · Load-shedding crisis mining", items:[
+  ["d","https://data.mendeley.com/datasets/vpk8spw2mm/1","Hourly generation, demand, load shedding and fuel mix 2015–2026 (API + full CSV)"],
+  ["d","https://archive.ics.uci.edu/dataset/1175/pgcb+hourly+generation+dataset","UCI mirror"],
+  ["d","https://data.mendeley.com/datasets/x7r7wdb39k/1","Daily electricity with division-level shedding (BPDB)"],
+  ["d","https://data.mendeley.com/datasets/4c5jwjhpns","Daily peak demand 2016–2024 (considered)"],
+  ["d","https://data.mendeley.com/datasets/djdg2d3rbz/1","Chattogram urban load 2021–2023 (considered)"],
+  ["d","https://data.mendeley.com/datasets/tbrhznpwg9/1","BMD daily weather, 35 stations"],
+  ["p","https://doi.org/10.1007/s42488-025-00140-9","Islam, Turja & Habib 2025"],
+  ["p","https://doi.org/10.1109/ECAI65401.2025.11095479","Yeaser, Nafs & Hossain 2025, ECAI"],
+  ["p","https://arxiv.org/abs/2406.06651","Akhter et al. 2024, Dhaka demand forecasting"],
+  ["p","https://vu.edu.bd/publications/3168/an-intelligent-machine-learning-based-load-shedding-prediction-and-smart-energy-management-framework-for-power-grid-optimization-in-bangladesh","SPICSCON 2026 load-shedding prediction"],
+  ["p","https://doi.org/10.65405/cv5t9g68","LATENT anomaly tracking on the PGCB grid (2026)"],
+  ["p","https://courses.lsa.umich.edu/urop-symposium/symposium-presentati/left-in-the-dark-regional-variation-in-the-impacts-of-load-shedding-across-bangladesh/","Student symposium on regional load-shedding impacts"],
+  ["c","https://en.prothomalo.com/bangladesh/e4s0883p85","News: shedding peaks at midnight"],
+  ["c","https://cpd-power-energy-study.com/?p=2296","2022 fuel-shortage context"],
+  ["m","https://doi.org/10.1109/ICDM.2016.0179","Matrix Profile I"],
+  ["m","https://arxiv.org/abs/1811.03064","Matrix profile journal version"],
+  ["m","https://doi.org/10.1145/312129.312191","Emerging patterns (Dong & Li 1999)"],
+  ["m","https://doi.org/10.1080/01621459.2012.737745","PELT change points"],
+  ["m","https://doi.org/10.1109/ICDE.2001.914830","PrefixSpan"],
+  ["m","https://doi.org/10.1145/342009.335372","FP-Growth"],
+  ["m","https://doi.org/10.1109/ICDM.2008.17","Isolation Forest"] ]},
+ {g:"Idea 2 · Dhaka congestion propagation", items:[
+  ["d","https://data.mendeley.com/datasets/phkvy2xwrt/1","Dhaka_Traffic_Data (API + all CSVs)"],
+  ["d","https://open-meteo.com/","Open-Meteo historical weather API (licence unverified)"],
+  ["d","https://www.kaggle.com/datasets/mahabub001cs/dhaka-local-bus-route","Dhaka bus routes (possible add-on)"],
+  ["p","https://doi.org/10.2478/ttj-2024-0030","Rahman & Nower 2024"],
+  ["p","https://doi.org/10.5220/0013296200003941","Sarker, Sakib & Nower 2025, VEHITS"],
+  ["p","https://scitepress.org/publishedPapers/2025/131936/pdf/index.html","Hasan & Sarker 2025, VEHITS"],
+  ["p","https://arxiv.org/abs/2011.02359","Pramanik et al. 2020"],
+  ["p","https://sanghani.cs.vt.edu/research/publications/2022/granger-causal-inference-for-interpretable-traffic-prediction.html","Granger causal inference for traffic (ITSC 2022)"],
+  ["m","https://doi.org/10.1145/2723372.2737793","k-Shape"] ]},
+ {g:"Idea 3 · Restaurant popularity rhythms", items:[
+  ["d","https://data.mendeley.com/datasets/hxrmzggw5b/1","BanglaDine2024 (API + byte-range samples)"],
+  ["p","https://doi.org/10.3390/ijgi14060221","Barrena-Herrán et al. 2025, IJGI"],
+  ["p","https://ekoizpen-zientifikoa.ehu.eus/documentos/686973d984fff30d95b13d30?lang=en","Record of the same paper"],
+  ["p","https://doi.org/10.1145/2976796.2976862","Neves et al. 2016"],
+  ["m","https://doi.org/10.1007/978-3-642-37456-2_14","HDBSCAN"],
+  ["m","https://doi.org/10.1145/335191.335388","LOF"] ]},
+ {g:"Idea 4 · Load shedding × air quality", items:[
+  ["d","https://data.mendeley.com/datasets/hwmzyh5w4w/1","CAMS-BD hourly air quality (API only)"],
+  ["d","https://data.mendeley.com/datasets/cdn2vbvzgr","Dhaka EPZ PM2.5/PM10/CO (considered)"],
+  ["d","https://zenodo.org/records/18673791","Dhaka air quality 2022–2026 from Open-Meteo CAMS-global (modelled; considered)"],
+  ["p","https://doi.org/10.1371/journal.pone.0313341","Al Hallak et al. 2024, Beirut generators"],
+  ["p","https://arxiv.org/abs/2111.07635","Beirut generator dispersion modelling"],
+  ["p","https://doi.org/10.1007/s10661-023-12046-3","Khan et al. 2023, Dhaka pollution loading"],
+  ["p","https://doi.org/10.1016/j.atmosenv.2023.119587","Sarwar et al. 2023, US Embassy Dhaka PM2.5"],
+  ["p","https://doi.org/10.1016/j.dib.2024.110594","Dhaka EPZ dataset paper"],
+  ["c","https://indiaenvironmentportal.org.in/news-clippings/diesel-gensets-push-air-pollution-up-by-30-in-city-reveals-survey","CSE survey (news): gensets raise PM ~30%"],
+  ["c","https://www.thedailystar.net/tech-startup/news/real-time-air-quality-tracking-launched-across-bangladesh-3474436","DoE's 16 CAMS stations"] ]},
+ {g:"Idea 5 · Dengue spatiotemporal mining", items:[
+  ["d","https://www.kaggle.com/datasets/brownsugar297/dengue-and-weather-data-bangladesh-20222025","Daily dengue 2022–Oct 2025"],
+  ["d","https://www.kaggle.com/datasets/jisangain/bangladesh-daily-and-searo-monthly-dengue-cases","Daily 2024–Mar 2026 + OpenDengue monthly"],
+  ["d","https://data.mendeley.com/datasets/z5mvwrfgsz/1","Division daily 2022–2024 + weather"],
+  ["d","https://data.mendeley.com/datasets/cgwjshkx5k","Monthly division 2020–2025"],
+  ["d","https://data.mendeley.com/datasets/zdtc3n6xv2","Survey/clinical dengue (considered)"],
+  ["d","https://data.mendeley.com/datasets/673swz9tb4","Clinical/hematological dengue (considered)"],
+  ["d","https://datasetsearch.research.google.com/search?query=Bangladesh%20dengue%20daily","Google Dataset Search results"],
+  ["p","https://doi.org/10.1371/journal.pone.0323238","Alam et al. 2025, PLOS ONE"],
+  ["p","https://doi.org/10.1101/2024.03.24.24304789","Hasan et al. 2024, medRxiv"],
+  ["p","https://doi.org/10.32473/flairs.v34i1.128552","Tasnim et al. 2021, FLAIRS"],
+  ["p","https://arxiv.org/abs/2107.14095","Tasnim et al. 2021, arXiv"] ]},
+ {g:"Idea 6 · Food-price shock networks", items:[
+  ["d","https://data.humdata.org/dataset/wfp-food-prices-for-bangladesh","WFP Bangladesh food prices (HDX)"],
+  ["d","https://data.mendeley.com/datasets/dd58ks2p5y","Food Commodity Price (OHLC)"],
+  ["d","https://data.mendeley.com/datasets/5m4d33mxrs","Wheat flour + macro 2007–2025"],
+  ["d","https://data.mendeley.com/datasets/bkmxnrn3hn","AgriPriceBD daily"],
+  ["d","https://data.mendeley.com/datasets/867kdtn78c/1","AgriCast-Sylhet (considered)"],
+  ["p","https://doi.org/10.3329/agric.v6i1.5219","Siddique et al. 2010"],
+  ["p","https://doi.org/10.1186/s40100-022-00228-5","Alam, McKenzie & Begum 2022"],
+  ["p","https://doi.org/10.2139/ssrn.4325164","Prince et al. 2023"],
+  ["p","https://doi.org/10.1109/QPAIN69676.2026.11546003","Hossain et al. 2026, QPAIN"],
+  ["m","https://doi.org/10.1088/1742-5468/2008/10/P10008","Louvain community detection"] ]},
+ {g:"Idea 7 · Food-delivery complaint mining", items:[
+  ["d","https://data.mendeley.com/datasets/532fxhnwbb/2","BDFoodSent"],
+  ["d","https://zenodo.org/records/14259962","BDFoodSent Zenodo mirror"],
+  ["d","https://data.mendeley.com/datasets/wc87kpk6ks","Foodpanda + Hungrynaki reviews (considered)"],
+  ["d","https://data.mendeley.com/datasets/2p5cyjwmrx","Foodpanda reviews 43k (considered)"],
+  ["p","https://doi.org/10.1109/icaeee62219.2024.10561876","Amin et al. 2024"],
+  ["p","https://arxiv.org/html/2405.06667v1","arXiv version of the above"],
+  ["p","https://dspace.bracu.ac.bd/items/3a557973-d4a5-4df7-b641-33f390f832f0","BRACU thesis"],
+  ["p","https://shdl.mmu.edu.my/14998/","Deep hierarchical networks for restaurant reviews"] ]},
+ {g:"Idea 8 · DSE floor-price regime", items:[
+  ["d","https://data.mendeley.com/datasets/5mww8rb9td/1","DSE 1999–2025"],
+  ["d","https://data.mendeley.com/datasets/23553sm4tn","DSE historical, older (licence unverified)"],
+  ["d","https://www.kaggle.com/datasets/mahmudulhaque/dsebd","Kaggle DSE (CC BY-NC-SA; considered)"],
+  ["p","https://doi.org/10.1371/journal.pone.0301725","Rakib et al. 2024"],
+  ["p","https://arxiv.org/abs/2301.04455","Muhammad et al. 2023"],
+  ["p","https://doi.org/10.1007/s100510050929","Mantegna 1999"],
+  ["c","https://www.thedailystar.net/business/economy/news/investors-edge-stocks-end-two-years-inflated-prices-3529781","Floor price lifted Jan 2024"],
+  ["c","https://old.thefinancialexpress.com.bd/stock/dse-records-lowest-trade-in-25-years-after-partial-removal-of-floor-1671764664","Turnover collapse under the floor"] ]},
+ {g:"Idea 9 · DhaTraX trajectories", items:[
+  ["d","https://zenodo.org/records/22157752","DhaTraX"],
+  ["p","https://doi.org/10.1145/1247480.1247546","TRACLUS"],
+  ["p","https://arxiv.org/abs/2512.11898","UAV trajectory datasets, heterogeneous traffic"],
+  ["d","https://ieee-dataport.org/documents/airport-dataset","Dhaka Airport Highway trajectories (access unverified)"],
+  ["p","https://dl.lib.uom.lk/items/735b8f94-f6a5-472b-8942-891ad2edeeb1","Vehicle detection for non-lane-based Dhaka traffic"],
+  ["d","https://huggingface.co/datasets/hamimmahmud0/DRINF","DRINF drone footage (considered)"] ]},
+ {g:"Idea 10 · Bangla news bursts", items:[
+  ["d","https://zenodo.org/records/11111869","BNAD (Zenodo)"],
+  ["d","https://huggingface.co/datasets/Asif-Saad/Bangla_News_Article","BNAD (Hugging Face)"],
+  ["d","https://www.kaggle.com/datasets/shafin11027/bangla-daily-news-corpus","Bangla Daily News Corpus"],
+  ["p","https://doi.org/10.1109/iccit51783.2020.9392719","Alam et al. 2020, ICCIT"],
+  ["p","https://arxiv.org/abs/2508.00605","GHTM Bengali topic modelling"],
+  ["p","https://arxiv.org/abs/2101.09667","Monitoring social dynamics in Bangladesh via news"],
+  ["m","https://doi.org/10.1023/A:1024940629314","Kleinberg burst detection"] ]},
+ {g:"Idea 11 · Retail network", items:[
+  ["d","https://data.mendeley.com/datasets/mgzvngzng2/1","Comprehensive Retail Network Dataset"],
+  ["p","https://doi.org/10.1016/j.dib.2025.112326","Shahin, Swarna & Farid 2026, Data in Brief"],
+  ["m","https://doi.org/10.1109/TKDE.2004.90","Co-location pattern mining"] ]},
+ {g:"Idea 12 · BPL cricket", items:[
+  ["d","https://cricsheet.org/downloads/","Cricsheet downloads (BPL, 469 matches)"],
+  ["d","https://cricsheet.org/","Cricsheet overview"],
+  ["d","https://cricsheet.org/register","Cricsheet register (ODC-BY reference)"],
+  ["d","https://library.mcmaster.ca/data/cricsheet","Library guide (licence)"],
+  ["d","https://pkg.robjhyndman.com/cricketdata/articles/cricsheet.html","R access to Cricsheet"],
+  ["m","https://doi.org/10.1007/BFb0014140","GSP sequential patterns"],
+  ["p","https://norma.ncirl.ie/3475/1/kuldeeprawat.pdf","IPL data-mining report"] ]},
+ {g:"Round 2 · Research-oriented ideas (13–19)", items:[
+  ["d","https://data.mendeley.com/datasets/673swz9tb4","Dengue clinical dataset (13)"],
+  ["d","https://data.mendeley.com/datasets/zdtc3n6xv2","Dengue survey dataset (13)"],
+  ["d","https://data.mendeley.com/datasets/p2kgkb5cd2","Road accident dataset (13)"],
+  ["d","https://data.mendeley.com/datasets/m8cgwxs9s6/3","DiaBD (13)"],
+  ["d","https://data.mendeley.com/datasets/f4z2bfv7vk","Undergrad mental health (13, 17)"],
+  ["d","https://data.mendeley.com/datasets/57yvy3gx8f","USDI-30 depression (13, 17)"],
+  ["d","https://www.openml.org/","OpenML real control datasets (13)"],
+  ["d","https://data.mendeley.com/datasets/5mww8rb9td/1","DSE historical data (14)"],
+  ["d","https://data.mendeley.com/datasets/phkvy2xwrt/1","Dhaka congestion data (14)"],
+  ["d","https://huggingface.co/datasets/sakhadib/Bangladesh-Legal-Acts-Dataset","Bangladesh Legal Acts Dataset (15)"],
+  ["d","https://openalex.org/","OpenAlex (16)"],
+  ["d","https://data.mendeley.com/datasets/93r2cxvbdx","BECS (18)"],
+  ["d","https://data.mendeley.com/datasets/bnbbcdsf4m","RevBangla (18)"],
+  ["d","https://data.mendeley.com/datasets/kkzfrvhbhp","BanglaEcomReviewCorpus (18)"],
+  ["d","https://data.mendeley.com/datasets/sz5558wrd4/3","Bangla multilabel cyberbully (18)"],
+  ["p","https://arxiv.org/abs/2412.13227","Cross-table Synthetic Tabular Data Detection"],
+  ["p","https://arxiv.org/abs/2503.01937","Synthetic Tabular Data Detection In the Wild"],
+  ["p","https://arxiv.org/abs/2509.00092","Robust Detection of Synthetic Tabular Data under Schema Variability"],
+  ["p","https://doi.org/10.1109/TKDE.2021.3112126","Wu & Keogh 2021, flawed anomaly benchmarks"],
+  ["p","https://arxiv.org/abs/1711.05233","A visual search engine for Bangladeshi laws"],
+  ["p","https://arxiv.org/abs/1501.05237","Network Analysis in the Legal Domain (EU)"],
+  ["p","https://arxiv.org/abs/2205.01833","OpenAlex paper (Priem et al.)"],
+  ["p","https://publications.drdo.gov.in/ojs/index.php/djlit/article/view/16854","Bibliometric study of Bangladeshi LIS research"],
+  ["p","https://doi.org/10.1007/s10618-018-0590-x","Tutorial on statistically sound pattern discovery"],
+  ["p","https://doi.org/10.1007/s10618-010-0202-x","Krimp: mining itemsets that compress"],
+  ["p","https://aclanthology.org/2021.eacl-main.113","Memorization vs. Generalization: data leakage in NLP (EACL 2021)"],
+  ["p","https://arxiv.org/pdf/2608.08503","MathShikkha (Bangla math reasoning; near-duplicate checks)"],
+  ["p","https://doi.org/10.1126/sciadv.aau4996","PCMCI (Runge et al. 2019)"],
+  ["m","https://doi.org/10.1145/2976796.2976862","Neves et al. 2016 (round 1 reference reused)"] ]},
+ {g:"Venues", items:[
+  ["v","https://iccit.org.bd/","ICCIT"],
+  ["v","https://iccit.org.bd/2026/call-for-paper/","ICCIT 2026 call for papers (closed Aug 2026)"],
+  ["v","https://icece.buet.ac.bd/","ICECE 2026 (10–12 Dec 2026, biennial)"],
+  ["v","https://www.climatechange.ai/events/neurips2026","Tackling Climate Change with ML, NeurIPS 2026"],
+  ["v","https://compass.acm.org/","ACM COMPASS"] ]},
+ {g:"Rejected / considered (selection)", items:[
+  ["d","https://www.kaggle.com/datasets/mdnahidurrahmankh/bangladesh-road-accident-dataset-2007-2024","Kaggle copy of the accident dataset"],
+  ["p","https://arxiv.org/abs/2409.11929","Explainable ML for Dhaka traffic fatality prediction"],
+  ["p","https://doi.org/10.1109/qpain66474.2025.11171847","ML road accident risk in Bangladesh (QPAIN 2025)"],
+  ["p","https://iccesd.kuet.ac.bd/Papers/362.pdf","Khulna accident hotspots (KDE / Gi*)"],
+  ["p","https://doi.org/10.1016/j.dib.2025.111746","DiaBD dataset paper"],
+  ["p","https://arxiv.org/abs/2504.08408","BOISHOMMO paper"],
+  ["p","https://www.journal.bmd.gov.bd/media/research_papers/3.pdf","Bay of Bengal cyclone track analysis"],
+  ["d","https://dataverse.harvard.edu/","Harvard Dataverse search"],
+  ["d","https://bbs.gov.bd/site/page/3e838eb6-30a2-4709-be85-40484b0c16c6/Yearbook-of-Agricultural-Statistics","BBS Agricultural Yearbook (page load unverified)"] ]}
+];
+// add rejected-table URLs to the sources view without duplicating
+(function(){ const seen = new Set(); SOURCES.forEach(g=>g.items.forEach(i=>seen.add(i[1])));
+  const extra = SOURCES[SOURCES.length-1].items;
+  REJECTED.forEach(r=>r[1].forEach(u=>{ if(!seen.has(u)){ seen.add(u); extra.push(["d",u,r[0]]); } })); })();
+const KIND = {d:"Dataset", p:"Paper", m:"Method", c:"Context / news", v:"Venue"};
+
+/* ---------------------------------------------------------------- helpers */
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const pips = n => '<span class="pips" aria-label="' + n + ' of 5">' + [1,2,3,4,5].map(k=>'<i class="'+(k<=n?'on':'')+'"></i>').join('') + '</span>';
+const SC = [["N","Novelty"],["F","Feasibility"],["D","Data quality"],["Demo","Demo appeal"],["P","Publishability"]];
+const byId = id => IDEAS.find(i=>i.id===id);
+
+/* ---------------------------------------------------------------- round 2 data */
+const R2 = [
+{ id:13, top:1, title:"Fingerprinting synthetic tabular data in the wild", short:"Synthetic-data fingerprinting",
+  family:"Anomaly detection / data forensics", tech:"dependence tests, within-class independence, meta-classifier",
+  pitch:`Open repositories now host tables produced by scripts or generative models instead of measured from people. Round 1 hit one by accident (the road-accident dataset). This project builds a small, interpretable, label-aware test battery, validates it on controls where the truth is known, and applies it to Bangladeshi datasets on Mendeley and Kaggle. The key signature: when a generator draws each feature separately given the label, features that are correlated in real data become independent within each class, while the label stays easy to predict.`,
+  pilotTitle:"Pilot: what I measured",
+  pilotTable:{ head:["Test","Real controls","Deliberately faked controls","Flagged datasets"], rows:[
+    ["Median Cramér's V, categorical pairs","adult 0.125 · credit-g 0.067 · Pima 0.252","shuffled 0.000 · uniform 0.000–0.005","road accident 0.017"],
+    ["Categorical columns with near-uniform marginals","0–14%","100% (uniform random)","road accident 70% · dengue clinical 100% (9 cols)"],
+    ["Within-class pairs significant (Bonferroni)","Pima 12/28, 5/28 · credit-g 11/190, 27/190 · adult 34/91, 10/91","–","dengue clinical 1/55, 1/55 · dengue survey 0/105, 0/120"],
+    ["Depth-3 tree accuracy (majority rate)","Pima 0.729 (0.65) · credit-g 0.728 (0.70) · adult 0.809 (0.75)","–","dengue clinical 0.985 (0.68) · dengue survey 1.000 (0.53)"] ]},
+  pilotNote:`Other observations from my own counts: in the dengue survey, AreaType splits 501/499, all 1,000 rows are one district, and Joint_Pain is missing in 491 rows. In the dengue clinical data, fever duration is spread almost evenly over 3–7 days, and platelet and WBC means differ sharply by outcome while age does not. A single marginal test is weak: Student Performance (50% uniform columns), Motorbike (40%) and USDI-30 (62%) also trip it, and my label choice for Student Performance was wrong, so ignore that row. DiaBD looked real (within-class 40/91 and 18/91). Treat every flag as "consistent with programmatic generation, ask the authors", never as proof.`,
+  datasets:[["Dengue clinical (1,018 rows)","https://data.mendeley.com/datasets/673swz9tb4"],["Dengue survey (1,000 rows; Kaggle copy has 11 notebooks)","https://data.mendeley.com/datasets/zdtc3n6xv2"],["Road accident 2007–2024","https://data.mendeley.com/datasets/p2kgkb5cd2"],["DiaBD","https://data.mendeley.com/datasets/m8cgwxs9s6/3"],["DiaHealth","https://data.mendeley.com/datasets/7m7555vgrn"],["Undergrad mental health","https://data.mendeley.com/datasets/f4z2bfv7vk"],["USDI-30","https://data.mendeley.com/datasets/57yvy3gx8f"],["Real controls: Adult, German credit, Pima diabetes via OpenML (sklearn fetch_openml)","https://www.openml.org/"]],
+  techniques:`Dependence tests (Cramér's V, mutual information, within-class Spearman), uniformity and terminal-digit tests, duplicate analysis, shallow-model separability, anomaly detection over test-statistic vectors across many datasets, and a meta-classifier trained on real vs generated tables (CTGAN, TVAE, TabDDPM-style via sdv or synthcity).`,
+  rq:`Can a small set of interpretable, label-aware statistics reliably separate real from generated tables, and how common are flagged tables in South Asian open-data repositories?`,
+  papers:[["Kindji et al. (2024), Cross-table Synthetic Tabular Data Detection, arXiv","https://arxiv.org/abs/2412.13227"],["Kindji et al. (2025), Synthetic Tabular Data Detection In the Wild, arXiv","https://arxiv.org/abs/2503.01937"],["Kindji et al. (2025), Robust Detection of Synthetic Tabular Data under Schema Variability, arXiv","https://arxiv.org/abs/2509.00092"]],
+  gap:`Those papers train supervised detectors on UCI tables and generator outputs. Missing: an interpretable, training-free audit based on conditional-independence structure, plus an applied survey of a real repository. I did not find a prior survey of this kind, but my search was limited.`,
+  difficulty:"Medium", cleaning:"Low", compute:"Laptop",
+  risks:`Naming and shaming: use neutral wording and give authors a chance to respond before public release. A well-made generator trained on real data will evade the test. Possible false positives on legitimately simple or heavily designed data. A statistical claim needs 60–100 surveyed tables.`,
+  s:{N:5,F:4,D:4,Demo:4,P:5} },
+
+{ id:14, top:2, title:"An event-grounded benchmark for change-point and anomaly detectors", short:"Event-grounded detector benchmark",
+  family:"Time-series methods", tech:"PELT, BinSeg, BOCPD, matrix profile, Isolation Forest",
+  pitch:`Many time-series anomaly benchmarks have unclear or flawed ground truth. Real Bangladeshi series contain documented regime events: stock-market price-floor changes, the 2022 fuel crisis in the grid, the Eid exodus in traffic, the 2023 dengue surge. Use them as ground truth and compare detectors honestly: delay, false alarms and sensitivity to penalty settings.`,
+  pilotTitle:"Pilot: do standard detectors recover documented events?",
+  pilotTable:{ head:["Series","Documented event","Detected breakpoints"], rows:[
+    ["DSE market-wide zero-return share (58 tickers, 5-day mean)","Floor price July 2022; lifted Jan 2024","BinSeg (4 breaks): 2022-07-20, 2022-10-11, 2023-04-26, 2024-01-21 · PELT (rbf): 14 breaks incl. the same two"],
+    ["PGCB daily load-shedding energy (14-day mean)","Fuel crisis from ~July 2022","PELT (l2): 2022-07-24 plus 7 more"],
+    ["Dhaka daily congestion index","Eid-ul-Adha ~27 May 2026","PELT: 2026-05-26 (only one)"] ]},
+  pilotNote:`Half-year zero-return share across the 58 tickers was 1–2% normally and 7.5–9.1% from H2 2022 to H1 2023, though one stock (ACI) was frozen on 82.8% of days, so the effect is concentrated. Event dates for the floor price come from news reports and should be confirmed against SEC orders.`,
+  datasets:[["DSE historical data","https://data.mendeley.com/datasets/5mww8rb9td/1"],["PGCB hourly grid data","https://data.mendeley.com/datasets/vpk8spw2mm/1"],["Dhaka congestion, 10-minute","https://data.mendeley.com/datasets/phkvy2xwrt/1"],["Daily dengue by division","https://www.kaggle.com/datasets/brownsugar297/dengue-and-weather-data-bangladesh-20222025"]],
+  techniques:`PELT, BinSeg, BOCPD, CUSUM, matrix-profile discords, Isolation Forest on rolling features, STL residual thresholds, k-Shape cluster-switch detection. Metrics: detection delay, tolerance-window precision and recall, spurious detections per year, sensitivity to penalty or threshold, runtime.`,
+  rq:`Which detectors recover documented regime events with the least delay and fewest false alarms across heterogeneous real series, and how much do rankings depend on tolerance and tuning?`,
+  papers:[["Wu & Keogh (2021), Current Time Series Anomaly Detection Benchmarks are Flawed…, IEEE TKDE","https://doi.org/10.1109/TKDE.2021.3112126"],["Yeh et al. (2016), Matrix Profile I, ICDM","https://doi.org/10.1109/ICDM.2016.0179"],["Killick, Fearnhead & Eckley (2012), PELT, JASA","https://doi.org/10.1080/01621459.2012.737745"]],
+  gap:`An openly licensed benchmark with externally documented events from a non-Western setting. I did not exhaustively search existing event-labelled benchmarks, so check before claiming priority.`,
+  difficulty:"Easy–Medium", cleaning:"Low–Medium", compute:"Laptop",
+  risks:`Only about 6–8 events, so statistics are thin; add events (COVID lockdown, 2024 floods in WFP prices) and bootstrap over windows. Event dates need citations. Several series overlap with round-1 ideas 1 and 8.`,
+  s:{N:4,F:5,D:4,Demo:4,P:4} },
+
+{ id:15, top:3, title:"The Bangladesh legal code as a graph", short:"Legal code citation graph",
+  family:"Graph + text mining", tech:"entity linking, PageRank, Louvain, link prediction",
+  pitch:`A public dataset packs 1,484 Bangladesh acts with titles, sections, footnotes and a repealed flag. I found no study that builds a citation and repeal network over it. Questions: which acts are the legal hubs, how do clusters line up with legal areas and eras, and which live acts still refer to repealed ones (stale references a legislator would want fixed)?`,
+  pilotTitle:"Pilot: title matching over section text and footnotes",
+  pilotTable:{ head:["Measure","Value"], rows:[
+    ["Acts in file","1,484 (582 English, 698 Bengali, 203 unknown language)"],
+    ["Unique normalised titles / flagged repealed","721 / 203"],
+    ["Distinct title-like mentions found","3,771"],
+    ["Matched citation edges","1,336 (599 citing acts, 237 cited acts)"],
+    ["Live → repealed edges","324 (239 distinct live citing acts)"],
+    ["Most cited","Bangladesh Bank (Demonetisation of Currency Notes) Order 1972 (170) · Chartered Accountants Order 1973 (117) · Customs Act 1969 (85) · Public Demands Recovery Act 1913 (83)"] ]},
+  pilotNote:`The 170-edge count for a 1972 currency order is probably an artefact (repeated amendment footnotes), not genuine centrality. Only English text is covered, so about half the corpus is not yet in the graph. The repealed flag is from the portal and unverified. Title matching is crude; proper entity linking is the main technical work and a good research component.`,
+  datasets:[["Bangladesh Legal Acts Dataset (CC BY 4.0, 61.9 MB JSON)","https://huggingface.co/datasets/sakhadib/Bangladesh-Legal-Acts-Dataset"]],
+  techniques:`Citation extraction and entity linking (fuzzy titles, year and act-number features), PageRank/HITS, k-core, Louvain communities vs subject area and era, temporal growth, stale-reference detection, link prediction from text similarity plus graph features, Bangla numeral normalisation for the Bengali half.`,
+  rq:`What is the citation and repeal structure of Bangladesh's statute book, and how many live statutes depend on repealed ones?`,
+  papers:[["Mandal, Nath & Mizan et al. (2017), A visual search engine for Bangladeshi laws, arXiv","https://arxiv.org/abs/1711.05233"],["Koniaris et al. (2015), Network Analysis in the Legal Domain: EU legal sources, arXiv","https://arxiv.org/abs/1501.05237"]],
+  gap:`No graph-mining study of Bangladeshi statute citations found (one query). The Bangladesh paper is a search-engine interface, not a network analysis.`,
+  difficulty:"Medium–Hard", cleaning:"High (entity linking, Bengali text)", compute:"Laptop (62 MB)",
+  risks:`Legal accuracy: frame findings as candidate stale references for expert review. The repealed flag and act text can be wrong. The Bengali half may take most of the effort. A law-informatics venue may want a legal collaborator.`,
+  s:{N:4,F:3,D:3,Demo:5,P:4} },
+
+{ id:16, title:"Scouting the field: a topic-saturation map of Bangladeshi CS research", short:"Topic-saturation map (OpenAlex)",
+  family:"Text + network mining", tech:"topic models, trends, collaboration networks",
+  pitch:`Mine every Bangladesh-affiliated computer-science work from 2015 to 2025 in OpenAlex (abstracts, venues, citations, co-authors). Build a topic × domain × data-type map and a saturation score to show which areas are crowded and which are open. It doubles as a way to pick a project.`,
+  pilotTitle:"Pilot: OpenAlex API counts",
+  pilotText:`37,198 works (2015–2025) with a Bangladesh affiliation in Computer Science. Per year: 1,143 (2015), 2,769 (2020), 7,984 (2025). Top subfields 2015: Computer Networks (181), AI (134). 2025: AI (1,627), Computer Vision (868), Information Systems (849), with Plant Science (489) and Health Information Management (405) in the top six. Top venues 2020–2025: ICCIT (1,823 works), arXiv (1,141), SSRN (1,113), IEEE Access (460). Co-author countries after Bangladesh: United States 3,345, India 1,863, China 1,692, Australia 1,514. 23,271 works from 2020–2025 have abstracts.`,
+  datasets:[["OpenAlex API (licence believed CC0, unverified)","https://openalex.org/"]],
+  techniques:`NMF or BERTopic, burst and trend detection, keyword co-occurrence and collaboration networks, density estimation over topic × domain grids to find empty cells, association rules between datasets and tasks.`,
+  rq:`Where is Bangladeshi CS research saturated or sparse, and how has the topic mix shifted?`,
+  papers:[["Priem, Piwowar & Orr (2022), OpenAlex, arXiv","https://arxiv.org/abs/2205.01833"],["Bibliometric study of Bangladeshi LIS research 1971–2020 (not CS, not OpenAlex)","https://publications.drdo.gov.in/ojs/index.php/djlit/article/view/16854"]],
+  gap:`I found no OpenAlex-based study of Bangladeshi CS with topic evolution. That means "not found", not "does not exist".`,
+  difficulty:"Easy–Medium", cleaning:"Medium", compute:"Laptop",
+  risks:`Noisy affiliation metadata, partial abstract coverage, topic models need validation, and scientometrics reviewers may expect established bibliometric methods.`,
+  s:{N:3,F:5,D:4,Demo:5,P:3} },
+
+{ id:17, title:"Rule explosion on small surveys: a few valid, readable rules", short:"Rule explosion on small surveys",
+  family:"Pattern mining methods", tech:"FP-Growth, FDR, closed rules, Krimp/MDL",
+  pitch:`Student papers often run Apriori on a survey and report a handful of rules. The pilot shows the real problem on small surveys is an explosion of near-duplicate rules, not false discoveries. Compare ways of shrinking the rule set: statistical filters, closed and non-redundant rules, and compression-based summaries, judged by size, information retained and a small human study.`,
+  pilotTitle:"Pilot: real data vs shuffled null (each column permuted independently)",
+  pilotTable:{ head:["Dataset, thresholds","Rules (real)","Rules (shuffled null, mean)","Pass Fisher + BH q=0.05"], rows:[
+    ["Mental health (n=501), sup ≥0.15, conf ≥0.8, lift ≥1.2","11,418","1.1","11,418"],
+    ["USDI-30 (n=823), sup ≥0.10, conf ≥0.7, lift ≥1.2","2,890","0.2","2,890"],
+    ["USDI-30, sup ≥0.05, conf ≥0.6, lift ≥1.15","20,387","113.4 (≈1%)","20,382"],
+    ["USDI-30, sup ≥0.03, conf ≥0.5, lift ≥1.1","64,082","5,044.6 (≈8%)","61,105"] ]},
+  pilotNote:`The starting hypothesis (many rules are spurious) failed. The interesting question is how to reduce 11k–64k mostly redundant, true rules to something a person can read. The Fisher + BH step is applied after mining on the same data, so it is optimistic; a proper study would use a holdout or permutation-based correction.`,
+  datasets:[["USDI-30 depression survey (823 × 37)","https://data.mendeley.com/datasets/57yvy3gx8f"],["Undergrad mental health survey (501 × 63)","https://data.mendeley.com/datasets/f4z2bfv7vk"]],
+  techniques:`FP-Growth (mlxtend), permutation nulls, Fisher + FDR/FWER, closed and non-redundant rules, Krimp/MDL itemset summaries, a small readability study.`,
+  rq:`Which rule-set reduction method gives the most compact, statistically valid and human-readable rules on small surveys?`,
+  papers:[["Hämäläinen & Webb (2018), A tutorial on statistically sound pattern discovery, DMKD","https://doi.org/10.1007/s10618-018-0590-x"],["Vreeken, van Leeuwen & Siebes (2011), Krimp: mining itemsets that compress, DMKD","https://doi.org/10.1007/s10618-010-0202-x"]],
+  gap:`The methods are known. The contribution would be a systematic comparison with a readability measure on small surveys: workshop-level.`,
+  difficulty:"Medium", cleaning:"Low", compute:"Laptop",
+  risks:`Known methods; a human study needs participants.`,
+  s:{N:3,F:4,D:4,Demo:3,P:3} },
+
+{ id:18, title:"Duplicate and leakage audit of public Bangla text datasets", short:"Bangla dataset leakage audit",
+  family:"Text mining / data quality", tech:"near-duplicate detection, classifiers",
+  pitch:`Many Bangla classification papers train on public datasets. If the same text appears in train and test, scores are inflated. Audit duplicates inside and across datasets, and how much they matter for different model types.`,
+  pilotTitle:"Pilot: duplicates after Unicode, Bangla-digit and punctuation normalisation",
+  pilotTable:{ head:["Dataset","Rows","% in exact-dup groups","% in normalised-dup groups","Near-duplicate (cosine ≥0.9)"], rows:[
+    ["BECS","15,385","21.2","22.9","20.8% (74 duplicate texts with conflicting labels)"],
+    ["RevBangla","4,999","0.04","4.1","12.8%"],
+    ["BanglaEcomReviewCorpus","8,685","0.0","0.4","8.7%"],
+    ["Cyberbully multilabel","12,175","28.5","31.5","19.7%"] ]},
+  pilotNote:`Cross-dataset exact overlaps were small (4–146 texts per pair). Effect on accuracy (TF-IDF char n-grams + logistic regression, 5 random splits): on BECS, 21.2% of test rows had an exact twin in train; accuracy 0.693 with a random split vs 0.681 with duplicates grouped (1.1 points). RevBangla −0.2 points, BanglaEcomReviewCorpus −0.9. Duplicates are common but mostly short generic comments, and a linear model barely benefits. Inflation may be larger for fine-tuned transformers; I did not test that.`,
+  datasets:[["BECS","https://data.mendeley.com/datasets/93r2cxvbdx"],["RevBangla","https://data.mendeley.com/datasets/bnbbcdsf4m"],["BanglaEcomReviewCorpus","https://data.mendeley.com/datasets/kkzfrvhbhp"],["Bangla multilabel cyberbully","https://data.mendeley.com/datasets/sz5558wrd4/3"]],
+  techniques:`Normalisation, char-n-gram TF-IDF nearest neighbours, MinHash/LSH at scale, grouped vs random splits, error analysis of label conflicts.`,
+  rq:`How prevalent are duplicates and cross-dataset overlaps in public Bangla text datasets, and how much do they inflate reported performance?`,
+  papers:[["Elangovan, He & Verspoor (2021), Memorization vs. Generalization: Quantifying Data Leakage in NLP Performance Evaluation, EACL","https://aclanthology.org/2021.eacl-main.113"],["MathShikkha (2026), near-duplicate checks on a Bangla math set (read via search snippet only)","https://arxiv.org/pdf/2608.08503"]],
+  gap:`Dataset-level audit across popular Bangla sentiment and abuse sets; check recent Bangla contamination preprints before claiming novelty.`,
+  difficulty:"Easy–Medium", cleaning:"Medium", compute:"Laptop; Colab for transformers",
+  risks:`The measured effect on a simple model is small, so a strong paper needs the transformer experiment.`,
+  s:{N:3,F:4,D:4,Demo:3,P:3} },
+
+{ id:19, title:"Dependency-structure shift in Bangladesh's power grid", short:"Grid dependency-structure shift",
+  family:"Time-series / causal structure", tech:"PCMCI, Granger, graphical lasso",
+  pitch:`Detect how relationships between variables change at a regime break, not just that a level changed. Pilot: day-to-day changes in liquid-fuel generation barely related to changes in load shedding before the crisis and strongly after. Extend to a dependency graph per regime and test whether the graphs differ more than chance.`,
+  pilotTitle:"Pilot: Spearman correlation of daily changes",
+  pilotTable:{ head:["Pair","Pre-crisis 2018–21 (1,461 days)","Crisis Jul 2022–2024 (915 days)"], rows:[
+    ["Liquid fuel × load shedding","0.01","0.43"],
+    ["Liquid fuel × coal","0.18","0.29"],
+    ["Liquid fuel × imports","0.32","0.26"],
+    ["Gas × anything","≤ 0.24","≈ 0"] ]},
+  pilotNote:`A lagged check (gas change today vs liquid-fuel change tomorrow) was weak in both periods (0.10 and 0.04). Overlaps with round-1 idea 1 (same data): pick one. Present as dependency structure, not causation.`,
+  datasets:[["PGCB hourly grid data","https://data.mendeley.com/datasets/vpk8spw2mm/1"]],
+  techniques:`PCMCI, Granger tests, graphical lasso per regime, permutation tests on graph differences.`,
+  rq:`How did the dependency structure among fuel sources, imports and shedding change at the start of the 2022 crisis?`,
+  papers:[["Runge et al. (2019), Detecting and quantifying causal associations in large nonlinear time series datasets, Science Advances","https://doi.org/10.1126/sciadv.aau4996"]],
+  gap:`Structure-change analysis of this grid data; causal claims are fragile.`,
+  difficulty:"Medium", cleaning:"Low–Medium", compute:"Laptop",
+  risks:`Same data as round-1 idea 1; causal claims need caution.`,
+  s:{N:3,F:4,D:4,Demo:3,P:3} }
+];
+R2.forEach(i => i.sum = i.s.N + i.s.F + i.s.D + i.s.Demo + i.s.P);
+
+const PLANS2 = {
+13:{ ptitle:"Is This Data Real? Label-Aware Fingerprints of Synthetic Tabular Data in Open Repositories",
+  venues:[["ICCIT 2027 (2026 closed Aug 2026)","https://iccit.org.bd/"],["Data-centric AI / data-quality workshops at KDD, NeurIPS, ICML (check calls; unverified)",""],["IEEE R10 events",""]],
+  rows:[["Is a table generated?","Duplicate rows, uniform marginals","Label-aware battery: within-class dependence, shallow-tree separability, cross-column consistency checks"],
+        ["Combining signals","Eyeball","Standardise each statistic against real reference tables, then a small interpretable score (logistic regression or rule list)"],
+        ["Generalisation","Train a detector on one table","Leave-one-table-out evaluation across 30+ real tables and generated copies"],
+        ["Repository survey","Read a few datasets","Run the battery on 60–100 small tabular Mendeley/Kaggle datasets; report prevalence with confidence intervals"]],
+  evaluation:["AUROC and precision at fixed recall on held-out tables; false-positive rate on real controls below 5%.","Robustness against stronger generators (CTGAN, TVAE, TabDDPM-style) trained on the real controls.","Comparison with the supervised detector of Kindji et al. if code is available (unverified)."],
+  figures:["Distribution of each statistic, real vs fake.","ROC curves.","Fingerprint heatmap of surveyed datasets.","Dengue-vs-controls scatter: within-class dependence vs tree accuracy.","Prevalence bar chart with intervals."],
+  hypotheses:`The within-class test separates naive generators almost perfectly but degrades on generators trained on real data. A minority of surveyed datasets (single digits to low double digits percent) get flagged. Flagged tables may be downloaded or cited as often as unflagged ones.`,
+  weeks:["Read the 3 detection papers; choose reference tables","Assemble 30+ real reference tables and the survey sample list (60–100 tables)","Implement the statistic battery (marginal, pairwise, within-class, separability, digit tests)|Checkpoint: first heatmap","Build generated counterparts with sdv/synthcity (CTGAN, TVAE, Gaussian copula)","Validate on known real vs known fake; tune thresholds without peeking at the survey","Interpretable score; leave-one-table-out evaluation","Robustness to stronger generators; document failure modes|Mid-term demo","Run on the survey sample; quarantine flagged tables for manual review","Manual review: read dataset papers; contact authors of flagged data (you do this)","Prevalence estimates, confidence intervals, notebook-count analysis","Ablation: which statistics matter; minimum table size","Small web demo: upload a CSV, get a fingerprint report","Write the paper; decide anonymisation of flagged tables","Polish; course submission; conference version|Submit"] },
+14:{ ptitle:"Documented Events as Ground Truth: Benchmarking Change-Point Detectors on Bangladeshi Market, Grid and Traffic Series",
+  venues:[["ICCIT 2027","https://iccit.org.bd/"],["Time-series workshops at ECML-PKDD or KDD (check calls; unverified)",""],["IEEE R10 events",""]],
+  rows:[["Detect regime changes","Fixed-penalty PELT","Full precision–delay curves over penalty grids; BOCPD with calibrated hazard"],
+        ["Detect anomalies","z-score on residuals","Matrix-profile discords, Isolation Forest on rolling features, STL residual thresholds"],
+        ["Score","Count hits","Tolerance-window precision/recall, detection delay, false alarms per year, area under the precision–delay curve"],
+        ["Ground truth","Hand-picked","Documented events with citations; labelling protocol written before running detectors"]],
+  evaluation:["Precision, recall and delay at ±3, ±7 and ±14 days.","Rank stability across tolerance and penalty choices; bootstrap over series segments for intervals.","Compare against the flaws listed by Wu & Keogh (trivial examples, run-to-failure bias)."],
+  figures:["Timelines per series with true events and each detector's breakpoints.","Precision–delay curves.","Rank-stability heatmap.","Spurious-detection counts per year."],
+  hypotheses:`Simple detectors perform comparably on clean level shifts. Rankings change a lot with tolerance. rbf-cost PELT over-segments, as the pilot's 14 breakpoints suggest. Variance-sensitive detectors do better on the DSE zero-return series.`,
+  weeks:["Read the benchmark-critique literature; define protocol and tolerance windows","Event inventory with citations: DSE floor, PGCB crisis, Eid, dengue 2023, 2024 floods in WFP prices, COVID lockdown","Build the series (zero-return share, daily shedding, daily congestion, weekly dengue)|Checkpoint: event table + plots","Implement PELT, BinSeg, BOCPD, CUSUM","Implement discord, Isolation Forest and STL detectors","Scoring code: tolerance windows, delay, false alarms","First full results; sanity checks|Mid-term demo","Penalty and threshold sweeps; precision–delay curves","Rank-stability and bootstrap analysis","Add extra series (WFP prices, more DSE sectors) for more events","Error analysis: why each detector fails on each event","Package benchmark (data, events file, scripts); small leaderboard page","Write the paper","Polish; submit|Submit"] },
+15:{ ptitle:"Mapping the Statute Book: Citation and Repeal Structure of Bangladesh's Laws",
+  venues:[["ICCIT 2027","https://iccit.org.bd/"],["Legal-informatics workshops, e.g. JURIX (check calls; unverified)",""],["IEEE R10 events",""]],
+  rows:[["Find citations","Exact title regex","Fuzzy entity linking with year and act-number features; evaluated on hand-labelled citations"],
+        ["Importance","In-degree","PageRank/HITS with footnote-artefact filtering; compare rankings"],
+        ["Structure","Connected components","Louvain communities vs legal subject areas and eras; temporal growth"],
+        ["Stale references","–","Live→repealed edges ranked by section context, reviewed by a legal reader"],
+        ["Missing links","–","Link prediction from text similarity + graph features"]],
+  evaluation:["Citation extraction: precision and recall on 200 hand-labelled citations.","Community quality: normalised mutual information against subject areas (portal categories if available, unverified).","Stale-reference precision from a legal expert's review of 50 candidates (needs a collaborator)."],
+  figures:["Whole-network visualisation by era.","In-degree distribution (log–log).","Community map.","Top stale-reference table.","Timeline of growth."],
+  hypotheses:`Heavy-tailed in-degree with a few procedural and tax hubs. Communities follow subject area more than era. A nontrivial fraction of the 324 pilot live→repealed edges survive review, with some caused by partial repeals.`,
+  weeks:["Read related work; download the 62 MB file; confirm fields","Data audit: language split, repealed flags, duplicate titles (721 unique of 1,484)","Baseline regex citation extraction and first graph|Checkpoint: graph stats","Hand-label 200 citations; implement fuzzy linking; measure precision/recall","Filter amendment-footnote artefacts (e.g., the 170-edge currency-order anomaly)","Bengali half: numeral normalisation, Bangla title matching","Centrality and degree analysis|Mid-term demo","Community detection; compare with subject areas","Temporal analysis by era and government period","Stale-reference detection; prepare 50 candidates for expert review","Link prediction experiment","Interactive graph demo (pyvis or D3 in a static page)","Write the paper","Polish; submit|Submit"] }
+};
+
+let r2Sel = 13;
+function r2Card(i){
+  const pt = i.pilotTable ? `<div class="tscroll"><table><thead><tr>${i.pilotTable.head.map(h=>'<th>'+esc(h)+'</th>').join('')}</tr></thead><tbody>${i.pilotTable.rows.map(r=>'<tr>'+r.map((c,k)=>'<td'+(k===0?' style="min-width:160px"':'')+'>'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table></div>` : `<p>${esc(i.pilotText)}</p>`;
+  return `<details class="idea" id="r2-${i.id}">
+   <summary>
+     <div class="inum"><span>Idea ${i.id}</span>${i.top?'<span class="star">Top '+i.top+'</span>':''}</div>
+     <div class="ititle"><h3>${esc(i.title)}</h3><p>${esc(i.rq)}</p>
+       <div class="chips"><span class="chip acc">${esc(i.family)}</span><span class="chip">${esc(i.difficulty)}</span><span class="chip">${esc(i.compute)}</span></div></div>
+     <div class="isum"><span class="total">${i.sum}<small> / 25</small></span><span class="chev" aria-hidden="true">▼</span></div>
+   </summary>
+   <div class="ibody">
+     <div class="main">
+       <div class="blk"><h4>Pitch</h4><p>${esc(i.pitch)}</p></div>
+       <div class="blk"><h4>${esc(i.pilotTitle)}</h4>${pt}${i.pilotNote?'<div class="note" style="margin-top:10px"><b>Reading</b>'+esc(i.pilotNote)+'</div>':''}</div>
+       <div class="blk"><h4>Data</h4><ul>${i.datasets.map(d=>'<li>'+L(d[1],esc(d[0]))+'</li>').join('')}</ul></div>
+       <div class="blk"><h4>Techniques</h4><p>${esc(i.techniques)}</p></div>
+       <div class="blk"><h4>Related work</h4><ul>${i.papers.map(p=>'<li>'+L(p[1],esc(p[0]))+'</li>').join('')}</ul></div>
+       <div class="blk"><h4>Gap / novelty</h4><p>${esc(i.gap)}</p></div>
+       <div class="blk"><h4>Risks</h4><p>${esc(i.risks)}</p></div>
+     </div>
+     <aside class="side">
+       <div class="blk"><h4>Scores</h4><div class="scorelist">${SC.map(([k,n])=>`<span class="k">${n}</span>${pips(i.s[k])}<span class="v">${i.s[k]}</span>`).join('')}</div></div>
+       <div class="blk"><h4>Effort</h4><dl class="kv"><dt>Difficulty</dt><dd>${esc(i.difficulty)}</dd><dt>Cleaning</dt><dd>${esc(i.cleaning)}</dd><dt>Compute</dt><dd>${esc(i.compute)}</dd></dl></div>
+       <div class="blk"><h4>Research question</h4><p>${esc(i.rq)}</p></div>
+     </aside>
+   </div></details>`;
+}
+function r2Plan(id){
+  const p = PLANS2[id];
+  return `<div class="plan" id="r2plan-${id}" role="tabpanel" aria-labelledby="r2pt-${id}" ${r2Sel===id?'':'hidden'}>
+   <div class="titlecard"><span class="eyebrow">Possible paper title</span><div class="ptitle">${esc(p.ptitle)}</div>
+     <div class="chips">${p.venues.map(v=> v[1] ? '<a class="chip acc" href="'+v[1]+'" target="_blank" rel="noopener">'+esc(v[0])+'</a>' : '<span class="chip">'+esc(v[0])+'</span>').join('')}</div></div>
+   <div><h3 class="sub" style="margin-bottom:10px">Baseline vs the interesting method</h3>
+   <div class="tscroll"><table><thead><tr><th>Task</th><th>Baseline</th><th>Interesting method</th></tr></thead><tbody>
+     ${p.rows.map(r=>`<tr><td style="white-space:nowrap;font-weight:600">${esc(r[0])}</td><td style="min-width:160px">${esc(r[1])}</td><td style="min-width:260px">${esc(r[2])}</td></tr>`).join('')}
+   </tbody></table></div></div>
+   <div class="two">
+     <div class="panel"><h4>Evaluation</h4><ul>${p.evaluation.map(e=>'<li>'+esc(e)+'</li>').join('')}</ul></div>
+     <div class="panel"><h4>Expected figures</h4><ul>${p.figures.map(e=>'<li>'+esc(e)+'</li>').join('')}</ul></div>
+   </div>
+   <div class="panel"><h4>What I expect to find (hypotheses, not results)</h4><p>${esc(p.hypotheses)}</p></div>
+   <div><h3 class="sub" style="margin-bottom:10px">Week by week</h3>
+   <div class="timeline">${p.weeks.map((w,k)=>{ const [t,cp] = w.split("|"); return `<div class="wk ${cp?'cp':''}"><div class="w"><span>Week ${k+1}</span>${cp?'<span>'+esc(cp)+'</span>':''}</div><div>${esc(t)}</div></div>`; }).join('')}</div></div>
+  </div>`;
+}
+function viewRound2(){
+  const sorted = [...R2].sort((a,b)=>a.id-b.id);
+  return `<div class="vhead"><h2>Round 2: research-oriented ideas</h2>
+  <p>Added after round 1. Nothing from round 1 was removed (see Shortlist, Compare and 14-week plans). Each idea here centres on a research contribution (a test, a benchmark, an audit, a method comparison or a new graph) and was piloted on real data before being written up. Some pilots came out negative, and those are reported too.</p></div>
+  <div class="callouts">
+    <div class="callout"><h4>Recommendation</h4><p>Idea 13 for the most original and clearly publishable result. Idea 14 for the safest path to a clean paper. Idea 15 for graph mining with a strong visual demo. Idea 16 is a good first-week scouting step for any choice.</p></div>
+    <div class="callout bad"><h4>Handle idea 13 with care</h4><p>Flagged datasets are "consistent with programmatic generation", not proven fabrication. Use neutral wording and contact authors before any public release.</p></div>
+    <div class="callout"><h4>Negative pilot results</h4><p>Idea 17's starting hypothesis (many rules are spurious) failed. Idea 18's duplicates are common but inflate a linear model's accuracy by only about 1 point.</p></div>
+  </div>
+  <h3 class="sub">Comparison</h3>
+  <div class="tscroll"><table><thead><tr><th class="num">#</th><th>Idea</th><th>Main techniques</th><th class="num">N</th><th class="num">F</th><th class="num">D</th><th class="num">Demo</th><th class="num">P</th><th>Total</th><th>Difficulty</th></tr></thead><tbody>
+   ${sorted.map(i=>`<tr class="${i.top?'is-top':''}"><td class="num">${i.id}</td><td><a href="#round2" data-r2open="${i.id}">${esc(i.short)}</a>${i.top?' <span class="chip acc">Top '+i.top+'</span>':''}</td><td style="min-width:220px">${esc(i.tech)}</td>${["N","F","D","Demo","P"].map(k=>`<td class="num"><span class="heat h${i.s[k]}">${i.s[k]}</span></td>`).join('')}<td><div class="sumbar"><div class="bar"><span style="width:${i.sum/25*100}%"></span></div><b>${i.sum}</b></div></td><td style="white-space:nowrap">${esc(i.difficulty)}</td></tr>`).join('')}
+  </tbody></table></div>
+  <h3 class="sub">The seven ideas</h3>
+  <div class="ideas">${sorted.map(r2Card).join('')}</div>
+  <h3 class="sub">14-week plans for the top 3</h3>
+  <div class="plantabs" role="tablist" aria-label="Choose a round 2 plan">
+    ${[13,14,15].map(id=>`<button role="tab" id="r2pt-${id}" aria-selected="${r2Sel===id}" data-r2plan="${id}">${id} · ${esc(R2.find(x=>x.id===id).short)}</button>`).join('')}
+  </div>
+  ${[13,14,15].map(r2Plan).join('')}
+  <p class="lead" style="font-size:13.5px;color:var(--muted)">Full text with all tables: <code>REPORT_ROUND2.md</code> in the project folder. Pilot numbers are what quick single-machine scripts printed on 7–10 Oct 2026; they show a signal and are not publishable results.</p>`;
+}
+
+/* ---------------------------------------------------------------- views */
+const VIEWS = [
+ ["overview","Overview",""],
+ ["round2","Round 2 ideas","7"],
+ ["shortlist","Shortlist","12"],
+ ["compare","Compare",""],
+ ["plans","14-week plans","3"],
+ ["rejected","Rejected",String(REJECTED.length)],
+ ["method","Method & assumptions",""],
+ ["sources","Sources",""]
+];
+
+function viewOverview(){
+  const picks = IDEAS.filter(i=>i.top).sort((a,b)=>a.top-b.top);
+  const facts = {
+    1:["94,934 hourly rows","2015 → 2026","6.5 MB","CC BY 4.0"],
+    2:["81 junctions","10-min steps","0% missing","covers Eid-ul-Adha"],
+    3:["58,376 restaurants","~23k with curves","168 hourly columns","CC BY 4.0"]};
+  const blurbs = {
+    1:`Hours with load shedding went from 3–46 a year (2015–2021) to 2,287 in 2022 and about 5,000 a year in 2023–24. Every paper on this data does forecasting or prediction; nobody has mined the patterns of the crisis itself. Small, clean enough, runs on a laptop.`,
+    2:`60 days of congestion at 81 named Dhaka locations, plus an 81×81 travel-time table. The Eid-ul-Adha exodus shows as a clear city-wide drop. Recent Dhaka papers cluster divisions or find static bottlenecks; none do lagged, directed propagation or Eid. Best demo of the three.`,
+    3:`Google Maps "popular times" curves for about 23k restaurants. Cluster them into archetypes (late-night, Friday brunch, office lunch), map them, and explain them with association rules. I found no Popular-Times study for any South Asian city.`};
+  return `
+  <div class="callout" style="border-left-color:var(--accent);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between">
+    <div style="min-width:0;flex:1 1 320px"><h4>New: round 2, research-oriented ideas</h4><p>Seven more ideas built around a research contribution (a test, a benchmark, an audit, a new graph), each piloted on real data. Round 1 is unchanged below.</p></div>
+    <button class="btn" data-view="round2">Open round 2</button></div>
+  <div class="vhead"><h2>Three recommendations from round 1</h2>
+  <p>Picked from about 50 candidates for novelty, feasibility in 14 weeks, data quality, demo appeal and publishability, and to cover three different technique families.</p></div>
+  <div class="top3">${picks.map(i=>`
+    <article class="pick">
+      <div class="rank"><span>${i.top}</span><span class="chip acc">${esc(i.family)}</span></div>
+      <h3>${esc(i.short)}</h3>
+      <p>${blurbs[i.id]}</p>
+      <div class="chips">${facts[i.id].map(f=>'<span class="chip">'+esc(f)+'</span>').join('')}</div>
+      <div class="scorelist">${SC.map(([k,n])=>`<span class="k">${n}</span>${pips(i.s[k])}<span class="v">${i.s[k]}</span>`).join('')}</div>
+      <div class="actions"><button class="btn" data-goplan="${i.id}">Open 14-week plan</button><button class="btn ghost" data-goidea="${i.id}">Full details</button></div>
+    </article>`).join('')}
+  </div>
+  <p class="lead"><b>Runners-up:</b> load shedding × air quality (Idea 4) is the most novel research question but the hardest, and works best as Idea 1's stretch goal. Dengue spatiotemporal mining (Idea 5) is very locally relevant but crowded.</p>
+  <h3 class="sub">Data checks that changed the ranking</h3>
+  <div class="callouts">${CALLOUTS.map(c=>`<div class="callout ${c.cls}"><h4>${esc(c.h)}</h4><p>${esc(c.p)}</p></div>`).join('')}</div>
+  <h3 class="sub">Before you commit to any idea</h3>
+  <ol class="check">${CHECKLIST.map(c=>'<li>'+esc(c)+'</li>').join('')}</ol>`;
+}
+
+function ideaCard(i){
+  return `<details class="idea" id="idea-${i.id}" data-diff="${esc(i.difficulty)}">
+   <summary>
+     <div class="inum"><span>Idea ${i.id}</span>${i.top?'<span class="star">Top '+i.top+'</span>':''}</div>
+     <div class="ititle"><h3>${esc(i.title)}</h3><p>${esc(i.rq)}</p>
+       <div class="chips"><span class="chip acc">${esc(i.family)}</span><span class="chip">${esc(i.difficulty)}</span><span class="chip">${esc(i.compute)}</span></div></div>
+     <div class="isum"><span class="total">${i.sum}<small> / 25</small></span><span class="chev" aria-hidden="true">▼</span></div>
+   </summary>
+   <div class="ibody">
+     <div class="main">
+       <div class="blk"><h4>Pitch</h4><p>${esc(i.pitch)}</p></div>
+       <div class="blk"><h4>Datasets</h4><div class="tscroll"><table class="dtable"><thead><tr><th>Dataset</th><th>Size / format</th><th>Licence</th><th>Updated</th></tr></thead><tbody>
+         ${i.datasets.map(d=>`<tr><td>${L(d[1],esc(d[0]))}</td><td>${esc(d[2])}</td><td>${d[3]}</td><td>${esc(d[4])}</td></tr>`).join('')}
+       </tbody></table></div></div>
+       <div class="note"><b>My data check</b>${esc(i.check)}</div>
+       <div class="blk"><h4>Techniques</h4><p>${esc(i.techniques)}</p></div>
+       <div class="blk"><h4>Related work</h4><ul>${i.papers.map(p=>'<li>'+L(p[1],esc(p[0]))+'</li>').join('')}</ul></div>
+       <div class="blk"><h4>Gap / novelty</h4><p>${esc(i.gap)}</p></div>
+       <div class="blk"><h4>Risks</h4><p>${esc(i.risks)}</p></div>
+     </div>
+     <aside class="side">
+       <div class="blk"><h4>Scores</h4><div class="scorelist">${SC.map(([k,n])=>`<span class="k">${n}</span>${pips(i.s[k])}<span class="v">${i.s[k]}</span>`).join('')}</div></div>
+       <div class="blk"><h4>Effort</h4><dl class="kv"><dt>Difficulty</dt><dd>${esc(i.difficulty)}</dd><dt>Cleaning</dt><dd>${esc(i.cleaning)}</dd><dt>Compute</dt><dd>${esc(i.compute)}</dd></dl></div>
+       <div class="blk"><h4>Research question</h4><p>${esc(i.rq)}</p></div>
+       ${i.top?'<button class="btn" data-goplan="'+i.id+'">Open 14-week plan</button>':''}
+     </aside>
+   </div></details>`;
+}
+
+let slFilter = "all", slSort = "id", slQuery = "";
+function viewShortlist(){
+  return `<div class="vhead"><h2>Shortlist of 12 ideas</h2><p>Scores out of 5 for novelty, feasibility, data quality, demo appeal and publishability. Open a card for datasets, techniques, related work and risks.</p></div>
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Filter ideas">
+      ${[["all","All 12"],["top","Recommended"],["Easy","Easy"],["Medium","Medium"],["Hard","Hard"]].map(([v,t])=>`<button data-filter="${v}" aria-pressed="${slFilter===v}">${t}</button>`).join('')}
+    </div>
+    <div class="seg" style="gap:12px;align-items:center">
+      <label class="sel" for="sl-sort">Sort by <select id="sl-sort">
+        ${[["id","Idea number"],["sum","Total score"],["N","Novelty"],["F","Feasibility"],["D","Data quality"],["Demo","Demo appeal"],["P","Publishability"]].map(([v,t])=>`<option value="${v}" ${slSort===v?'selected':''}>${t}</option>`).join('')}
+      </select></label>
+      <input type="search" id="sl-q" placeholder="Search ideas, datasets, techniques" aria-label="Search ideas" value="${esc(slQuery)}">
+    </div>
+  </div>
+  <div class="ideas" id="ideas"></div>`;
+}
+function renderIdeas(){
+  const box = document.getElementById("ideas"); if(!box) return;
+  const q = slQuery.trim().toLowerCase();
+  let list = IDEAS.filter(i => slFilter==="all" ? true : slFilter==="top" ? i.top : i.difficulty.startsWith(slFilter) || (slFilter==="Medium" && i.difficulty.includes("Medium")));
+  if(q) list = list.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+  list.sort((a,b)=> slSort==="id" ? a.id-b.id : slSort==="sum" ? b.sum-a.sum || a.id-b.id : b.s[slSort]-a.s[slSort] || b.sum-a.sum);
+  box.innerHTML = list.length ? list.map(ideaCard).join('') : '<p class="empty">No ideas match. Clear the search or pick another filter.</p>';
+}
+
+let cmpKey = "sum", cmpDir = -1;
+function viewCompare(){
+  return `<div class="vhead"><h2>Comparison</h2><p>Click a column header to sort. Ideas 1 and 2 tie on total; Idea 3 is picked over the other 20-pointers because Idea 4 works best as Idea 1's stretch goal, Idea 5 is crowded, Idea 9 is hard to finish in 14 weeks and Idea 12 has low publishability.</p></div>
+  <div class="legend"><span>Score shading:</span>${[1,2,3,4,5].map(n=>'<span class="heat h'+n+'">'+n+'</span>').join('')}<span>· bold rows are the recommendations</span></div>
+  <div class="tscroll"><table id="cmp"><thead><tr>
+   ${[["id","#",1],["short","Idea",0],["tech","Main techniques",0],["N","N",1],["F","F",1],["D","D",1],["Demo","Demo",1],["P","P",1],["sum","Total",1],["difficulty","Difficulty",0]].map(([k,t,n])=>`<th class="${n&&k!=='sum'?'num':''}" ${k===cmpKey?'aria-sort="'+(cmpDir<0?'descending':'ascending')+'"':''}><button data-sort="${k}">${t}<span class="ar">${k===cmpKey?(cmpDir<0?'↓':'↑'):'↕'}</span></button></th>`).join('')}
+  </tr></thead><tbody id="cmpbody"></tbody></table></div>
+  <p class="lead" style="font-size:13.5px;color:var(--muted)">N novelty · F feasibility · D data quality · Demo demo appeal · P publishability.</p>`;
+}
+function renderCompare(){
+  const tb = document.getElementById("cmpbody"); if(!tb) return;
+  const val = i => ["N","F","D","Demo","P"].includes(cmpKey) ? i.s[cmpKey] : i[cmpKey];
+  const list = [...IDEAS].sort((a,b)=>{ const x=val(a), y=val(b); return (typeof x==="number" ? (x-y) : String(x).localeCompare(String(y))) * cmpDir || a.id-b.id; });
+  tb.innerHTML = list.map(i=>`<tr class="${i.top?'is-top':''}">
+    <td class="num">${i.id}</td>
+    <td><a href="#shortlist" data-goidea="${i.id}">${esc(i.short)}</a>${i.top?' <span class="chip acc">Top '+i.top+'</span>':''}</td>
+    <td style="min-width:220px">${esc(i.tech)}</td>
+    ${["N","F","D","Demo","P"].map(k=>`<td class="num"><span class="heat h${i.s[k]}">${i.s[k]}</span></td>`).join('')}
+    <td><div class="sumbar"><div class="bar"><span style="width:${i.sum/25*100}%"></span></div><b>${i.sum}</b></div></td>
+    <td style="white-space:nowrap">${esc(i.difficulty)}</td></tr>`).join('');
+}
+
+let planSel = 1;
+function viewPlans(){
+  return `<div class="vhead"><h2>14-week plans for the top 3</h2><p>Baseline versus the interesting method, evaluation, expected figures, hypotheses, a week-by-week schedule and target venues. Shared toolkit: pandas, scikit-learn, mlxtend, tslearn, stumpy, ruptures, statsmodels, networkx, hdbscan, geopandas / folium / pydeck, and Streamlit for the demo.</p></div>
+  <div class="plantabs" role="tablist" aria-label="Choose a plan">
+    ${[1,2,3].map(id=>`<button role="tab" id="pt-${id}" aria-selected="${planSel===id}" data-plan="${id}">${id} · ${esc(byId(id).short)}</button>`).join('')}
+  </div>
+  ${[1,2,3].map(id=>planPanel(id)).join('')}`;
+}
+function planPanel(id){
+  const p = PLANS[id];
+  return `<div class="plan" id="plan-${id}" role="tabpanel" aria-labelledby="pt-${id}" ${planSel===id?'':'hidden'}>
+   <div class="titlecard"><span class="eyebrow">Possible paper title</span><div class="ptitle">${esc(p.ptitle)}</div>
+     <div class="chips">${p.venues.map(v=> v[1] ? '<a class="chip acc" href="'+v[1]+'" target="_blank" rel="noopener">'+esc(v[0])+'</a>' : '<span class="chip">'+esc(v[0])+'</span>').join('')}</div></div>
+   <div><h3 class="sub" style="margin-bottom:10px">Baseline vs the interesting method</h3>
+   <div class="tscroll"><table><thead><tr><th>Task</th><th>Baseline</th><th>Interesting method</th></tr></thead><tbody>
+     ${p.rows.map(r=>`<tr><td style="white-space:nowrap;font-weight:600">${esc(r[0])}</td><td style="min-width:160px">${esc(r[1])}</td><td style="min-width:260px">${esc(r[2])}</td></tr>`).join('')}
+   </tbody></table></div></div>
+   <div class="two">
+     <div class="panel"><h4>Evaluation</h4><ul>${p.evaluation.map(e=>'<li>'+esc(e)+'</li>').join('')}</ul></div>
+     <div class="panel"><h4>Expected figures</h4><ul>${p.figures.map(e=>'<li>'+esc(e)+'</li>').join('')}</ul></div>
+   </div>
+   <div class="panel"><h4>What I expect to find (hypotheses, not results)</h4><p>${esc(p.hypotheses)}</p></div>
+   <div><h3 class="sub" style="margin-bottom:10px">Week by week</h3>
+   <div class="timeline">${p.weeks.map((w,k)=>{ const [t,cp] = w.split("|"); return `<div class="wk ${cp?'cp':''}"><div class="w"><span>Week ${k+1}</span>${cp?'<span>'+esc(cp)+'</span>':''}</div><div>${esc(t)}</div></div>`; }).join('')}</div></div>
+  </div>`;
+}
+
+let rjQuery = "";
+function viewRejected(){
+  return `<div class="vhead"><h2>Ideas I rejected</h2><p>${REJECTED.length} candidates considered and set aside, with the reason for each.</p></div>
+  <input type="search" id="rj-q" placeholder="Search rejected ideas" aria-label="Search rejected ideas" value="${esc(rjQuery)}">
+  <div class="tscroll"><table><thead><tr><th>Candidate</th><th>Why rejected</th><th>Links</th></tr></thead><tbody id="rjbody"></tbody></table></div>`;
+}
+function renderRejected(){
+  const tb = document.getElementById("rjbody"); if(!tb) return;
+  const q = rjQuery.trim().toLowerCase();
+  const list = REJECTED.filter(r => !q || (r[0]+" "+r[2]).toLowerCase().includes(q));
+  tb.innerHTML = list.length ? list.map(r=>`<tr><td style="min-width:200px;font-weight:600">${esc(r[0])}</td><td style="min-width:260px">${esc(r[2])}</td><td style="min-width:120px">${r[1].length? r[1].map((u,k)=>L(u,"link "+(k+1))).join('<br>') : '–'}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="empty">No rejected ideas match that search.</td></tr>';
+}
+
+function viewMethod(){
+  return `<div class="vhead"><h2>Method & assumptions</h2><p>Where I looked, how things were verified, and the assumptions behind the ranking.</p></div>
+  <h3 class="sub">Sources searched</h3>
+  <div class="tscroll"><table><thead><tr><th>Source</th><th>What I did</th><th>Useful finds</th></tr></thead><tbody>
+   ${COVERAGE.map(c=>`<tr><td style="white-space:nowrap;font-weight:600">${esc(c[0])}</td><td style="min-width:260px">${esc(c[1])}</td><td style="min-width:160px">${esc(c[2])}</td></tr>`).join('')}
+  </tbody></table></div>
+  <h3 class="sub">Assumptions</h3>
+  <ul class="plain">${ASSUMPTIONS.map(a=>'<li>'+esc(a)+'</li>').join('')}</ul>
+  <h3 class="sub">Files</h3>
+  <p class="lead">Round 1 is in <code>REPORT.md</code> and <code>sources.md</code>; round 2 is in <code>REPORT_ROUND2.md</code>, all in the project folder.</p>`;
+}
+
+let srcQuery = "";
+function viewSources(){
+  const total = SOURCES.reduce((n,g)=>n+g.items.length,0);
+  return `<div class="vhead"><h2>Sources</h2><p>${total} URLs visited and found useful, grouped by idea. Marked "unverified" where a page or licence could not be confirmed.</p></div>
+  <input type="search" id="src-q" placeholder="Search sources" aria-label="Search sources" value="${esc(srcQuery)}">
+  <div id="srclist" style="display:flex;flex-direction:column;gap:12px"></div>`;
+}
+function renderSources(){
+  const box = document.getElementById("srclist"); if(!box) return;
+  const q = srcQuery.trim().toLowerCase();
+  const html = SOURCES.map(g=>{
+    const items = g.items.filter(i=>!q || (g.g+" "+i[1]+" "+i[2]).toLowerCase().includes(q));
+    if(!items.length) return "";
+    const kinds = ["d","p","m","c","v"].filter(k=>items.some(i=>i[0]===k));
+    return `<section class="srcgroup"><h3>${esc(g.g)}</h3>${kinds.map(k=>`<div class="kind">${KIND[k]}s</div><ul>${items.filter(i=>i[0]===k).map(i=>`<li><span>${esc(i[2])}</span>${L(i[1],esc(i[1]))}</li>`).join('')}</ul>`).join('')}</section>`;
+  }).join('');
+  box.innerHTML = html || '<p class="empty">No sources match that search.</p>';
+}
+
+/* ---------------------------------------------------------------- shell */
+const main = document.getElementById("main"), rail = document.getElementById("rail");
+rail.innerHTML = VIEWS.map(([k,t,n])=>`<button role="tab" id="tab-${k}" aria-controls="view-${k}" data-view="${k}"><span>${t}</span><span class="n">${n}</span></button>`).join('') +
+  '<div class="railnote">Scores: N novelty · F feasibility · D data quality · Demo · P publishability, each out of 5.</div>';
+main.innerHTML = VIEWS.map(([k])=>`<section class="view" id="view-${k}" role="tabpanel" aria-labelledby="tab-${k}" hidden></section>`).join('');
+const RENDER = {overview:viewOverview, round2:viewRound2, shortlist:viewShortlist, compare:viewCompare, plans:viewPlans, rejected:viewRejected, method:viewMethod, sources:viewSources};
+const AFTER = {shortlist:renderIdeas, compare:renderCompare, rejected:renderRejected, sources:renderSources};
+
+function show(view, opts){
+  if(!RENDER[view]) view = "overview";
+  VIEWS.forEach(([k])=>{ const on = k===view;
+    document.getElementById("tab-"+k).setAttribute("aria-selected", on);
+    const sec = document.getElementById("view-"+k); sec.hidden = !on;
+    if(on){ sec.innerHTML = RENDER[k](); AFTER[k] && AFTER[k](); } });
+  try{ if(location.hash.slice(1)!==view) history.replaceState(null,"","#"+view); }catch(e){}
+  try{ localStorage.setItem("dmshort.view", view); }catch(e){}
+  if(opts && opts.idea){ const d = document.getElementById("idea-"+opts.idea); if(d){ d.open = true; d.scrollIntoView({block:"start", behavior:"smooth"}); } }
+  else if(!opts || !opts.keepScroll) window.scrollTo({top:0});
+}
+
+document.addEventListener("click", e=>{
+  const v = e.target.closest("[data-view]"); if(v){ show(v.dataset.view); return; }
+  const gp = e.target.closest("[data-goplan]"); if(gp){ e.preventDefault(); planSel = +gp.dataset.goplan; show("plans"); return; }
+  const gi = e.target.closest("[data-goidea]"); if(gi){ e.preventDefault(); slFilter="all"; slQuery=""; slSort="id"; show("shortlist",{idea:+gi.dataset.goidea}); return; }
+  const f = e.target.closest("[data-filter]"); if(f){ slFilter = f.dataset.filter; document.querySelectorAll("[data-filter]").forEach(b=>b.setAttribute("aria-pressed", b===f)); renderIdeas(); return; }
+  const s = e.target.closest("[data-sort]"); if(s){ const k = s.dataset.sort; if(cmpKey===k) cmpDir*=-1; else { cmpKey=k; cmpDir = ["short","tech","difficulty","id"].includes(k)?1:-1; } document.getElementById("view-compare").innerHTML = viewCompare(); renderCompare(); return; }
+  const ro = e.target.closest("[data-r2open]"); if(ro){ e.preventDefault(); const d = document.getElementById("r2-"+ro.dataset.r2open); if(d){ d.open = true; d.scrollIntoView({block:"start", behavior:"smooth"}); } return; }
+  const rp = e.target.closest("[data-r2plan]"); if(rp){ r2Sel = +rp.dataset.r2plan; [13,14,15].forEach(id=>{ document.getElementById("r2plan-"+id).hidden = id!==r2Sel; document.getElementById("r2pt-"+id).setAttribute("aria-selected", id===r2Sel); }); return; }
+  const p = e.target.closest("[data-plan]"); if(p){ planSel = +p.dataset.plan; [1,2,3].forEach(id=>{ document.getElementById("plan-"+id).hidden = id!==planSel; document.getElementById("pt-"+id).setAttribute("aria-selected", id===planSel); }); return; }
+});
+document.addEventListener("input", e=>{
+  if(e.target.id==="sl-q"){ slQuery = e.target.value; renderIdeas(); }
+  if(e.target.id==="rj-q"){ rjQuery = e.target.value; renderRejected(); }
+  if(e.target.id==="src-q"){ srcQuery = e.target.value; renderSources(); }
+});
+document.addEventListener("change", e=>{ if(e.target.id==="sl-sort"){ slSort = e.target.value; renderIdeas(); } });
+rail.addEventListener("keydown", e=>{
+  if(!["ArrowDown","ArrowUp","ArrowLeft","ArrowRight"].includes(e.key)) return;
+  const tabs = [...rail.querySelectorAll("[data-view]")]; const i = tabs.indexOf(document.activeElement); if(i<0) return;
+  e.preventDefault(); const n = tabs[(i + (e.key==="ArrowDown"||e.key==="ArrowRight"?1:-1) + tabs.length) % tabs.length]; n.focus(); show(n.dataset.view,{keepScroll:true});
+});
+window.addEventListener("hashchange", ()=>{ const h = location.hash.slice(1); if(RENDER[h]) show(h); });
+
+let start = location.hash.slice(1);
+if(!RENDER[start]){ try{ start = localStorage.getItem("dmshort.view") || "overview"; }catch(e){ start = "overview"; } }
+show(RENDER[start] ? start : "overview", {keepScroll:true});
+</script>
+</body>
+</html>
