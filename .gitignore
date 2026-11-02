@@ -1,0 +1,21 @@
+# Data: raw and intermediate files are not versioned (see docs/research/sources.md for where to get them)
+data/raw/
+data/interim/
+data/external/
+*.csv
+*.xlsx
+*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
