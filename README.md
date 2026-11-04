@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <img alt="Status: planning" src="https://img.shields.io/badge/status-planning-c92a3a?style=flat-square">
-  <img alt="Code: none yet" src="https://img.shields.io/badge/code-none%20yet-56675f?style=flat-square">
+  <img alt="Status: foundation" src="https://img.shields.io/badge/status-foundation-c92a3a?style=flat-square">
+  <img alt="Code: cleaning pipeline" src="https://img.shields.io/badge/code-cleaning%20pipeline-56675f?style=flat-square">
   <img alt="Data: PGCB hourly, 2015 to 2026" src="https://img.shields.io/badge/data-PGCB%20hourly%202015%E2%80%932026-0a6b4f?style=flat-square">
   <img alt="Data licence: CC BY 4.0" src="https://img.shields.io/badge/data%20licence-CC%20BY%204.0-0a6b4f?style=flat-square">
   <img alt="Focus: Bangladesh" src="https://img.shields.io/badge/focus-Bangladesh-13201b?style=flat-square">
@@ -14,10 +14,29 @@
 
 A data mining project on Bangladesh's load-shedding crisis. It looks for the **structure** of the crisis in eleven years of hourly grid data: when the regime changed, what a typical bad day looks like, which fuel-mix conditions come before a blackout, and which odd readings are real events and which are data errors.
 
-> **Where this stands.** The project is in the planning stage. The research is done and the plan is written, but there is **no code yet**. This repository currently holds the research notes and the plan.
+> **Where this stands.** The research is done and the plan is written. Week 1–2 code is in: a cleaning pipeline and a profile command, covered by tests on synthetic data. It has **not yet been run on the real data**, because the raw file has to be downloaded by hand (see [Getting started](#getting-started)). No mining results exist yet.
+
+## Getting started
+
+```bash
+pip install -e ".[dev]"
+python scripts/download_data.py   # prints where to save the raw files
+```
+
+Download the main dataset from [Mendeley Data](https://data.mendeley.com/datasets/vpk8spw2mm/1) and save it as `data/raw/pgcb_hourly_mendeley.csv`. Then:
+
+```bash
+blackout inspect   # raw columns, and the role each one was matched to
+blackout clean     # writes data/interim/hourly_clean.parquet and a cleaning report
+blackout profile   # compares yearly shedding hours with the figures in this README
+pytest             # cleaning-rule tests (synthetic data)
+```
+
+The exact column headers of the real file were not recorded in the research notes, so columns are matched to roles (timestamp, generation, load shedding, gas, liquid fuel, imports…) by keyword. Check the `blackout inspect` output on first run and pin any wrong match with `--map role=column`. The cleaning thresholds in [`src/blackout/config.py`](src/blackout/config.py) are starting assumptions to review during EDA.
 
 ## Contents
 
+- [Getting started](#getting-started)
 - [The problem in one chart](#the-problem-in-one-chart)
 - [Research question](#research-question)
 - [What is different about this project](#what-is-different-about-this-project)
@@ -123,7 +142,7 @@ For the rules, the hourly data will be discretised into states such as season, h
 
 Support, lift and conviction are used instead of confidence alone, because some rules will be obvious ("summer evening means shedding") and need to be ranked below the surprising ones.
 
-**Planned toolkit** (all free; nothing is installed or written yet): `pandas`, `scikit-learn`, `mlxtend`, `tslearn`, `stumpy`, `ruptures`, `statsmodels`, `matplotlib`, and `streamlit` for the demo.
+**Toolkit** (all free): `pandas` and `pyarrow` are the core dependencies and are in use now. The rest are declared as optional extras in [`pyproject.toml`](pyproject.toml) and get installed as each phase starts: `scikit-learn`, `mlxtend`, `tslearn`, `stumpy`, `ruptures`, `statsmodels` (`.[mining]`), and `matplotlib` and `streamlit` for the demo (`.[viz]`).
 
 ## Evaluation
 
@@ -208,6 +227,14 @@ Three extensions are worth doing only if the core work finishes early. All are d
 Blackout-Patterns/
 ├── README.md                      You are here
 ├── .gitignore                     Keeps raw data and Python clutter out of git
+├── pyproject.toml                 Package, dependencies, `blackout` command
+├── src/blackout/
+│   ├── config.py                  Paths, dataset sources, cleaning thresholds
+│   ├── clean.py                   Column-role matching, hourly resampling, impossible-value rules
+│   ├── profile.py                 Reproduces the README's first profile
+│   └── cli.py                     `blackout inspect | clean | profile`
+├── scripts/download_data.py       Says where to save the raw files and checks them
+├── tests/test_clean.py            Cleaning-rule tests on synthetic data
 ├── assets/
 │   ├── banner.svg                 README banner
 │   └── shedding-hours-per-year.svg   Chart used in this README
@@ -221,7 +248,7 @@ Blackout-Patterns/
         └── DESIGN_BRIEF.md        How that HTML report is designed and how to reuse it
 ```
 
-There is no source code directory yet. When code is added it will go in its own folders (for example `data/`, `notebooks/` and `src/`), and this section will be updated.
+Data lives in `data/raw/` and `data/interim/` (both git-ignored). Notebooks, when they arrive, go in `notebooks/`.
 
 The research notes cover more projects than this one, because Blackout Patterns was picked from that list. Idea 1 in [`ideas-round-1.md`](docs/research/ideas-round-1.md) is the full write-up for this project, and Section 5.1 holds the detailed plan.
 
@@ -233,8 +260,9 @@ To browse the idea reports as a tabbed page, open [`docs/report-workbench/index.
 - [x] Compare 19 project ideas and pick this one
 - [x] Write the research question, method plan and 14-week schedule
 - [x] Set up the repository and structure
-- [ ] Download the data and re-run the first profile
-- [ ] Clean the data and document every cleaning rule
+- [x] Write the cleaning pipeline and profile command (tested on synthetic data only)
+- [ ] Download the data and re-run the first profile (`blackout inspect`, `clean`, `profile`)
+- [ ] Review the cleaning thresholds against the real data and document every rule
 - [ ] EDA and the data report (week 3 checkpoint)
 - [ ] Regimes, clusters, motifs, rules
 - [ ] Validation, dashboard, paper

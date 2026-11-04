@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blackout-patterns"
+version = "0.1.0"
+description = "Mining regimes, motifs and fuel-mix precursors of load shedding in Bangladesh's hourly grid data"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "pyarrow>=14",
+]
+
+[project.optional-dependencies]
+# Installed as each phase of the plan starts (see README, "Approach").
+mining = [
+    "scikit-learn",
+    "mlxtend",
+    "tslearn",
+    "stumpy",
+    "ruptures",
+    "statsmodels",
+]
+viz = ["matplotlib", "streamlit"]
+dev = ["pytest"]
+
+[project.scripts]
+blackout = "blackout.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
