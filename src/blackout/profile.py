@@ -20,7 +20,7 @@ README_SHEDDING_HOURS = {
 
 def shedding_hours_per_year(clean: pd.DataFrame) -> pd.Series:
     """Hours per calendar year with load shedding > 0 MW."""
-    return clean.groupby("year")["shedding"].sum().astype(int).rename("shedding_hours")
+    return clean[clean["observed"]].groupby("year")["shedding"].sum().astype(int).rename("shedding_hours")
 
 
 def compare_with_readme(clean: pd.DataFrame) -> pd.DataFrame:

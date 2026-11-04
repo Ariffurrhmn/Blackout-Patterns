@@ -1,4 +1,4 @@
-"""Command line entry point: ``blackout inspect | clean | profile``."""
+"""Command line entry point: ``blackout inspect | clean | profile | eda``."""
 
 from __future__ import annotations
 
@@ -52,6 +52,15 @@ def cmd_profile(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eda(args: argparse.Namespace) -> int:
+    from .eda import run  # matplotlib is only needed for this command
+
+    if not args.clean.exists():
+        raise SystemExit(f"{args.clean} not found. Run `blackout clean` first.")
+    print(run(args.clean))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="blackout", description=__doc__)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -70,6 +79,10 @@ def main(argv: list[str] | None = None) -> int:
     sp = sub.add_parser("profile", help="reproduce the README's first profile from the clean table")
     sp.add_argument("--clean", type=Path, default=config.CLEAN_HOURLY_PATH)
     sp.set_defaults(fn=cmd_profile)
+
+    sp = sub.add_parser("eda", help="write the data-report figures and print the tables behind them")
+    sp.add_argument("--clean", type=Path, default=config.CLEAN_HOURLY_PATH)
+    sp.set_defaults(fn=cmd_eda)
 
     args = p.parse_args(argv)
     return args.fn(args)

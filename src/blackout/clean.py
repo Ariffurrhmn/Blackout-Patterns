@@ -9,6 +9,8 @@ Cleaning rules (all thresholds live in ``config.py``):
 4. Impossible values (negative, or above the plausible ceilings) are set to NaN
    and recorded in a ``flag_bad_<role>`` column. Rows are never deleted for this.
 5. Solar and wind stay NaN where missing; ``flag_missing_<role>`` records it.
+   Hours absent from the source (00:00 on nearly every day, plus a 518-hour gap in
+   Feb 2017) are added as empty rows with ``observed`` = False. Nothing is imputed.
 6. ``supply_mw`` = generation + load shedding. Reported demand is censored while
    shedding is happening (it records what was served), so this is the better
    proxy for what the grid was asked to deliver.
@@ -102,6 +104,7 @@ class CleaningReport:
     duplicate_timestamps_merged: int = 0
     halfhourly_rows_resampled: int = 0
     rows_out: int = 0
+    missing_hours_added: int = 0
     first_timestamp: str = ""
     last_timestamp: str = ""
     roles: dict[str, list[str]] = field(default_factory=dict)
@@ -117,6 +120,7 @@ class CleaningReport:
             f"- duplicate timestamps merged: {self.duplicate_timestamps_merged:,}",
             f"- sub-hourly rows folded into hours: {self.halfhourly_rows_resampled:,}",
             f"- hourly rows out: {self.rows_out:,} ({self.first_timestamp} to {self.last_timestamp})",
+            f"- of which absent from the source and added as empty rows (`observed` = False): {self.missing_hours_added:,}",
             "",
             "## Column roles",
             "",
@@ -215,10 +219,21 @@ def clean(
     hourly.index.name = "timestamp"
     out = hourly.join(hourly_flags)
 
+    # Put every missing hour on the grid as an explicit all-NaN row. In the real
+    # file 00:00 is absent on almost every day, so silent gaps would bias any
+    # 24-hour profile. ``observed`` is False on these rows; nothing is imputed.
+    full = pd.date_range(out.index.min(), out.index.max(), freq="h", name="timestamp")
+    report.missing_hours_added = len(full) - len(out)
+    seen = out.index
+    out = out.reindex(full)
+    out["observed"] = out.index.isin(seen)
+    flag_cols = [c for c in out if c.startswith("flag_bad_")]
+    out[flag_cols] = out[flag_cols].fillna(False).astype(bool)
+
     # Renewable missingness is recorded, never imputed here.
     for role in config.RENEWABLE_ROLES:
         if role in out:
-            out[f"flag_missing_{role}"] = out[role].isna()
+            out[f"flag_missing_{role}"] = out[role].isna() & out["observed"]
 
     out["supply_mw"] = out["generation"] + out["load_shedding"].fillna(0.0)
     out["shedding"] = out["load_shedding"].fillna(0.0) > 0
@@ -227,8 +242,9 @@ def clean(
     report.rows_out = len(out)
     report.first_timestamp = str(out.index.min())
     report.last_timestamp = str(out.index.max())
+    seen_rows = out[out["observed"]]
     report.missing_share = {
-        r: float(out[r].isna().mean()) for r in _VALUE_ROLES if r in out
+        r: float(seen_rows[r].isna().mean()) for r in _VALUE_ROLES if r in out
     }
     return out, report
 

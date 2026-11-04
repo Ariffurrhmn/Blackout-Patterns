@@ -14,7 +14,7 @@
 
 A data mining project on Bangladesh's load-shedding crisis. It looks for the **structure** of the crisis in eleven years of hourly grid data: when the regime changed, what a typical bad day looks like, which fuel-mix conditions come before a blackout, and which odd readings are real events and which are data errors.
 
-> **Where this stands.** The research is done and the plan is written. Week 1–2 code is in: a cleaning pipeline and a profile command, run on the real file (v1, 94,934 rows × 15 columns) and covered by tests. No mining results exist yet.
+> **Where this stands.** The research is done and the plan is written. Weeks 1–3 are done: a cleaning pipeline, a profile command and the exploratory analysis, all run on the real file (v1, 94,934 rows × 15 columns) and covered by tests. The result is the [data report](docs/data-report/README.md). The mining (regimes, clusters, motifs, rules) has not started.
 
 ## Getting started
 
@@ -29,6 +29,7 @@ Download the main dataset from [Mendeley Data](https://data.mendeley.com/dataset
 blackout inspect   # raw columns, and the role each one was matched to
 blackout clean     # writes data/interim/hourly_clean.parquet and a cleaning report
 blackout profile   # compares yearly shedding hours with the figures in this README
+blackout eda       # writes the data-report figures to docs/data-report/figures/
 pytest             # cleaning-rule tests (synthetic data)
 ```
 
@@ -176,9 +177,9 @@ Support, lift and conviction are used instead of confidence alone, because some 
 
 These are hypotheses to test, not results.
 
-1. A sharp regime break in mid-2022 and a partial recovery in 2025.
-2. Shedding concentrated in the evening peak and late at night.
-3. High-lift rules linking a low gas share and high liquid-fuel generation to shedding.
+1. A sharp regime break in mid-2022 and a partial recovery in 2025. *(First look: both visible; the 2025 recovery is mostly a fall in the amount shed, down 83%, more than in the number of shedding days.)*
+2. Shedding concentrated in the evening peak and late at night. *(First look: not in 2023–2024, when shedding was spread across the whole day; closer to true in 2025. Midnight is missing from the source, so it cannot be checked.)*
+3. High-lift rules linking a low gas share and high liquid-fuel generation to shedding. *(First look: liquid-fuel share was highest in 2022 and fell afterwards, so this may hold for one regime only.)*
 4. A cluster of obvious data-entry glitches, since the first inspection already turned up several impossible values.
 
 ## Timeline
@@ -241,13 +242,17 @@ Blackout-Patterns/
 │   ├── config.py                  Paths, dataset sources, cleaning thresholds
 │   ├── clean.py                   Column-role matching, hourly resampling, impossible-value rules
 │   ├── profile.py                 Reproduces the README's first profile
-│   └── cli.py                     `blackout inspect | clean | profile`
+│   ├── eda.py                     Figures and tables for the data report
+│   └── cli.py                     `blackout inspect | clean | profile | eda`
 ├── scripts/download_data.py       Says where to save the raw files and checks them
 ├── tests/test_clean.py            Cleaning-rule tests on synthetic data
 ├── assets/
 │   ├── banner.svg                 README banner
 │   └── shedding-hours-per-year.svg   Chart used in this README
 └── docs/
+    ├── data-report/
+    │   ├── README.md              Week 3 checkpoint: data quality and a first look
+    │   └── figures/               Fingerprint heatmap, fuel mix, hour-of-day profile, size histogram
     ├── research/
     │   ├── ideas-round-1.md       12 candidate projects, with the full write-up of this one (Idea 1)
     │   ├── ideas-round-2.md       7 further research-oriented ideas, including extensions of this one
@@ -271,9 +276,9 @@ To browse the idea reports as a tabbed page, open [`docs/report-workbench/index.
 - [x] Set up the repository and structure
 - [x] Write the cleaning pipeline and profile command
 - [x] Download the data and re-run the first profile (`blackout inspect`, `clean`, `profile`)
-- [ ] Merge the UCI version as a cross-check and decide the solar / wind policy
-- [ ] Review the cleaning ceilings during EDA and write them up in the data report
-- [ ] EDA and the data report (week 3 checkpoint)
+- [x] EDA and the data report (week 3 checkpoint): [docs/data-report](docs/data-report/README.md)
+- [ ] Decide the rule for the missing midnight hour; merge the UCI version as a cross-check; decide the solar / wind policy
+- [ ] Hand-check the 14 hours above 3,000 MW and revisit the cleaning ceilings
 - [ ] Regimes, clusters, motifs, rules
 - [ ] Validation, dashboard, paper
 

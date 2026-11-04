@@ -74,7 +74,7 @@ def test_impossible_values_are_nan_flagged_and_rows_kept():
     assert report.bad_values["generation"] == 1
     assert report.bad_values["load_shedding"] == 1
     assert report.bad_values["gas"] == 1  # negative reading
-    assert len(out) == 8  # nothing dropped: 2 half-hourly hours + 6 hourly
+    assert out["observed"].sum() == 8  # nothing dropped: 2 half-hourly hours + 6 hourly
 
 
 def test_glitch_does_not_count_as_shedding_but_real_shedding_does():
@@ -85,8 +85,10 @@ def test_glitch_does_not_count_as_shedding_but_real_shedding_does():
 
 def test_renewables_stay_nan_with_flag_and_imports_are_summed():
     out, report = clean(make_raw())
-    assert out["solar"].isna().all() and out["flag_missing_solar"].all()
-    assert (out["imports"] == 400.0).all()
+    seen = out[out["observed"]]
+    assert seen["solar"].isna().all() and seen["flag_missing_solar"].all()
+    assert not out.loc[~out["observed"], "flag_missing_solar"].any()  # absent hours are not 'missing solar'
+    assert (seen["imports"] == 400.0).all()
     assert report.missing_share["solar"] == 1.0
 
 
@@ -134,3 +136,35 @@ def test_ceilings_are_per_source_and_applied_before_imports_are_summed():
     t = raw.loc[9, "Date Time"]
     assert out.loc[t, "imports"] == 100.0  # only the Tripura column survives
     assert out.loc[t, "flag_bad_imports"]
+
+
+def test_hours_absent_from_source_become_explicit_unobserved_rows():
+    raw = pd.DataFrame(
+        {
+            "Date Time": pd.to_datetime(["2022-01-01 22:00", "2022-01-01 23:00", "2022-01-02 01:00"]),
+            "Generation": [5000.0, 5100.0, 5200.0],
+            "Load Shedding": [0.0, 100.0, 100.0],
+        }
+    )
+    out, report = clean(raw)
+    midnight = pd.Timestamp("2022-01-02 00:00")
+    assert midnight in out.index and not out.loc[midnight, "observed"]
+    assert np.isnan(out.loc[midnight, "load_shedding"])  # not imputed
+    assert report.missing_hours_added == 1
+    assert shedding_hours_per_year(out).loc[2022] == 2  # empty row is not counted as shedding or non-shedding
+
+
+def test_eda_tables_on_synthetic_frame():
+    from blackout.eda import hour_profile, monthly_fuel_mix
+
+    idx = pd.date_range("2023-01-01", periods=48, freq="h", name="timestamp")
+    t = pd.DataFrame(
+        {"observed": True, "year": 2023, "shedding": [h % 24 == 19 for h in range(48)],
+         "gas": 100.0, "liquid_fuel": 10.0, "coal": 5.0, "imports": 1.0, "hydro": 1.0,
+         "solar": np.nan, "wind": np.nan},
+        index=idx,
+    )
+    prof = hour_profile(t, [2023])
+    assert prof.loc[19, 2023] == 1.0 and prof.loc[3, 2023] == 0.0
+    mix = monthly_fuel_mix(t)
+    assert mix.loc["2023-01-01", "gas"] == 100.0 and np.isnan(mix.loc["2023-01-01", "renewables"])
