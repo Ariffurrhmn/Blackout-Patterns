@@ -22,3 +22,9 @@ reports/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Notebook build folder (the notebook rebuilds the package here)
+notebooks/_nb_pkg/
+
+# Result tables are small and part of the deliverable; keep them despite the *.csv rule above
+!docs/results/*.csv

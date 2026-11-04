@@ -1,4 +1,4 @@
-"""Command line entry point: ``blackout inspect | clean | profile | eda``."""
+"""Command line entry point: ``blackout inspect | clean | profile | eda | mine``."""
 
 from __future__ import annotations
 
@@ -61,6 +61,16 @@ def cmd_eda(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_mine(args: argparse.Namespace) -> int:
+    from .mine import run
+
+    if not args.clean.exists():
+        raise SystemExit(f"{args.clean} not found. Run `blackout clean` first.")
+    run(args.clean, skip_cluster_search=args.skip_cluster_search)
+    print(f"tables and figures written to {config.RESULTS}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="blackout", description=__doc__)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -83,6 +93,11 @@ def main(argv: list[str] | None = None) -> int:
     sp = sub.add_parser("eda", help="write the data-report figures and print the tables behind them")
     sp.add_argument("--clean", type=Path, default=config.CLEAN_HOURLY_PATH)
     sp.set_defaults(fn=cmd_eda)
+
+    sp = sub.add_parser("mine", help="run regimes, clusters, motifs, rules, episodes, anomalies")
+    sp.add_argument("--clean", type=Path, default=config.CLEAN_HOURLY_PATH)
+    sp.add_argument("--skip-cluster-search", action="store_true", help="reuse docs/results/cluster_comparison.csv")
+    sp.set_defaults(fn=cmd_mine)
 
     args = p.parse_args(argv)
     return args.fn(args)

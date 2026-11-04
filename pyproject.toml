@@ -18,6 +18,7 @@ dependencies = [
 # Installed as each phase of the plan starts (see README, "Approach").
 mining = [
     "scikit-learn",
+    "scipy",
     "mlxtend",
     "tslearn",
     "stumpy",
@@ -25,6 +26,7 @@ mining = [
     "statsmodels",
 ]
 viz = ["matplotlib", "streamlit"]
+notebook = ["nbformat", "nbconvert", "ipykernel"]
 dev = ["pytest"]
 
 [project.scripts]

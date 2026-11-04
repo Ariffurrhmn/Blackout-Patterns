@@ -8,9 +8,12 @@ not inline, so each cleaning rule stays visible and justified.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+# BLACKOUT_ROOT lets the self-contained notebook (which writes a copy of this package into a
+# build folder) point at the real repository for data and results.
+ROOT = Path(os.environ.get("BLACKOUT_ROOT", Path(__file__).resolve().parents[2]))
 DATA_RAW = ROOT / "data" / "raw"
 DATA_INTERIM = ROOT / "data" / "interim"
 REPORTS = ROOT / "reports"
@@ -66,3 +69,17 @@ RENEWABLE_ROLES = ("solar", "wind")
 
 # Regime boundary used for the calendar-split baseline (README, "Approach").
 BASELINE_SPLIT_DATE = "2022-01-01"
+
+# --- Mining-phase settings -----------------------------------------------------
+# First shedding block in the data (see docs/data-report). Regime detection tests
+# this independently; it is used for crisis-relative terciles and splits.
+CRISIS_START = "2022-07-01"
+HOLDOUT_YEAR = 2025  # rules are mined on CRISIS_START..2024 and re-checked here
+RESULTS = ROOT / "docs" / "results"
+RANDOM_SEED = 42
+# Event dates used to judge change points. Dates are from memory, NOT yet checked
+# against sources: verify before quoting them in the paper.
+KNOWN_EVENTS = {
+    "2022-07-15": "Spot LNG purchases halted (mid-July 2022, approximate)",
+    "2022-10-04": "National grid failure (about half the country without power)",
+}

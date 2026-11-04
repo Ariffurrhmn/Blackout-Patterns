@@ -1,0 +1,3 @@
+event,event_date,nearest_break,gap_days,within_7d
+"Spot LNG purchases halted (mid-July 2022, approximate)",2022-07-15,2022-07-19,4,True
+National grid failure (about half the country without power),2022-10-04,2022-07-19,-77,False

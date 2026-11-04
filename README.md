@@ -14,12 +14,12 @@
 
 A data mining project on Bangladesh's load-shedding crisis. It looks for the **structure** of the crisis in eleven years of hourly grid data: when the regime changed, what a typical bad day looks like, which fuel-mix conditions come before a blackout, and which odd readings are real events and which are data errors.
 
-> **Where this stands.** The research is done and the plan is written. Weeks 1–3 are done: a cleaning pipeline, a profile command and the exploratory analysis, all run on the real file (v1, 94,934 rows × 15 columns) and covered by tests. The result is the [data report](docs/data-report/README.md). The mining (regimes, clusters, motifs, rules) has not started.
+> **Where this stands.** The research is done and the plan is written. Weeks 1–10 of the plan are done in first-pass form: a cleaning pipeline, a profile command and the exploratory analysis, all run on the real file (v1, 94,934 rows × 15 columns) and covered by tests. The result is the [data report](docs/data-report/README.md). The mining stages (regimes, archetype days, motifs, rules, episodes, anomalies) have also been run: see [`DEMO.md`](DEMO.md) for everything done, every model used and the results, and [`notebooks/blackout_patterns_demo.ipynb`](notebooks/blackout_patterns_demo.ipynb) for all the code in one place.
 
 ## Getting started
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev,mining,viz,notebook]"
 python scripts/download_data.py   # prints where to save the raw files
 ```
 
@@ -30,6 +30,7 @@ blackout inspect   # raw columns, and the role each one was matched to
 blackout clean     # writes data/interim/hourly_clean.parquet and a cleaning report
 blackout profile   # compares yearly shedding hours with the figures in this README
 blackout eda       # writes the data-report figures to docs/data-report/figures/
+blackout mine      # regimes, clusters, motifs, rules, episodes, anomalies -> docs/results/
 pytest             # cleaning-rule tests (synthetic data)
 ```
 
@@ -243,13 +244,25 @@ Blackout-Patterns/
 │   ├── clean.py                   Column-role matching, hourly resampling, impossible-value rules
 │   ├── profile.py                 Reproduces the README's first profile
 │   ├── eda.py                     Figures and tables for the data report
-│   └── cli.py                     `blackout inspect | clean | profile | eda`
+│   ├── features.py                Daily table, 23-hour day matrix, discretisation
+│   ├── regimes.py                 PELT change points vs calendar split
+│   ├── clusters.py                k-means vs DTW k-means vs k-Shape
+│   ├── motifs.py                  Matrix profile motifs and discords
+│   ├── rules.py                   Apriori, FP-Growth, emerging patterns, hold-out
+│   ├── episodes.py                PrefixSpan on the days before shedding onsets
+│   ├── anomalies.py               STL + Isolation Forest vs z-score
+│   ├── mine.py                    Runs every stage, writes docs/results
+│   └── cli.py                     `blackout inspect | clean | profile | eda | mine`
 ├── scripts/download_data.py       Says where to save the raw files and checks them
-├── tests/test_clean.py            Cleaning-rule tests on synthetic data
+├── scripts/build_notebook.py      Builds the self-contained notebook from src/
+├── notebooks/blackout_patterns_demo.ipynb   All the code and every result in one notebook
+├── tests/                         Tests on synthetic data (cleaning and mining)
+├── DEMO.md                        Everything done so far, all models used, results and caveats
 ├── assets/
 │   ├── banner.svg                 README banner
 │   └── shedding-hours-per-year.svg   Chart used in this README
 └── docs/
+    ├── results/                   Tables (CSV) and figures from `blackout mine`
     ├── data-report/
     │   ├── README.md              Week 3 checkpoint: data quality and a first look
     │   └── figures/               Fingerprint heatmap, fuel mix, hour-of-day profile, size histogram
@@ -277,9 +290,11 @@ To browse the idea reports as a tabbed page, open [`docs/report-workbench/index.
 - [x] Write the cleaning pipeline and profile command
 - [x] Download the data and re-run the first profile (`blackout inspect`, `clean`, `profile`)
 - [x] EDA and the data report (week 3 checkpoint): [docs/data-report](docs/data-report/README.md)
-- [ ] Decide the rule for the missing midnight hour; merge the UCI version as a cross-check; decide the solar / wind policy
+- [x] Midnight rule decided (dropped; days are 23 hours)
+- [x] Regimes, archetype days, motifs, rules, episodes, anomalies: first pass, see [DEMO.md](DEMO.md)
+- [ ] Merge the UCI version as a cross-check; decide the solar / wind policy
+- [ ] Verify the event dates; label anomalies by hand
 - [ ] Hand-check the 14 hours above 3,000 MW and revisit the cleaning ceilings
-- [ ] Regimes, clusters, motifs, rules
 - [ ] Validation, dashboard, paper
 
 ## Paper and venues
