@@ -36,14 +36,28 @@ DATASETS = {
 }
 
 # --- Impossible-value rules (MW) ------------------------------------------------
-# A reading outside these bounds is set to NaN and flagged; the row is kept.
-# Rationale: the first profile found 64,526,500 MW "generation" (2023) and a
-# 65,359 MW load-shedding value (2017). Bangladesh's peak generation is in the
-# mid-teens of GW and installed capacity in the high twenties, so 30,000 MW is a
-# generous ceiling. Shedding of several GW happens; tens of GW does not.
-MAX_PLAUSIBLE_GENERATION_MW = 30_000.0
-MAX_PLAUSIBLE_SHEDDING_MW = 6_000.0
-MAX_PLAUSIBLE_FUEL_MW = 30_000.0  # any single fuel / import column
+# A reading outside [MIN, ceiling] is set to NaN and flagged; the row is kept.
+# Ceilings are per source and applied to each raw column *before* imports are
+# summed. They were set from the upper tail of the real file (v1, 94,934 rows):
+# each is roughly 1.2-2x the 99.9th percentile and sits in a visible gap between
+# the plausible tail and the glitches (e.g. hydro: 99.9th pct 265 MW, Kaptai is
+# ~230 MW, but 32 readings are 1,000-5,600 MW; coal: 7,329 then 11,991 then
+# 22,206). Glitches in the file include 64,526,500 MW generation, 29,222,897 MW
+# liquid fuel and 65,359 MW shedding. Revisit these if the dataset version changes.
+MAX_PLAUSIBLE_MW = {
+    "generation": 20_000.0,  # real max 16,794
+    "demand": 20_000.0,  # plausible tail ends at 17,200; next value is 20,587
+    "load_shedding": 6_000.0,  # 99.9th pct 4,821; values above 6,000 are isolated
+    "gas": 12_000.0,
+    "liquid_fuel": 12_000.0,
+    "coal": 9_000.0,
+    "hydro": 500.0,
+    "solar": 1_500.0,
+    "wind": 200.0,
+}
+# Imports are checked per interconnector column, matched by keyword in the header.
+MAX_PLAUSIBLE_IMPORT_MW = {"bheramara": 1_500.0, "tripura": 400.0, "adani": 2_000.0, "nepal": 100.0}
+MAX_PLAUSIBLE_IMPORT_DEFAULT_MW = 2_000.0
 MIN_PLAUSIBLE_MW = 0.0  # negative readings are treated as errors
 
 # Solar and wind are 22% / 74% missing. Cleaning leaves them as NaN and adds a

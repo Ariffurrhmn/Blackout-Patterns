@@ -121,3 +121,16 @@ def test_date_plus_hour_columns_supported():
     out, _ = clean(raw)
     assert list(out.index.hour) == [0, 1, 2]
     assert out["shedding"].tolist() == [False, False, True]
+
+
+def test_ceilings_are_per_source_and_applied_before_imports_are_summed():
+    raw = make_raw()
+    raw["Hydro"] = 100.0
+    raw.loc[8, "Hydro"] = 1_500.0  # far above Kaptai-scale hydro, below the old global ceiling
+    raw.loc[9, "India Bheramara"] = 76_292.0  # would have vanished into a 30,000 MW sum check
+    out, report = clean(raw)
+    assert report.bad_values["hydro"] == 1
+    assert report.bad_values["imports"] == 1
+    t = raw.loc[9, "Date Time"]
+    assert out.loc[t, "imports"] == 100.0  # only the Tripura column survives
+    assert out.loc[t, "flag_bad_imports"]

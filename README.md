@@ -14,7 +14,7 @@
 
 A data mining project on Bangladesh's load-shedding crisis. It looks for the **structure** of the crisis in eleven years of hourly grid data: when the regime changed, what a typical bad day looks like, which fuel-mix conditions come before a blackout, and which odd readings are real events and which are data errors.
 
-> **Where this stands.** The research is done and the plan is written. Week 1–2 code is in: a cleaning pipeline and a profile command, covered by tests on synthetic data. It has **not yet been run on the real data**, because the raw file has to be downloaded by hand (see [Getting started](#getting-started)). No mining results exist yet.
+> **Where this stands.** The research is done and the plan is written. Week 1–2 code is in: a cleaning pipeline and a profile command, run on the real file (v1, 94,934 rows × 15 columns) and covered by tests. No mining results exist yet.
 
 ## Getting started
 
@@ -32,7 +32,16 @@ blackout profile   # compares yearly shedding hours with the figures in this REA
 pytest             # cleaning-rule tests (synthetic data)
 ```
 
-The exact column headers of the real file were not recorded in the research notes, so columns are matched to roles (timestamp, generation, load shedding, gas, liquid fuel, imports…) by keyword. Check the `blackout inspect` output on first run and pin any wrong match with `--map role=column`. The cleaning thresholds in [`src/blackout/config.py`](src/blackout/config.py) are starting assumptions to review during EDA.
+Columns are matched to roles (timestamp, generation, load shedding, gas, liquid fuel, imports…) by keyword. On the real file (`datetime`, `generation_mw`, `demand_mw`, `load_shedding`, `gas`, `liquid_fuel`, `coal`, `hydro`, `solar`, `wind`, four import columns, `remarks`) every column is matched correctly; pin a wrong match with `--map role=column` if a later version renames them.
+
+**What the first run on the real data showed**
+
+- The raw yearly counts of rows with shedding above 0 MW reproduce the chart above exactly (22, 46, 7 … 2,287, 5,012, 5,034, 3,316).
+- The cleaned table counts **hours**, so its 2022–2025 totals are 4–5% lower (2,178 / 4,788 / 4,816 / 3,158). The file has one extra off-the-hour reading a day (19:30, sometimes 18:30). On a shedding evening both it and the 19:00 row are above zero, and the chart counts that hour twice. Hours are the better unit; the chart counts rows.
+- The glitches are much more widespread than the first profile suggested: besides 64.5 million MW generation, liquid fuel reaches 29 million MW and hydro has dozens of readings above 1,000 MW when the real figure is near 265 MW. Cleaning therefore uses a ceiling per source (in [`src/blackout/config.py`](src/blackout/config.py)), chosen from the upper tail of the real data, instead of one global limit. About 210 readings are set to NaN in total, and no rows are removed.
+- The Spearman correlation between daily changes in liquid fuel and load shedding comes out at 0.00 for 2018–2021 and 0.45 for Jul 2022–2024 (the pilot reported 0.01 and 0.43).
+
+The ceilings are judgement calls and should be revisited during EDA, particularly shedding (6,000 MW) and liquid fuel (12,000 MW).
 
 ## Contents
 
@@ -260,9 +269,10 @@ To browse the idea reports as a tabbed page, open [`docs/report-workbench/index.
 - [x] Compare 19 project ideas and pick this one
 - [x] Write the research question, method plan and 14-week schedule
 - [x] Set up the repository and structure
-- [x] Write the cleaning pipeline and profile command (tested on synthetic data only)
-- [ ] Download the data and re-run the first profile (`blackout inspect`, `clean`, `profile`)
-- [ ] Review the cleaning thresholds against the real data and document every rule
+- [x] Write the cleaning pipeline and profile command
+- [x] Download the data and re-run the first profile (`blackout inspect`, `clean`, `profile`)
+- [ ] Merge the UCI version as a cross-check and decide the solar / wind policy
+- [ ] Review the cleaning ceilings during EDA and write them up in the data report
 - [ ] EDA and the data report (week 3 checkpoint)
 - [ ] Regimes, clusters, motifs, rules
 - [ ] Validation, dashboard, paper

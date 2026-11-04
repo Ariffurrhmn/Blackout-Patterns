@@ -76,13 +76,19 @@ def infer_roles(columns: list[str], overrides: dict[str, str] | None = None) -> 
     for role, patterns in _ROLE_PATTERNS.items():
         if role in roles:
             continue
+        if role == "imports":
+            # Imports legitimately span several interconnector columns: collect
+            # every column matching any pattern, not just the first pattern.
+            hits = [c for c in columns if c not in taken and any(re.search(p, _norm(c)) for p in patterns)]
+            if hits:
+                roles[role] = hits
+                taken.update(hits)
+            continue
         for pat in patterns:
             hits = [c for c in columns if c not in taken and re.search(pat, _norm(c))]
             if hits:
-                # Only imports legitimately spans several columns.
-                chosen = hits if role == "imports" else hits[:1]
-                roles[role] = chosen
-                taken.update(chosen)
+                roles[role] = hits[:1]
+                taken.update(hits[:1])
                 break
     return roles
 
@@ -146,12 +152,14 @@ def _parse_timestamp(df: pd.DataFrame, roles: dict[str, list[str]]) -> pd.Series
     )
 
 
-def _plausible_max(role: str) -> float:
-    return {
-        "generation": config.MAX_PLAUSIBLE_GENERATION_MW,
-        "demand": config.MAX_PLAUSIBLE_GENERATION_MW,
-        "load_shedding": config.MAX_PLAUSIBLE_SHEDDING_MW,
-    }.get(role, config.MAX_PLAUSIBLE_FUEL_MW)
+def _plausible_max(role: str, column: str) -> float:
+    if role == "imports":
+        name = _norm(column)
+        for key, ceiling in config.MAX_PLAUSIBLE_IMPORT_MW.items():
+            if key in name:
+                return ceiling
+        return config.MAX_PLAUSIBLE_IMPORT_DEFAULT_MW
+    return config.MAX_PLAUSIBLE_MW[role]
 
 
 def clean(
@@ -172,28 +180,32 @@ def clean(
     ok = ts.notna()
     report.rows_dropped_bad_timestamp = int((~ok).sum())
 
-    # One numeric column per role (imports summed across interconnectors).
+    # Impossible-value rules come first, per raw column and before any
+    # aggregation, so one 64-million MW row cannot poison an hourly mean or an
+    # import sum. The offending reading becomes NaN; the row is kept.
     values = pd.DataFrame(index=raw.index[ok])
+    bad_roles = pd.DataFrame(index=raw.index[ok])
     for role in _VALUE_ROLES:
         if role not in roles:
             continue
         cols = raw.loc[ok, roles[role]].apply(pd.to_numeric, errors="coerce")
-        values[role] = cols.sum(axis=1, min_count=1)
+        bad_any = pd.Series(False, index=cols.index)
+        for col in cols:
+            bad = (cols[col] < config.MIN_PLAUSIBLE_MW) | (cols[col] > _plausible_max(role, col))
+            bad_any |= bad.fillna(False)
+            cols.loc[bad, col] = np.nan
+        if bad_any.any():
+            report.bad_values[role] = int(bad_any.sum())
+        values[role] = cols.sum(axis=1, min_count=1)  # imports: sum of interconnectors
+        bad_roles[f"flag_bad_{role}"] = bad_any
     values.index = pd.DatetimeIndex(ts[ok], name="timestamp")
-    values = values.sort_index()
+    bad_roles.index = values.index
+    order = values.index.argsort(kind="stable")
+    values, bad_roles = values.iloc[order], bad_roles.iloc[order]
 
     report.duplicate_timestamps_merged = int(values.index.duplicated().sum())
     values = values.groupby(level=0).mean()
-
-    # Impossible-value rules, applied before aggregation so a single 64-million
-    # MW row cannot poison an hourly mean.
-    flags = pd.DataFrame(index=values.index)
-    for role in values.columns:
-        bad = (values[role] < config.MIN_PLAUSIBLE_MW) | (values[role] > _plausible_max(role))
-        if bad.any():
-            report.bad_values[role] = int(bad.sum())
-        flags[f"flag_bad_{role}"] = bad.fillna(False)
-        values.loc[bad, role] = np.nan
+    flags = bad_roles.groupby(level=0).max()
 
     # Sub-hourly rows -> hourly means.
     hour_index = values.index.floor("h")
