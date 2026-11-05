@@ -1,0 +1,100 @@
+% Methodology diagram for the Blackout Patterns proposal (TikZ).
+% Input from proposal.tex inside a figure* environment. Coordinates are in cm.
+\definecolor{dataFill}{RGB}{233,236,239}
+\definecolor{prepFill}{RGB}{222,235,247}
+\definecolor{regFill}{RGB}{252,228,214}
+\definecolor{modFill}{RGB}{226,240,217}
+\definecolor{valFill}{RGB}{255,242,204}
+\definecolor{outFill}{RGB}{217,210,233}
+\definecolor{baseGrey}{gray}{0.42}
+
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    font=\scriptsize,
+    >={Stealth[length=1.6mm,width=1.3mm]},
+    box/.style={draw=black!70, rounded corners=1.5pt, line width=0.45pt,
+                align=left, inner xsep=3pt, inner ysep=2.5pt},
+    flow/.style={->, line width=0.55pt, draw=black!75},
+    bus/.style={line width=0.55pt, draw=black!75},
+    hdr/.style={font=\scriptsize\bfseries, text=black!80, align=center},
+    base/.style={text=baseGrey},
+]
+
+% ---------------- column headers ----------------
+\node[hdr] at (1.1, 4.15)  {1\; Data};
+\node[hdr] at (3.95,4.15)  {2\; Preparation};
+\node[hdr] at (7.0, 4.15)  {3\; Regimes};
+\node[hdr] at (10.9,4.15)  {4\; Regime-aware pattern mining};
+\node[hdr] at (14.45,4.15) {5\; Validation};
+\node[hdr] at (17.7,4.15) {6\; Deliverables};
+
+% ---------------- 1 data ----------------
+\node[box, fill=dataFill, text width=2.0cm, minimum height=1.25cm] (d1) at (1.1, 1.75)
+  {\textbf{PGCB hourly}\\2015--2026, main\\94{,}934 $\times$ 15};
+\node[box, fill=dataFill, text width=2.0cm, minimum height=1.25cm] (d2) at (1.1, 0)
+  {\textbf{UCI mirror}\\cross-check\\92{,}650 $\times$ 14};
+\node[box, fill=dataFill, dashed, text width=2.0cm, minimum height=1.25cm] (d3) at (1.1,-1.75)
+  {\textbf{Optional}\\BPDB divisions,\\BMD weather};
+
+% ---------------- 2 preparation ----------------
+\node[box, fill=prepFill, text width=2.45cm, minimum height=7.2cm] (prep) at (3.95,0)
+  {\textbf{Clean and explore}\\[2pt]
+   $\bullet$ half-hourly $\to$ hourly\\
+   $\bullet$ impossible-value rules\\
+   $\bullet$ merge two versions\\
+   $\bullet$ missing solar and wind policy\\
+   $\bullet$ demand proxy = generation + shedding\\[3pt]
+   \textbf{EDA}\\
+   $\bullet$ yearly heatmaps\\
+   $\bullet$ fuel-mix trends\\[3pt]
+   \textit{Checkpoint: data report}};
+
+% ---------------- 3 regimes ----------------
+\node[box, fill=regFill, text width=2.45cm, minimum height=7.2cm] (reg) at (7.0,0)
+  {\textbf{PELT change points}\\[2pt]
+   on daily shedding energy, liquid-fuel share and import share; several penalties\\[4pt]
+   Aligned with documented events within $\pm 7$ days\\[4pt]
+   \textbf{Output}\\
+   regime labels\\[4pt]
+   \textcolor{baseGrey}{\textit{Baseline:} calendar split, before 2022 vs.\ 2022 on}};
+
+% ---------------- 4 mining modules and 5 validation (rows) ----------------
+\newcommand{\modrow}[5]{% index, y, name+method, baseline, validation
+  \node[box, fill=modFill, text width=3.25cm, minimum height=1.6cm] (m#1) at (10.9,#2) {#3\\[1pt]\textcolor{baseGrey}{\textit{Baseline:} #4}};
+  \node[box, fill=valFill, text width=2.65cm, minimum height=1.6cm] (v#1) at (14.45,#2) {#5};
+  \draw[flow] (m#1.east) -- (v#1.west);
+}
+\modrow{1}{2.8}{\textbf{Typical days}\\k-Shape and DTW per regime; matrix-profile motifs}{k-means on raw 24-h vectors}{Silhouette, Davies--Bouldin, bootstrap ARI stability}
+\modrow{2}{0.93}{\textbf{Rules}\\FP-Growth + emerging patterns between regimes}{Apriori on all years}{Lift, conviction, leverage; hold-out: mine 2022--24, test 2025}
+\modrow{3}{-0.93}{\textbf{Episodes}\\PrefixSpan on shedding episodes}{count of shedding hours}{Support against the baseline counts}
+\modrow{4}{-2.8}{\textbf{Anomalies}\\matrix-profile discords + Isolation Forest on STL residuals}{z-score outliers}{Precision@50 (manual labels); recall on injected glitches}
+
+% ---------------- 6 deliverables ----------------
+\node[box, fill=outFill, text width=2.15cm, minimum height=7.2cm] (out) at (17.7,0)
+  {\textbf{Findings}\\[1pt]
+   crisis fingerprint\\
+   regime timeline\\
+   archetype days\\
+   motif / discord plot\\
+   top-rule table\\
+   audited anomalies\\[4pt]
+   \textbf{Products}\\[1pt]
+   Streamlit dashboard\\
+   IEEE-format paper};
+
+% ---------------- arrows ----------------
+% data -> preparation
+\foreach \n in {d1,d2,d3}{ \draw[flow] (\n.east) -- (\n.east -| prep.west); }
+% preparation -> regimes -> modules (fan-out)
+\draw[flow] (prep.east) -- (reg.west);
+\draw[bus] (reg.east) -- ++(0.42,0) coordinate (b0);
+\draw[bus] (b0 |- m1.west) -- (b0 |- m4.west);
+\foreach \n in {1,2,3,4}{ \draw[flow] (b0 |- m\n.west) -- (m\n.west); }
+\node[font=\tiny, text=black!70, rotate=90] at ($(reg.east)+(0.2,1.9)$) {regime labels};
+% validation -> deliverables (fan-in)
+\draw[bus] (v1.east) -- ++(0.35,0) coordinate (c0);
+\draw[bus] (c0) -- (c0 |- v4.east);
+\foreach \n in {2,3,4}{ \draw[bus] (v\n.east) -- (v\n.east -| c0); }
+\draw[flow] (c0 |- out.west) -- (out.west);
+\end{tikzpicture}%
+}

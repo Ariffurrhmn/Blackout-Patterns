@@ -1,0 +1,158 @@
+% Blackout Patterns: research proposal (IEEE conference format)
+% Build:  pdflatex proposal && bibtex proposal && pdflatex proposal && pdflatex proposal
+\documentclass[conference]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+
+\setlist[itemize]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
+
+\hyphenation{Bangla-desh}
+
+\begin{document}
+
+\title{Blackout Patterns: Mining Regimes, Motifs and Emerging Fuel-Mix Rules in Bangladesh's Hourly Grid Data, 2015--2026}
+
+\author{\IEEEauthorblockN{Arifur Rahman}
+\IEEEauthorblockA{[Department], [Institution]\\
+Bangladesh\\
+Project proposal, November 2026}}
+
+\maketitle
+
+% =====================================================================
+\begin{abstract}
+From 2015 to 2021 Bangladesh's grid hardly ever shed load, with 3 to 46 shedding hours a year. After the 2022 fuel and foreign-currency crisis the figure rose to between 2,287 and 5,034 hours a year. That break sits inside a single public file of hourly Power Grid Company of Bangladesh (PGCB) records. Published work on this data forecasts demand or predicts shedding; none found so far mines the crisis for its structure. This proposal describes a data mining study that asks which operating regimes and recurring patterns characterise the 2022--2025 crisis, and which fuel-mix conditions systematically come before shedding. The method has five parts: PELT change-point detection for regimes, k-Shape and DTW clustering with matrix-profile motifs for typical days, FP-Growth with emerging-pattern mining for rules, PrefixSpan for shedding episodes, and matrix-profile discords with Isolation Forest to separate data errors from real events. Each part is compared with a simple baseline and validated with a temporal hold-out, event alignment and injected glitches. The data are public (CC BY 4.0, 6.55~MB), so the work runs on a laptop at a tentative cost of about BDT~27{,}000. The outputs are a documented cleaning pipeline, five analyses, an interactive dashboard and an IEEE-format paper.
+\end{abstract}
+
+\begin{IEEEkeywords}
+load shedding, power grid, Bangladesh, time-series data mining, change-point detection, association rules, anomaly detection
+\end{IEEEkeywords}
+
+% =====================================================================
+\section{Introduction}
+Electricity supply in Bangladesh changed sharply in 2022. The hourly record of the national grid shows that from 2015 to 2021 load shedding was almost absent: 22, 46, 7, 12, 12, 6 and 3 hours with shedding in successive years. In 2022 the count rose to 2,287 hours, then to 5,012 in 2023 and 5,034 in 2024, and fell to 3,316 in 2025 (first profile of the data; to be re-run, see Section~\ref{sec:method}). A pilot check pointed the same way: day-to-day changes in liquid-fuel generation were unrelated to changes in shedding before the crisis (Spearman $\rho=0.01$) and clearly related during it ($\rho=0.43$). A change of this size inside one continuous series is a natural experiment, and it is available to anyone because the data are public.
+
+The same data have been used before, but for prediction. Islam \emph{et~al.}~\cite{islam2025} and Yeaser \emph{et~al.}~\cite{yeaser2025} forecast electricity demand with machine-learning and deep-learning models, and Arifuzzaman~\cite{arifuzzaman2026} predicts load shedding with supervised models. These studies answer ``how much load will be shed?'' None of the work found in the literature search (7~October~2026) asks what changed, what repeats, and what comes first. Prediction alone also hides data problems. The main file contains impossible values (a maximum ``generation'' of 64{,}526{,}500~MW in 2023 and a shedding value of 65{,}359~MW in 2017), and demand is censored during shedding because it records what was served.
+
+This proposal therefore treats the crisis as a pattern-discovery problem. The research question is:
+\begin{quote}
+\emph{What operating regimes and recurring patterns characterise Bangladesh's 2022--2025 load-shedding crisis, and which fuel-mix conditions systematically come before shedding?}
+\end{quote}
+It splits into four sub-questions: (1)~when did the grid change regime, and does that match known events; (2)~what does a typical day look like in each regime; (3)~which fuel-mix and calendar conditions come before shedding; and (4)~which unusual readings are data errors and which are real events. The study is mostly unsupervised and works at the level of patterns, so its outputs are regimes, archetype days, ranked rules and an audited list of anomalies, not a forecast and an error score.
+
+% =====================================================================
+\section{Objectives}
+The project has seven objectives.
+\begin{enumerate}
+  \item \textbf{Prepare the data.} Build a documented, reproducible cleaning pipeline: half-hourly to hourly, rules for impossible values, a merge of two dataset versions, a stated policy for missing solar and wind, and generation plus shedding as the demand proxy.
+  \item \textbf{Find the regimes.} Detect change points in daily shedding energy, liquid-fuel share and import share, and compare them with documented events within $\pm 7$ days.
+  \item \textbf{Describe typical days.} Cluster 24-hour profiles into archetype days for each regime, and find recurring multi-day motifs.
+  \item \textbf{Mine pre-shedding conditions.} Find fuel-mix and calendar rules that come before shedding and whose support grows between regimes (emerging patterns), and test whether they still hold in 2025.
+  \item \textbf{Mine shedding episodes.} Extract frequent event sequences, for example gas falls $\to$ liquid fuel rises $\to$ evening peak $\to$ shedding.
+  \item \textbf{Audit anomalies.} Find discords and outliers, and label the top 50 as \emph{data error} or \emph{real event}.
+  \item \textbf{Deliver.} Publish an interactive dashboard and an IEEE-format paper that report both the findings and the limits.
+\end{enumerate}
+
+% =====================================================================
+\section{Methodology}
+\label{sec:method}
+Fig.~\ref{fig:method} shows the workflow. Data are cleaned once, regimes are found next, and four pattern-mining modules then run in parallel, each on the regime labels. Every module has a simple baseline to beat and its own validation, and the validated results feed the dashboard and the paper.
+
+\begin{figure*}[!t]
+\centering
+\input{method-figure.tex}
+\caption{Methodology of the study. Data are harmonised and cleaned (stages 1--2), regimes are detected (stage 3), and four regime-aware mining modules (stage 4) each run against a baseline (grey) and are checked by a module-specific validation (stage 5). Validated results become the deliverables (stage 6).}
+\label{fig:method}
+\end{figure*}
+
+\subsection{Data}
+The main dataset holds hourly generation, demand, load shedding and fuel mix for 17~April~2015 to 8~March~2026: 94{,}934 rows by 15 columns, 6.55~MB, licensed CC~BY~4.0~\cite{pgcb_mendeley}. The UCI mirror of the PGCB data (92{,}650 rows by 14 columns)~\cite{pgcb_uci} is used to cross-check it. Division-level BPDB shedding (2019--2024) and BMD daily weather (to 2023) are optional additions. Raw files are not stored in the repository. A first inspection found that the earliest rows are half-hourly, that solar is about 22\% missing and wind about 74\% missing, and that impossible values exist. Because datasets can be revised, the first task is to re-run the profile on the current version.
+
+\subsection{Preparation and exploration}
+Rows are resampled to hourly, impossible values are handled by written rules, and the two versions are merged. Demand is not observed while load is shed, so the analysis uses generation plus shedding. Exploration then produces yearly day-of-year by hour heatmaps, fuel-mix trends and shedding distributions, and ends in a data report that is the first checkpoint.
+
+\subsection{Regime detection}
+PELT~\cite{killick2012}, in the form implemented in the \texttt{ruptures} library~\cite{truong2020}, is applied to daily shedding energy, liquid-fuel share and import share with several penalty values. The baseline is a calendar split (before 2022 versus 2022 onward). Detected breakpoints are compared with documented events, such as the mid-2022 halt of spot LNG purchases. The resulting regime labels are passed to all later modules.
+
+\subsection{Regime-aware pattern mining}
+\begin{itemize}
+  \item \textbf{Typical days.} 24-hour profiles are z-normalised and clustered per regime with k-Shape~\cite{paparrizos2015} and DTW, against a k-means baseline on raw vectors. Matrix-profile motifs~\cite{yeh2016,law2019} capture recurring multi-day patterns.
+  \item \textbf{Rules.} Hourly states are discretised (season, hour band, gas share, liquid-fuel share, import level), giving rules such as \{summer, evening peak, gas share low, liquid share high\} $\to$ \{shedding high\}. FP-Growth~\cite{han2000} is compared with an Apriori baseline~\cite{agrawal1994}. Emerging patterns~\cite{dong1999}, whose support grows by a factor of $k$ or more between regimes, are ranked by lift and conviction~\cite{brin1997} so that obvious rules (``summer evening means shedding'') rank below surprising ones.
+  \item \textbf{Episodes.} PrefixSpan~\cite{pei2001} mines frequent sequences in shedding episodes. The baseline is a count of shedding hours.
+  \item \textbf{Anomalies.} Matrix-profile discords and Isolation Forest~\cite{liu2008} on STL residuals~\cite{cleveland1990} are compared with z-score outliers. The 50 top-ranked items are labelled \emph{data error} or \emph{real event}.
+\end{itemize}
+
+\subsection{Validation}
+Clusters are judged by silhouette~\cite{rousseeuw1987}, Davies--Bouldin~\cite{davies1979} and bootstrap adjusted Rand index~\cite{hubert1985} for stability. Rules are judged by lift, conviction and leverage, and by a temporal hold-out: mine on 2022--2024, then check whether the rules still hold in 2025. Change points are judged by alignment with documented events within $\pm 7$ days. Anomaly detection is judged by precision@50 from manual labels and by recall on synthetic glitches injected at known positions.
+
+\subsection{Tools, schedule and limits}
+All tools are free: \texttt{pandas}, \texttt{scikit-learn}, \texttt{mlxtend}, \texttt{tslearn}, \texttt{stumpy}, \texttt{ruptures}, \texttt{statsmodels}, \texttt{matplotlib} and \texttt{streamlit}. The work is planned over 14 weeks in four phases: foundation (weeks 1--3), core mining (4--8), validation and dashboard (9--12), and writing (13--14), with a data-report checkpoint in week~3 and a demo in week~8. The main limits are known in advance. Demand is censored, many rules will be trivial, and regime changes line up with policy and market events, so the study can show alignment with them but cannot prove that they caused anything.
+
+% =====================================================================
+\section{Tentative Budget}
+The study uses public data and free software on an existing laptop, so costs are small. Table~\ref{tab:budget} lists planning estimates in Bangladeshi taka (BDT). The figures are assumptions made for planning and should be replaced with quotations before the proposal is submitted.
+
+\begin{table}[!t]
+\caption{Tentative budget (planning estimates, 14 weeks)}
+\label{tab:budget}
+\centering
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}l l r@{}}
+\toprule
+\textbf{Item} & \textbf{Basis} & \textbf{BDT} \\
+\midrule
+Laptop and Python stack & In kind & 0 \\
+Cloud compute fallback & 3 months & 3{,}600 \\
+Datasets (PGCB, UCI) & Public, CC BY 4.0 & 0 \\
+Literature access & Library & 0 \\
+Internet & 4 months & 4{,}000 \\
+Proofreading, similarity check & One-off & 3{,}000 \\
+Conference registration & Estimate & 12{,}000 \\
+Printing and binding & One-off & 2{,}000 \\
+\midrule
+Subtotal & & 24{,}600 \\
+Contingency (10\%) & & 2{,}460 \\
+\midrule
+\textbf{Total} & & \textbf{27{,}060} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Expected Outcomes}
+The following are hypotheses to be tested, not results.
+\begin{enumerate}
+  \item A sharp regime break in mid-2022 and a partial recovery in 2025.
+  \item Shedding concentrated in the evening peak and late at night.
+  \item High-lift rules that link a low gas share and high liquid-fuel generation to shedding, and that still hold on the 2025 hold-out.
+  \item A cluster of data-entry glitches, since the first inspection already found impossible values.
+\end{enumerate}
+The planned deliverables are:
+\begin{itemize}
+  \item a documented, reproducible data-cleaning pipeline;
+  \item a crisis fingerprint (day-of-year by hour shedding heatmap for every year) and a regime timeline over a stacked fuel-mix chart;
+  \item archetype days for each regime, and a matrix-profile plot with motifs and discords marked;
+  \item a table of the top emerging rules with their growth rates between regimes, and a list of audited anomalies labelled as data error or real event;
+  \item a Streamlit dashboard with a year slider, regime view and rule explorer;
+  \item an IEEE-format paper aimed at ICCIT~2027 or an IEEE Region~10 venue.
+\end{itemize}
+
+% =====================================================================
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
