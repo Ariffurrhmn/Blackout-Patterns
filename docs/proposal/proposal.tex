@@ -1,6 +1,7 @@
-% Blackout Patterns: research proposal (IEEE conference format)
+% Blackout Patterns: research proposal (single-column article)
 % Build:  pdflatex proposal && bibtex proposal && pdflatex proposal && pdflatex proposal
-\documentclass[conference]{IEEEtran}
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
 
 \usepackage[T1]{fontenc}
 \usepackage{mathptmx}
@@ -16,6 +17,17 @@
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cite}
+\usepackage{float}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\AtBeginEnvironment{thebibliography}{\small\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}}
+\emergencystretch=1.5em
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\itshape}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\titlespacing*{\subsection}{0pt}{8pt}{2pt}
+\setlength{\parskip}{3pt}
 
 \setlist[itemize]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
 \setlist[enumerate]{leftmargin=*,itemsep=1pt,topsep=2pt,parsep=0pt}
@@ -24,12 +36,9 @@
 
 \begin{document}
 
-\title{Blackout Patterns: Mining Regimes, Motifs and Emerging Fuel-Mix Rules in Bangladesh's Hourly Grid Data, 2015--2026}
-
-\author{\IEEEauthorblockN{Arifur Rahman}
-\IEEEauthorblockA{[Department], [Institution]\\
-Bangladesh\\
-Project proposal, November 2026}}
+\title{\Large\bfseries Blackout Patterns: Mining Regimes, Motifs and Emerging Fuel-Mix Rules in Bangladesh's Hourly Grid Data, 2015--2026}
+\author{Arifur Rahman\\[2pt]\normalsize [Department], [Institution], Bangladesh}
+\date{\normalsize Project proposal, November 2026}
 
 \maketitle
 
@@ -38,9 +47,7 @@ Project proposal, November 2026}}
 From 2015 to 2021 Bangladesh's grid hardly ever shed load, with 3 to 46 shedding hours a year. After the 2022 fuel and foreign-currency crisis the figure rose to between 2,287 and 5,034 hours a year. That break sits inside a single public file of hourly Power Grid Company of Bangladesh (PGCB) records. Published work on this data forecasts demand or predicts shedding; none found so far mines the crisis for its structure. This proposal describes a data mining study that asks which operating regimes and recurring patterns characterise the 2022--2025 crisis, and which fuel-mix conditions systematically come before shedding. The method has five parts: PELT change-point detection for regimes, k-Shape and DTW clustering with matrix-profile motifs for typical days, FP-Growth with emerging-pattern mining for rules, PrefixSpan for shedding episodes, and matrix-profile discords with Isolation Forest to separate data errors from real events. Each part is compared with a simple baseline and validated with a temporal hold-out, event alignment and injected glitches. The data are public (CC BY 4.0, 6.55~MB), so the work runs on a laptop at a tentative cost of about BDT~27{,}000. The outputs are a documented cleaning pipeline, five analyses, an interactive dashboard and an IEEE-format paper.
 \end{abstract}
 
-\begin{IEEEkeywords}
-load shedding, power grid, Bangladesh, time-series data mining, change-point detection, association rules, anomaly detection
-\end{IEEEkeywords}
+\noindent\textbf{Keywords:} \emph{load shedding, power grid, Bangladesh, time-series data mining, change-point detection, association rules, anomaly detection}
 
 % =====================================================================
 \section{Introduction}
@@ -55,6 +62,7 @@ This proposal therefore treats the crisis as a pattern-discovery problem. The re
 It splits into four sub-questions: (1)~when did the grid change regime, and does that match known events; (2)~what does a typical day look like in each regime; (3)~which fuel-mix and calendar conditions come before shedding; and (4)~which unusual readings are data errors and which are real events. The study is mostly unsupervised and works at the level of patterns, so its outputs are regimes, archetype days, ranked rules and an audited list of anomalies, not a forecast and an error score.
 
 % =====================================================================
+\Needspace{9\baselineskip}
 \section{Objectives}
 The project has seven objectives.
 \begin{enumerate}
@@ -72,12 +80,12 @@ The project has seven objectives.
 \label{sec:method}
 Fig.~\ref{fig:method} shows the workflow. Data are cleaned once, regimes are found next, and four pattern-mining modules then run in parallel, each on the regime labels. Every module has a simple baseline to beat and its own validation, and the validated results feed the dashboard and the paper.
 
-\begin{figure*}[!t]
+\begin{figure}[H]
 \centering
 \input{method-figure.tex}
 \caption{Methodology of the study. Data are harmonised and cleaned (stages 1--2), regimes are detected (stage 3), and four regime-aware mining modules (stage 4) each run against a baseline (grey) and are checked by a module-specific validation (stage 5). Validated results become the deliverables (stage 6).}
 \label{fig:method}
-\end{figure*}
+\end{figure}
 
 \subsection{Data}
 The main dataset holds hourly generation, demand, load shedding and fuel mix for 17~April~2015 to 8~March~2026: 94{,}934 rows by 15 columns, 6.55~MB, licensed CC~BY~4.0~\cite{pgcb_mendeley}. The UCI mirror of the PGCB data (92{,}650 rows by 14 columns)~\cite{pgcb_uci} is used to cross-check it. Division-level BPDB shedding (2019--2024) and BMD daily weather (to 2023) are optional additions. Raw files are not stored in the repository. A first inspection found that the earliest rows are half-hourly, that solar is about 22\% missing and wind about 74\% missing, and that impossible values exist. Because datasets can be revised, the first task is to re-run the profile on the current version.
@@ -106,7 +114,7 @@ All tools are free: \texttt{pandas}, \texttt{scikit-learn}, \texttt{mlxtend}, \t
 \section{Tentative Budget}
 The study uses public data and free software on an existing laptop, so costs are small. Table~\ref{tab:budget} lists planning estimates in Bangladeshi taka (BDT). The figures are assumptions made for planning and should be replaced with quotations before the proposal is submitted.
 
-\begin{table}[!t]
+\begin{table}[H]
 \caption{Tentative budget (planning estimates, 14 weeks)}
 \label{tab:budget}
 \centering
@@ -152,7 +160,7 @@ The planned deliverables are:
 \end{itemize}
 
 % =====================================================================
-\bibliographystyle{IEEEtran}
+\bibliographystyle{IEEEtran} % numbered reference style only
 \bibliography{references}
 
 \end{document}
