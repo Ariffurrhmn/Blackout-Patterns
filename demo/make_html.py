@@ -21,7 +21,7 @@ def js_literal(obj) -> str:
 def main(csv_path: Path, out: Path) -> None:
     if not csv_path.exists():
         sys.exit(f"CSV not found: {csv_path}\nRun demo/build_demo.py (needs data/raw/) or copy daily_demo.csv there.")
-    model = json.loads((DEMO / "model" / "model_f1.json").read_text())
+    model = json.loads((DEMO / "model" / "model_f3.json").read_text())
     html = (DEMO / "index.template.html").read_text(encoding="utf-8")
     html = html.replace("/*__CSV__*/\"\"", js_literal(csv_path.read_text(encoding="utf-8")))
     html = html.replace("/*__MODEL__*/null", js_literal(model))

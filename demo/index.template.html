@@ -57,9 +57,10 @@ input[type=range]{width:240px}
 <div class="warn"><b>Read before using the numbers.</b>
 <ul>
 <li>This is a working result, not a final or perfect model.</li>
-<li>Wind and cloud forecasts cover four zones only (Dhaka, Chattogram, Rajshahi, Sylhet), and the lead time is about 0 to 24 hours, not strictly day-ahead.</li>
+<li>This page uses the F3 recipe, rebuilt from re-downloaded public data. It takes the <b>same-day</b> wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet). That weather is not known the day before, so this is not a true day-ahead forecast. The earlier F1 model used weather forecasts that could not be collected again.</li>
+<li>The rebuild scores 4.80% on the frozen test; the original run reported 4.77%. The small gap is most likely a different NASA download (zone coordinates were not recorded).</li>
 <li>2025 to 2026 was used earlier for load-shedding work and five demand days were printed, so it is no longer a clean holdout.</li>
-<li>Gain over "tomorrow = today" is clear in 2025. In 2026 the interval includes zero.</li>
+<li>Gain over "tomorrow = today" is clear in 2025. In 2026 it is not (the original F3 run showed a slightly negative 2026 gain).</li>
 </ul></div>
 
 <section id="pipeline"></section>
@@ -129,7 +130,7 @@ function rolling(rows,key,w){ // trailing mean over available values
   return out;
 }
 function testRows(){ // one shared set of rows for every method
-  return DATA.filter(r=>r.split==="test"&&[r.demand_mw,r.pred_f1_mw,r.demand_yesterday_mw,r.bpdb_forecast_mw].every(v=>!Number.isNaN(v)));
+  return DATA.filter(r=>r.split==="test"&&[r.demand_mw,r.pred_mw,r.demand_yesterday_mw,r.bpdb_forecast_mw].every(v=>!Number.isNaN(v)));
 }
 function metrics(rows,key){
   const e=rows.map(r=>r[key]-r.demand_mw);
@@ -149,7 +150,7 @@ function lineChart(series,opt={}){
   let g="";
   yt.forEach(v=>{g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${M.l-6}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`;});
   const d0=new Date(x0),d1=new Date(x1),span=(x1-x0)/864e5;
-  if(span>500){for(let y=d0.getUTCFullYear()+1;y<=d1.getUTCFullYear();y++){const t=Date.UTC(y,0,1);g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle">${y}</text>`;}}
+  if(span>900){for(let y=d0.getUTCFullYear()+1;y<=d1.getUTCFullYear();y++){const t=Date.UTC(y,0,1);g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle">${y}</text>`;}}
   else{const k=Math.max(1,Math.round(span/6));for(let i=0;i<=6;i++){const t=x0+i*k*864e5;if(t>x1)break;g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle">${new Date(t).toISOString().slice(5,10)}</text>`;}}
   if(opt.yLabel) g+=`<text x="${M.l}" y="9">${opt.yLabel}</text>`;
   series.forEach(s=>{
@@ -199,15 +200,15 @@ function show(id){
 
 /* ---------- Pipeline ---------- */
 function renderPipeline(){
-  const tr=DATA.filter(r=>r.split==="train").length, te=testRows().length;
+  const tr=DATA.filter(r=>r.split==="train"&&!Number.isNaN(r.demand_mw)&&hasFeat(r)).length, te=testRows().length;
   const steps=[
-    ["1","Raw files","BPDB daily reports (Mendeley, versions 2 and extended), NASA POWER weather, BPDB same-morning forecast, Open-Meteo wind and cloud forecasts. Checksums in data/MANIFEST_raw_sha256.txt."],
+    ["Sources","Raw files","BPDB daily reports (Mendeley, versions 2 and extended), BPDB same-morning forecast, same-day wind and cloud (NASA POWER). Checksums in data/MANIFEST_raw_sha256.txt."],
     [fmt(2428),"Rows in combined table","2019-11-21 to 2026-08-03 (docs/cleaning_summary.md). 20 calendar days have no record."],
     [fmt(202),"Days excluded, definition A","First-pass cleaning (src/clean.py): R2 max demand zero, R3 copied regions, R4, R5 outliers, R7 missing. Model uses definition B: 51 of 1,851 training days excluded."],
     ["Target","Daily demand","Load-shedding did not beat \"tomorrow = today\", so the target is demand, in MW."],
     [String(MODEL.features.length),"Features",MODEL.features.join(", ")],
     [String(MODEL.trees.length),"Trees","Gradient boosting, learning rate 0.05, at most 15 leaves per tree. Output is log(demand / 7-day mean); prediction = exp(output) x 7-day mean."],
-    [fmt(tr),"Training days","Up to 2024-12-31 (rows with this CSV: "+fmt(tr)+")."],
+    [fmt(tr),"Training days","Up to 2024-12-31. Days in this CSV with a demand value and every feature: "+fmt(tr)+"."],
     [fmt(te),"Test days","2025-01-01 to 2026-08-03, scored once. Rows in this CSV with every method available."]
   ];
   $("#pipeline").innerHTML=`<div class="card"><h3>Pipeline</h3><p class="sub">Raw data to cleaned table, to features, to the model, to a single frozen test. Counts in grey text come from the project notes; counts that change with the CSV are computed from it.</p></div>
@@ -219,12 +220,12 @@ function renderPipeline(){
 let sortKey="date",sortDir=1,page=0;
 function renderAnalysis(){
   const flags={};DATA.forEach(r=>{const k=r.quality_flag||"no flag";flags[k]=(flags[k]||0)+1;});
-  const cols=["date","split","demand_mw","demand_yesterday_mw","bpdb_forecast_mw","shed_mw","quality_flag","cloud_reanalysis_pct","wind_reanalysis_ms","tmax_c_national","pred_f1_mw"];
+  const cols=["date","split","demand_mw","demand_yesterday_mw","bpdb_forecast_mw","shed_mw","quality_flag","ra_cloud_t","ra_wind_t","tmax_c_national","pred_mw"];
   $("#analysis").innerHTML=`
   <div class="card"><h3>Daily demand, 7-day average</h3>${lineChart([{name:"Demand (MW)",color:"var(--a)",pts:rolling(DATA,"demand_mw",7)}],{yLabel:"MW"})}</div>
   <div class="card"><h3>Load shedding, 7-day average</h3><p class="sub">Shedding is demand that could not be supplied. Its prediction did not beat yesterday, so it is shown for context only.</p>${lineChart([{name:"Shedding (MW)",color:"var(--d)",pts:rolling(DATA,"shed_mw",7)}],{yLabel:"MW"})}</div>
   <div class="card"><h3>Quality flags in this CSV</h3><p class="sub">Only three flags are encoded here, so these do not add up to the 202 excluded days.</p>${barChart(Object.entries(flags).sort((a,b)=>b[1]-a[1]))}</div>
-  <div class="card"><h3>Demand vs reanalysis cloud cover</h3>${scatter(DATA.map(r=>[r.cloud_reanalysis_pct,r.demand_mw]),"cloud cover (%)","demand (MW)")}</div>
+  <div class="card"><h3>Demand vs reanalysis cloud cover</h3>${scatter(DATA.map(r=>[r.ra_cloud_t,r.demand_mw]),"cloud cover (%)","demand (MW)")}</div>
   <div class="card"><h3>Dataset preview</h3><p class="sub">Click a column to sort. ${fmt(DATA.length)} rows.</p><div id="tbl" class="scroll"></div>
   <div class="row"><button class="b" id="prev">Previous</button><button class="b" id="next">Next</button><span id="pg"></span></div></div>`;
   const draw=()=>{
@@ -252,18 +253,18 @@ function renderPredict(){
   <div class="card"><h3>Predicted vs actual, 60 days around the date</h3><div id="pc"></div></div>`;
   const upd=()=>{
     const r=DATA.find(x=>x.date===selDate);
-    const cmin=Math.min(...cands.map(c=>c.fc_cloud_t)),cmax=Math.max(...cands.map(c=>c.fc_cloud_t));
-    const wmin=Math.min(...cands.map(c=>c.fc_wind_t)),wmax=Math.max(...cands.map(c=>c.fc_wind_t));
+    const cmin=Math.min(...cands.map(c=>c.ra_cloud_t)),cmax=Math.max(...cands.map(c=>c.ra_cloud_t));
+    const wmin=Math.min(...cands.map(c=>c.ra_wind_t)),wmax=Math.max(...cands.map(c=>c.ra_wind_t));
     $("#pf").innerHTML=`<h3>Model inputs</h3>`+MODEL.features.map(k=>`<div class="kv"><span>${k}</span><span>${fmt(r[k],3)}</span></div>`).join("")+`<div class="kv"><span>m7 (7-day mean, MW)</span><span>${fmt(r.m7_mw)}</span></div>
-    <p class="sub">Try the forecast inputs. The model re-runs in your browser.</p>
-    <div class="row"><label>Forecast cloud <input type="range" id="sc" min="${cmin}" max="${cmax}" step="any" value="${r.fc_cloud_t}"> <b id="vc"></b></label></div>
-    <div class="row"><label>Forecast wind <input type="range" id="sw" min="${wmin}" max="${wmax}" step="any" value="${r.fc_wind_t}"> <b id="vw"></b></label></div>`;
+    <p class="sub">Try other weather values. The model re-runs in your browser.</p>
+    <div class="row"><label>Same-day cloud (%) <input type="range" id="sc" min="${cmin}" max="${cmax}" step="any" value="${r.ra_cloud_t}"> <b id="vc"></b></label></div>
+    <div class="row"><label>Same-day wind (m/s) <input type="range" id="sw" min="${wmin}" max="${wmax}" step="any" value="${r.ra_wind_t}"> <b id="vw"></b></label></div>`;
     const run=()=>{
       const c=+$("#sc").value,w=+$("#sw").value;$("#vc").textContent=fmt(c,1);$("#vw").textContent=fmt(w,1);
-      const rr={...r,fc_cloud_t:c,fc_wind_t:w};const p=predictMW(featVec(rr),r.m7_mw);
+      const rr={...r,ra_cloud_t:c,ra_wind_t:w};const p=predictMW(featVec(rr),r.m7_mw);
       const err=p-r.demand_mw;
       $("#pr").innerHTML=`<h3>Prediction for ${r.date}</h3><div class="big">${fmt(p)} MW</div>
-      <p class="sub">Tree walk over ${MODEL.trees.length} trees. CSV value: ${fmt(r.pred_f1_mw)} MW.</p>
+      <p class="sub">Tree walk over ${MODEL.trees.length} trees. CSV value: ${fmt(r.pred_mw)} MW.</p>
       <div class="kv"><span>Actual demand</span><span>${fmt(r.demand_mw)} MW</span></div>
       <div class="kv"><span>Model error</span><span>${err>=0?"+":""}${fmt(err)} MW (${fmt(Math.abs(err)/r.demand_mw*100,2)}%)</span></div>
       <div class="kv"><span>Yesterday (persistence)</span><span>${fmt(r.demand_yesterday_mw)} MW (error ${fmt(Math.abs(r.demand_yesterday_mw-r.demand_mw))})</span></div>
@@ -273,7 +274,7 @@ function renderPredict(){
     const i=DATA.indexOf(r),win=DATA.slice(Math.max(0,i-30),i+31);
     $("#pc").innerHTML=lineChart([
       {name:"Actual",color:"var(--ink)",pts:win.map(x=>[x.t,x.demand_mw])},
-      {name:"Model (F1)",color:"var(--a)",pts:win.map(x=>[x.t,x.pred_f1_mw]),dash:true},
+      {name:"Model (F3)",color:"var(--a)",pts:win.map(x=>[x.t,x.pred_mw]),dash:true},
       {name:"Yesterday",color:"var(--b)",pts:win.map(x=>[x.t,x.demand_yesterday_mw]),w:1},
       {name:"BPDB forecast",color:"var(--c)",pts:win.map(x=>[x.t,x.bpdb_forecast_mw]),w:1}],{yLabel:"MW",vline:r.t});
   };
@@ -287,26 +288,26 @@ function renderPredict(){
 function renderResults(){
   const rows=testRows();
   if(!rows.length){$("#results").innerHTML="<div class='card'>No test rows with every method available.</div>";return;}
-  const M0=metrics(rows,"demand_yesterday_mw"),M1=metrics(rows,"pred_f1_mw"),M2=metrics(rows,"bpdb_forecast_mw");
+  const M0=metrics(rows,"demand_yesterday_mw"),M1=metrics(rows,"pred_mw"),M2=metrics(rows,"bpdb_forecast_mw");
   const line=(n,m,base)=>`<tr><td>${n}</td><td>${fmt(m.mape,2)}%</td><td>${fmt(m.mae)}</td><td>${base?fmt(M0.mae-m.mae):"0"}</td></tr>`;
   const years=[...new Set(rows.map(r=>r.date.slice(0,4)))];
-  const yr=years.map(y=>{const s=rows.filter(r=>r.date.startsWith(y));const a=metrics(s,"demand_yesterday_mw"),b=metrics(s,"pred_f1_mw"),c=metrics(s,"bpdb_forecast_mw");return `<tr><td>${y}</td><td>${s.length}</td><td>${fmt(a.mape,2)}%</td><td>${fmt(b.mape,2)}%</td><td>${fmt(c.mape,2)}%</td><td>${fmt(a.mae-b.mae)}</td></tr>`;}).join("");
+  const yr=years.map(y=>{const s=rows.filter(r=>r.date.startsWith(y));const a=metrics(s,"demand_yesterday_mw"),b=metrics(s,"pred_mw"),c=metrics(s,"bpdb_forecast_mw");return `<tr><td>${y}</td><td>${s.length}</td><td>${fmt(a.mape,2)}%</td><td>${fmt(b.mape,2)}%</td><td>${fmt(c.mape,2)}%</td><td>${fmt(a.mae-b.mae)}</td></tr>`;}).join("");
   $("#results").innerHTML=`<div class="card"><h3>Test period, ${rows.length} days with every method available</h3>
   <p class="sub">Computed live from the loaded CSV on one shared set of days. MAPE is mean absolute percentage error. Gain is how many MW per day the average error shrinks versus "tomorrow = today" (lower error is better).</p>
   <div class="scroll"><table><thead><tr><th>Method</th><th>MAPE</th><th>MAE (MW)</th><th>Gain vs yesterday (MW)</th></tr></thead><tbody>
-  ${line("Yesterday (persistence)",M0,false)}${line("Model F1",M1,true)}${line("BPDB same-morning forecast (has more information)",M2,true)}</tbody></table></div>
-  <p class="sub">Reported in docs/forecast_test.md on 569 days: F1 4.52%, persistence 5.48%, BPDB 4.41%, gain +110 MW (95% block bootstrap +59 to +163). Numbers here differ only if the CSV or the set of days differs.</p></div>
-  <div class="card"><h3>By year</h3><div class="scroll"><table><thead><tr><th>Year</th><th>Days</th><th>Yesterday MAPE</th><th>F1 MAPE</th><th>BPDB MAPE</th><th>F1 gain (MW)</th></tr></thead><tbody>${yr}</tbody></table></div>
-  <p class="sub">In 2026 the confidence interval for the gain includes zero (docs/forecast_test.md).</p></div>
+  ${line("Yesterday (persistence)",M0,false)}${line("Model F3",M1,true)}${line("BPDB same-morning forecast (has more information)",M2,true)}</tbody></table></div>
+  <p class="sub">Original F3 run (docs/forecast_test.md, 569 days): F3 4.77%, persistence 5.48%, BPDB 4.41%, gain +65 MW (95% block bootstrap +1 to +131). The earlier F1 model (day-ahead weather forecasts) scored 4.52% and could not be rebuilt. This page is a rebuild, so its numbers can differ slightly.</p></div>
+  <div class="card"><h3>By year</h3><div class="scroll"><table><thead><tr><th>Year</th><th>Days</th><th>Yesterday MAPE</th><th>F3 MAPE</th><th>BPDB MAPE</th><th>F3 gain (MW)</th></tr></thead><tbody>${yr}</tbody></table></div>
+  <p class="sub">In the original F3 run the 2026 gain was about zero (-11 MW). Small yearly differences are within noise.</p></div>
   <div class="card"><h3>Error over time, 30-day average of absolute error</h3>${lineChart([
     {name:"Yesterday",color:"var(--b)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.demand_yesterday_mw-r.demand_mw)})),"e",30)},
-    {name:"Model F1",color:"var(--a)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.pred_f1_mw-r.demand_mw)})),"e",30)},
+    {name:"Model F3",color:"var(--a)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.pred_mw-r.demand_mw)})),"e",30)},
     {name:"BPDB",color:"var(--c)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.bpdb_forecast_mw-r.demand_mw)})),"e",30)}],{yLabel:"MW"})}</div>
   <div class="card"><h3>What this does and does not show</h3><ul>
   <li>The model beats "tomorrow = today" on this test period, but BPDB's same-morning forecast is still slightly better and has more information.</li>
   <li>The 2025 to 2026 period was used for earlier work, so treat the result as an estimate, not a clean holdout.</li>
-  <li>Wind and cloud forecasts cover four zones; lead time is roughly 0 to 24 hours.</li>
-  <li>The same-day reanalysis version scored worse than the forecast version, which is unexpected and was not investigated.</li></ul></div>`;
+  <li>Wind and cloud come from four zones and are the actual same-day values, so a real forecast would be less accurate.</li>
+  <li>In the original project the forecast-weather version (F1) scored better than this one (F3), which was unexpected and not investigated.</li></ul></div>`;
 }
 
 /* ---------- load ---------- */
