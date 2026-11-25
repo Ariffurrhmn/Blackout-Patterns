@@ -58,6 +58,10 @@ Sorted by mean skill over persistence. Gain is the mean reduction in absolute er
 - **R5 does not remove the hardest days.** On validation, flagged days averaged 166, 214 and 87 MW against kept-day averages of 129, 200 and 300 MW. Most R5 flags in 2024-H2 are zero-maximum-demand days, which R2 already handles.
 - **Sensitivity:** after R3 was removed from the bound fit, the lower R5 bound moved from about −237 MW to exactly 0 MW, because many training residuals are exactly zero. Only days with a residual below zero are flagged on the low side.
 
+## Confirmatory check (validation only, run after the grid)
+
+Walk-forward R13 (monthly refit) over 2023-07 to 2024-12: gain +6.1 MW over yesterday's value, 95% interval −2.4 to +14.9, on 537 days. This matches the frozen-by-fold result for the same days (+7.6 MW, interval −0.9 to +16.6). Neither interval excludes zero.
+
 ## Recipes not run (kept out of the grid)
 
 - A walk-forward monthly refit, and a separate shed/no-shed classifier, are planned as a second protocol after the test run.

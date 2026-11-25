@@ -1,3 +1,5 @@
+> **Superseded: first pass only.** These numbers come from `src/model.py` on 515 test days, using the first cleaning definition. The final scoring set is 573 days, and yesterday's value scores 121.4 MW there. The final results are in [`test_results.md`](test_results.md), and the validation search is in [`experiments.md`](experiments.md).
+
 # Results: daily national load shedding, 2025–2026
 
 Target: total load shedding across the nine BPDB regions on each day (MW), summed from the `*_load` columns.

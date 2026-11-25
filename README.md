@@ -1,12 +1,22 @@
 # Blackout Patterns
 
-Load shedding in Bangladesh, 2019 to 2026: cleaning a messy daily record of the national grid, and testing how well the cleaned data predicts next-day shedding.
+Load shedding in Bangladesh, 2019 to 2026. A data-mining class project: clean a messy daily record of the national grid, separate recording errors from real shedding, and test how well the cleaned data predicts next-day shedding.
 
-This is a class data-mining project. The goals are to clean the data, find out which records are errors and which are real, and check whether a model trained on the cleaned data predicts shedding in 2025–2026 better than simple baselines.
+## Findings
 
-## Result so far
+1. **The data needs a serious audit.** Of 2,428 daily rows, 202 fail first-pass checks: zero recorded maximum demand (30 days), regional copies (mostly 2019–2020), supply above demand, and residual outliers. The 2019–2024 rows in the extended dataset are smoothed, so they cannot be used as training data without going back to the raw version.
+2. **Yesterday's value is a strong baseline.** Daily load shedding changes in jumps, and "tomorrow equals today" is hard to beat. Across 17 recipes on validation data, nine model recipes are worse than it on average. Smoothing models (EWMA) are clearly worse.
+3. **A model trained on one regime loses to that baseline.** The frozen model, trained through 2024, is 7.8 MW worse than yesterday's value on 2025–26 (interval −14.9 to +3.5). In 2025 it is clearly worse (−15.4 MW, interval −24.0 to −8.2), because it predicts the 2022–2024 crisis level for a calmer year.
+4. **Refitting monthly recovers most of the gap.** The walk-forward version is 5.6 MW better than yesterday's value (interval −1.8 to +14.7). On validation data only, the same approach gives +6.1 MW (interval −2.4 to +14.9). Consistent, but not statistically clear.
 
-The cleaning step works, and removes 202 of 2,428 days. The prediction step does not beat the simplest baseline. Yesterday's shedding gives an error of 104.8 MW, against 122.8 MW for the cleaned model. Full numbers are in [`docs/results.md`](docs/results.md).
+Figures are in [`docs/figures/`](docs/figures/). Start with the timeline and the monthly error chart.
+
+| Figure | Shows |
+|---|---|
+| [01 timeline](docs/figures/01_timeline_shedding.png) | Shedding 2019–2026, with rows excluded from training marked |
+| [02 test predictions](docs/figures/02_test_predictions.png) | 2025–26 actual, yesterday's value, frozen and walk-forward models |
+| [03 monthly error](docs/figures/03_monthly_mae.png) | Monthly error of the three methods; shows the 2025 failure and the recovery |
+| [04 cleaning flags](docs/figures/04_cleaning_flags.png) | Counts of each error type in the training window |
 
 ## Data
 
@@ -15,39 +25,47 @@ Both datasets are from the Bangladesh Power Development Board (BPDB) daily gener
 | Dataset | Used for | Coverage | Link |
 |---|---|---|---|
 | Hossain, Nafs & Yeaser (2025), v2 | 2019–2024 training rows (deduplicated, not smoothed) | 2019-11-21 to 2024-12-30, 1,850 rows | [doi:10.17632/x7r7wdb39k.1](https://doi.org/10.17632/x7r7wdb39k.1) |
-| Extended dataset (2026) | 2025–2026 test rows (raw values) | 2019-11-21 to 2026-08-03, 2,428 rows, 45 columns | [Mendeley yp5y4thtfm](https://data.mendeley.com/datasets/yp5y4thtfm/1) |
+| Extended dataset (2026) | 2024-12-31 to 2026-08-03 rows (test period is 2025–26) | 2019-11-21 to 2026-08-03, 2,428 rows, 45 columns | [Mendeley yp5y4thtfm](https://data.mendeley.com/datasets/yp5y4thtfm/1) |
 
-The extended file's 2019–2024 rows are smoothed (they equal version 5 of the 2025 dataset). So training uses version 2, and the test period uses the raw extended rows. Checksums of the raw files are in [`data/MANIFEST_raw_sha256.txt`](data/MANIFEST_raw_sha256.txt).
+The extended file's 2019–2024 rows are smoothed (they equal version 5 of the 2025 dataset), so training uses version 2 instead. Checksums of the raw files are in [`data/MANIFEST_raw_sha256.txt`](data/MANIFEST_raw_sha256.txt).
 
 Target: total load shedding (MW) across nine regions on each day (the sum of the `*_load` columns).
 
 ## Cleaning
 
-Each rule flags rows; nothing is imputed. Full rules and counts are in [`docs/cleaning_summary.md`](docs/cleaning_summary.md), and every excluded day is listed in [`docs/excluded_days.md`](docs/excluded_days.md).
+Two cleaning definitions exist, and [`docs/cleaning_summary.md`](docs/cleaning_summary.md) explains the difference. The model results use definition B (`src/experiments.py`): R2, R4 and R5 exclude training rows, R3 masks regional features, and R5 bounds are fitted up to each cutoff. The 202-day list in [`docs/excluded_days.md`](docs/excluded_days.md) uses the first-pass definition A (`src/clean.py`).
 
-- **Zero maximum demand** (30 days): the report left the field blank.
-- **Regional copies** (144 days): two regions have identical demand on the same day. Almost all are in 2019–2020.
-- **Supply above demand** (2 days) and **residual outliers** (28 days) outside thresholds set from 2019–2024 only.
-- **Weekday label mismatches** (6 days): logged, kept, because the date is trusted.
-- **Missing calendar days** (20 days): left as gaps.
-
-Thresholds come from 2019–2024 only, and the same rules are applied to 2025–2026.
+Nothing is imputed. Calendar days with no record (20 days) are left as gaps.
 
 ## Method
 
-`src/model.py` predicts next-day shedding from data known before the day starts: lagged shedding (1, 2 and 7 days, 7- and 28-day means), lagged supply limits, lagged maximum demand and temperature, and day of week and month. Same-day values are excluded, so there is no leakage.
+- **Target:** next-day national shedding (MW).
+- **Features:** lagged shedding (1, 2 and 7 days, 7- and 28-day means), lagged supply limits, maximum demand and temperature, day of week and month. Nothing from the same day is used.
+- **Model:** gradient boosting predicting the change from yesterday (the best validation recipe, R13), trained on 2022 onward with clean rows.
+- **Scoring:** same test days for every method, against yesterday's value. Intervals use a moving-block bootstrap (7-day blocks).
+- **Protocols:** frozen (train through 2024) and walk-forward (refit monthly). The walk-forward version was added after the frozen result, so it is exploratory.
 
-Two gradient-boosting models use the same features: one trained on raw training rows, one on cleaned rows. Both are scored on the same cleaned 2025–2026 test days, against four baselines (zero, yesterday, same weekday last week, 7-day mean).
+Full recipe grid and validation results: [`docs/experiments.md`](docs/experiments.md). Test results: [`docs/test_results.md`](docs/test_results.md). The first-pass results, now superseded, are in [`docs/results.md`](docs/results.md).
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python3 src/clean.py    # writes data/processed/ and the cleaning summary
-python3 src/model.py    # writes data/processed/model_results.json and predictions
+python3 src/clean.py          # definition A: first-pass audit and excluded-days list
+python3 src/experiments.py    # validation grid (uses only 2019–2024)
+python3 src/test_run.py       # the single test run (frozen and walk-forward)
+python3 src/figures.py        # figures from saved predictions
 ```
 
-The raw files in `data/raw/` must be downloaded first (see the links above). They are not in this repository. Copy the two datasets into `data/raw/` with the same folder names as in `data/MANIFEST_raw_sha256.txt`.
+The raw files in `data/raw/` must be downloaded first. They are not in this repository. Copy the two datasets into `data/raw/` with the folder names listed in `data/MANIFEST_raw_sha256.txt`.
+
+## Limits
+
+- The test period has been used twice. Any further modelling would need a fresh holdout, such as data published after August 2026.
+- Tree models predict the change from yesterday, so they can go above the training maximum, but in 2026 they learned to pull back after high-shedding days.
+- Shedding is recorded per region, but the 2019–2020 regional split is unreliable (copied values). The models use only the national total.
+- The features do not include generation outages or fuel prices, which probably drive most of the day-to-day change.
+- The 17-recipe search means the validation winner is optimistic.
 
 ## Repository layout
 
@@ -58,31 +76,30 @@ Blackout-Patterns/
 ├── data/
 │   ├── MANIFEST_raw_sha256.txt   Checksums and sizes of the raw files
 │   ├── raw/                      Raw downloads (ignored by git)
-│   └── processed/                Cleaned table and predictions (ignored by git)
+│   └── processed/                Derived tables and predictions (ignored by git)
 ├── src/
-│   ├── clean.py                  Merges the sources, flags errors, writes the clean table
-│   └── model.py                  Features, baselines, models and scoring
+│   ├── clean.py                  Definition A: flags errors, writes the first-pass table
+│   ├── experiments.py            Definition B: validation-only recipe search
+│   ├── test_run.py               The single test run (frozen and walk-forward)
+│   └── figures.py                Figures from saved predictions
 └── docs/
-    ├── cleaning_summary.md       Rules, counts and source choice
-    ├── excluded_days.md          Every excluded day with reasons
-    └── results.md                Scores, by-year breakdown and next steps
+    ├── cleaning_summary.md       Both cleaning definitions, rules and counts
+    ├── excluded_days.md          Excluded days under definition A
+    ├── experiments.md            Recipe grid, validation results, confirmatory check
+    ├── test_results.md           Final test results and interpretation
+    ├── results.md                First pass (superseded)
+    └── figures/                  Four PNG figures
 ```
-
-## Limits
-
-- Shedding is recorded per region, and the regional copy problem means the 2019–2020 regional split is unreliable. The model uses only the national total.
-- Tree models cannot predict above the values seen in training. 2026 shedding is above every training year, so the model under-predicts 2026.
-- The features do not include generation outages or fuel prices, which probably drive most of the day-to-day change.
 
 ## Status
 
 - [x] Find, check and organise the two datasets
 - [x] Cleaning rules, with a log of every excluded day
-- [x] Baselines and models, scored on the same cleaned 2025–2026 days
-- [ ] Train on 2022–2024 only, to test whether the 2019–2021 zero-shedding years are hurting the fit
-- [ ] Linear model on lags as a stronger baseline
-- [ ] Uncertainty bands for the predictions
+- [x] Validation-only recipe search (17 recipes)
+- [x] Single test run, frozen and walk-forward
+- [x] Figures and findings
+- [ ] Fresh holdout, when data after August 2026 is published
 
 ## Source
 
-Data: Hossain, Md Ikrama; Nafs, Tasnia; Yeaser, Sakif (2025). *Structured Dataset of Daily Electricity Demand, Generation, Load Shedding, and Supply Constraints in Bangladesh (2019–2024).* Mendeley Data V1, [doi:10.17632/x7r7wdb39k.1](https://doi.org/10.17632/x7r7wdb39k.1). The extended 2019–2026 dataset is from the Mendeley record linked above and uses BPDB reports, and it is covered by CC BY 4.0 in the same way.
+Hossain, Md Ikrama; Nafs, Tasnia; Yeaser, Sakif (2025). *Structured Dataset of Daily Electricity Demand, Generation, Load Shedding, and Supply Constraints in Bangladesh (2019–2024).* Mendeley Data V1, [doi:10.17632/x7r7wdb39k.1](https://doi.org/10.17632/x7r7wdb39k.1). The extended 2019–2026 dataset is [Mendeley yp5y4thtfm](https://data.mendeley.com/datasets/yp5y4thtfm/1). Both are CC BY 4.0 and use BPDB daily reports.

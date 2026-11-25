@@ -1,5 +1,12 @@
 # Cleaning summary
 
+**Two cleaning definitions exist in this repository. Read this first.**
+
+- **Definition A (first pass, this file and `excluded_days.md`).** Implemented in `src/clean.py`. R3 excludes rows. R5 bounds are fitted with R3 rows removed, giving about −237 to +112 MW. Produces the 202 excluded days. Used only for the first-pass results in `results.md`.
+- **Definition B (used for every model result in `experiments.md` and `test_results.md`).** Implemented in `src/experiments.py`. R2, R4 and R5 exclude training rows. R3 masks regional-load features only and keeps the row. R5 bounds are fitted up to each fold's cutoff. For the frozen training window (2019-11-21 to 2024-12-31) this excludes 51 of 1,851 days with a target: 30 for R2, 1 for R4, 50 for R5 (reasons can overlap), with R5 bounds −236 to +113 MW. The 135 R3 days are kept.
+
+The 202-day list below describes definition A. To check the model results, use definition B.
+
 Run `python3 src/clean.py` to rebuild `data/processed/daily_flagged.csv` and `daily_clean.csv`.
 
 | Item | Count |
