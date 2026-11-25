@@ -42,3 +42,32 @@ Same-day inputs, validation folds, pooled. Run after H0–H5 to see which part o
 **What this says.** Humidity on its own adds about as much as temperature on its own, and together they add no more than either one. The large gain needs wind and cloud cover as well. That combination was not tested alone, so the source of the gain is not yet pinned down. A follow-up would need its own pre-registered recipes (for example, temperature with wind and cloud, without humidity), and it would use the same validation folds.
 
 **Conclusion so far.** Humidity is not a useful stand-alone indicator in this data. Same-day weather as a group clearly helps. Whether the group can be forecast a day ahead is the next question, and it has not been tested.
+
+## Follow-up: wind and cloud without humidity (pre-registered before running)
+
+Question: is the gain in the post-hoc ablation from wind and cloud cover, and does humidity add anything once they are included?
+
+| ID | Recipe | Same-day inputs | Lagged inputs |
+|---|---|---|---|
+| W1 | Base + same-day temperature, wind, cloud | Tmax, wind, cloud | none |
+| W2 | Base + same-day wind and cloud (no temperature) | wind, cloud | none |
+| W3 | Base + lagged temperature, wind, cloud | none | Tmax, wind, cloud (t−1) |
+
+Reference recipes already run: H0 (base), A (same-day temperature only), D (same-day temperature, humidity, wind, cloud, from the post-hoc ablation). Same selection rule and same folds.
+
+### Results of the follow-up (validation folds, pooled)
+
+| ID | Recipe | Mean MAPE | Gain (MW) | 95% CI (MW) |
+|---|---|---|---|---|
+| W1 | Same-day temperature, wind, cloud | 4.47% | +135 | [+55, +210] |
+| W2 | Same-day wind and cloud only | 4.52% | +132 | [+52, +207] |
+| W3 | Lagged temperature, wind, cloud | 5.17% | +51 | [−26, +117] |
+
+Reference: H0 base 4.95%; full same-day set (temperature, humidity, wind, cloud) 4.52%.
+
+**Reading.** Same-day wind and cloud cover, with no temperature or humidity, give the whole gain. Adding temperature or humidity changes nothing. Lagged versions of the same inputs do not reach a significant gain. So the signal is in the same-day weather regime, not in humidity and not in yesterday's weather.
+
+**Caveats.**
+- These are reanalysis values for the same day. They are an upper bound, not a forecast.
+- Cloud cover and wind may be standing in for monsoon and storm days, which also change demand for other reasons. Correlation with demand is not a causal explanation.
+- This is the third look at this validation design (H, ablation, W). The result is stable, but it has not been checked on a holdout.
