@@ -6,7 +6,7 @@ Sources were found with Consensus. Only the abstracts and excerpts listed here w
 
 - Hossain, Nafs & Yeaser (2025). *Multi-year dataset on daily electricity demand, generation, load shedding, and external conditions in Bangladesh.* Data in Brief. DOI 10.1016/j.dib.2025.112014. Descriptor for the 2019–2024 dataset (version 2 used here). Describes programmatic scraping of BPDB reports and the version history.
 - Rahman & Islam (2026). *Extended Bangladesh Electricity Dataset: Daily Demand, Generation, Load Shedding, and Supply Constraints (2019–2026).* Mendeley Data, DOI 10.17632/yp5y4thtfm. The extended file used for 2025–26. The Mendeley record lists these authors; the README inside the file does not name them, so cite from the record.
-- Mridha (2026). *Bangladesh Daily Electricity Demand, Generation and Load-Shedding Dataset (2016–2026).* Zenodo. Not yet checked. It may extend past August 2026, which would allow a fresh holdout.
+- Mridha (2026). *Bangladesh Daily Electricity Demand, Generation and Load-Shedding Dataset (2016–2026).* Zenodo, DOI 10.5281/zenodo.21783852. Checked: coverage ends 2026-08-01, so it does not give a fresh holdout. Used as an independent cross-check of our shedding target; see `docs/crosscheck_mridha.md`.
 
 ## Bangladesh demand forecasting (protocol to replicate)
 

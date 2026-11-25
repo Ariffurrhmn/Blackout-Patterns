@@ -27,6 +27,8 @@ Both datasets are from the Bangladesh Power Development Board (BPDB) daily gener
 | Hossain, Nafs & Yeaser (2025), v2 | 2019–2024 training rows (deduplicated, not smoothed) | 2019-11-21 to 2024-12-30, 1,850 rows | [doi:10.17632/x7r7wdb39k.1](https://doi.org/10.17632/x7r7wdb39k.1) |
 | Extended dataset (2026) | 2024-12-31 to 2026-08-03 rows (test period is 2025–26) | 2019-11-21 to 2026-08-03, 2,428 rows, 45 columns | [Mendeley yp5y4thtfm](https://data.mendeley.com/datasets/yp5y4thtfm/1) |
 
+Target cross-check: an independent zone-level extraction (Mridha 2026, Zenodo 10.5281/zenodo.21783852) agrees with our national target on 96% of days 2019–2024; see [`docs/crosscheck_mridha.md`](docs/crosscheck_mridha.md).
+
 The extended file's 2019–2024 rows are smoothed (they equal version 5 of the 2025 dataset), so training uses version 2 instead. Checksums of the raw files are in [`data/MANIFEST_raw_sha256.txt`](data/MANIFEST_raw_sha256.txt).
 
 Target: total load shedding (MW) across nine regions on each day (the sum of the `*_load` columns).
@@ -98,7 +100,8 @@ Blackout-Patterns/
 - [x] Validation-only recipe search (17 recipes)
 - [x] Single test run, frozen and walk-forward
 - [x] Figures and findings
-- [ ] Fresh holdout, when data after August 2026 is published
+- [x] Independent cross-check of the shedding target (96% agreement, see `docs/crosscheck_mridha.md`)
+- [ ] Fresh holdout, when data after 3 August 2026 is published (none found yet)
 
 ## Source
 
