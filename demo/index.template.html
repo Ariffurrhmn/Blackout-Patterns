@@ -60,7 +60,7 @@ input[type=range]{width:240px}
 <li>This page uses the F3 recipe, rebuilt from re-downloaded public data. It takes the <b>same-day</b> wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet). That weather is not known the day before, so this is not a true day-ahead forecast. The earlier F1 model used weather forecasts that could not be collected again.</li>
 <li>The rebuild scores 4.80% on the frozen test; the original run reported 4.77%. The small gap is most likely a different NASA download (zone coordinates were not recorded).</li>
 <li>2025 to 2026 was used earlier for load-shedding work and five demand days were printed, so it is no longer a clean holdout.</li>
-<li>Gain over "tomorrow = today" is clear in 2025. In 2026 it is not (the original F3 run showed a slightly negative 2026 gain).</li>
+<li>Gain over "tomorrow = today" for the built-in data (95% block bootstrap): overall +60 MW (-2 to +128, so it does not clearly exclude zero), 2025 +108 MW (+35 to +173), 2026 -21 MW (-142 to +95).</li>
 </ul></div>
 
 <section id="pipeline"></section>
@@ -202,14 +202,14 @@ function show(id){
 function renderPipeline(){
   const tr=DATA.filter(r=>r.split==="train"&&!Number.isNaN(r.demand_mw)&&hasFeat(r)).length, te=testRows().length;
   const steps=[
-    ["Sources","Raw files","BPDB daily reports (Mendeley, versions 2 and extended), BPDB same-morning forecast, same-day wind and cloud (NASA POWER). Checksums in data/MANIFEST_raw_sha256.txt."],
+    ["Sources","Raw files","BPDB daily reports (Mendeley, versions 2 and extended), BPDB same-morning forecast, same-day wind and cloud (NASA POWER). Mendeley and Zenodo files match data/MANIFEST_raw_sha256.txt; the NASA file was fetched again and does not."],
     [fmt(2428),"Rows in combined table","2019-11-21 to 2026-08-03 (docs/cleaning_summary.md). 20 calendar days have no record."],
     [fmt(202),"Days excluded, definition A","First-pass cleaning (src/clean.py): R2 max demand zero, R3 copied regions, R4, R5 outliers, R7 missing. Model uses definition B: 51 of 1,851 training days excluded."],
     ["Target","Daily demand","Load-shedding did not beat \"tomorrow = today\", so the target is demand, in MW."],
     [String(MODEL.features.length),"Features",MODEL.features.join(", ")],
     [String(MODEL.trees.length),"Trees","Gradient boosting, learning rate 0.05, at most 15 leaves per tree. Output is log(demand / 7-day mean); prediction = exp(output) x 7-day mean."],
     [fmt(tr),"Training days","Up to 2024-12-31. Days in this CSV with a demand value and every feature: "+fmt(tr)+"."],
-    [fmt(te),"Test days","2025-01-01 to 2026-08-03, scored once. Rows in this CSV with every method available."]
+    [fmt(te),"Test days","2025-01-01 to 2026-08-03. "+fmt(DATA.filter(r=>r.split==="test"&&!Number.isNaN(r.demand_mw)).length)+" days have a demand value; "+fmt(te)+" also have a prediction, yesterday and the BPDB forecast."]
   ];
   $("#pipeline").innerHTML=`<div class="card"><h3>Pipeline</h3><p class="sub">Raw data to cleaned table, to features, to the model, to a single frozen test. Counts in grey text come from the project notes; counts that change with the CSV are computed from it.</p></div>
   <div class="steps">${steps.map(s=>`<div class="card step"><div class="n">${s[0]}</div><div class="t">${s[1]}</div><small>${s[2]}</small></div>`).join("")}</div>
@@ -229,7 +229,7 @@ function renderAnalysis(){
   <div class="card"><h3>Dataset preview</h3><p class="sub">Click a column to sort. ${fmt(DATA.length)} rows.</p><div id="tbl" class="scroll"></div>
   <div class="row"><button class="b" id="prev">Previous</button><button class="b" id="next">Next</button><span id="pg"></span></div></div>`;
   const draw=()=>{
-    const rows=[...DATA].sort((a,b)=>{const x=a[sortKey],y=b[sortKey];if(typeof x==="string")return sortDir*x.localeCompare(y);return sortDir*((Number.isNaN(x)?1e18:x)-(Number.isNaN(y)?1e18:y));});
+    const rows=[...DATA].sort((a,b)=>{const x=a[sortKey],y=b[sortKey];if(typeof x==="string")return sortDir*x.localeCompare(y);if(Number.isNaN(x))return 1;if(Number.isNaN(y))return -1;return sortDir*(x-y);});
     const pages=Math.max(1,Math.ceil(rows.length/15));page=Math.min(page,pages-1);
     $("#tbl").innerHTML=`<table><thead><tr>${cols.map(c=>`<th class="s" data-k="${c}">${c}${c===sortKey?(sortDir>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${rows.slice(page*15,page*15+15).map(r=>`<tr>${cols.map(c=>`<td>${TEXTCOLS.has(c)?r[c]:fmt(r[c],c.includes("wind")?1:0)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
     $("#pg").textContent=`page ${page+1} of ${pages}`;
@@ -268,7 +268,7 @@ function renderPredict(){
       <div class="kv"><span>Actual demand</span><span>${fmt(r.demand_mw)} MW</span></div>
       <div class="kv"><span>Model error</span><span>${err>=0?"+":""}${fmt(err)} MW (${fmt(Math.abs(err)/r.demand_mw*100,2)}%)</span></div>
       <div class="kv"><span>Yesterday (persistence)</span><span>${fmt(r.demand_yesterday_mw)} MW (error ${fmt(Math.abs(r.demand_yesterday_mw-r.demand_mw))})</span></div>
-      <div class="kv"><span>BPDB same-morning forecast</span><span>${fmt(r.bpdb_forecast_mw)} MW (error ${fmt(Math.abs(r.bpdb_forecast_mw-r.demand_mw))})</span></div>`;
+      <div class="kv"><span>BPDB forecast (issued that morning)</span><span>${fmt(r.bpdb_forecast_mw)} MW (error ${fmt(Math.abs(r.bpdb_forecast_mw-r.demand_mw))})</span></div>`;
     };
     run();$("#sc").oninput=run;$("#sw").oninput=run;
     const i=DATA.indexOf(r),win=DATA.slice(Math.max(0,i-30),i+31);
@@ -295,16 +295,16 @@ function renderResults(){
   $("#results").innerHTML=`<div class="card"><h3>Test period, ${rows.length} days with every method available</h3>
   <p class="sub">Computed live from the loaded CSV on one shared set of days. MAPE is mean absolute percentage error. Gain is how many MW per day the average error shrinks versus "tomorrow = today" (lower error is better).</p>
   <div class="scroll"><table><thead><tr><th>Method</th><th>MAPE</th><th>MAE (MW)</th><th>Gain vs yesterday (MW)</th></tr></thead><tbody>
-  ${line("Yesterday (persistence)",M0,false)}${line("Model F3",M1,true)}${line("BPDB same-morning forecast (has more information)",M2,true)}</tbody></table></div>
-  <p class="sub">Original F3 run (docs/forecast_test.md, 569 days): F3 4.77%, persistence 5.48%, BPDB 4.41%, gain +65 MW (95% block bootstrap +1 to +131). The earlier F1 model (day-ahead weather forecasts) scored 4.52% and could not be rebuilt. This page is a rebuild, so its numbers can differ slightly.</p></div>
+  ${line("Yesterday (persistence)",M0,false)}${line("Model F3",M1,true)}${line("BPDB forecast issued that morning (a real forecast; F3 uses the day's actual weather)",M2,true)}</tbody></table></div>
+  <p class="sub">Original F3 run (docs/forecast_test.md, 569 days): F3 4.77%, persistence 5.48%, BPDB 4.41%, gain +65 MW (95% block bootstrap +1 to +131, barely above zero). Intervals for this rebuild are in the box at the top. The earlier F1 model (day-ahead weather forecasts) scored 4.52% and could not be rebuilt. This page is a rebuild, so its numbers can differ slightly.</p></div>
   <div class="card"><h3>By year</h3><div class="scroll"><table><thead><tr><th>Year</th><th>Days</th><th>Yesterday MAPE</th><th>F3 MAPE</th><th>BPDB MAPE</th><th>F3 gain (MW)</th></tr></thead><tbody>${yr}</tbody></table></div>
-  <p class="sub">In the original F3 run the 2026 gain was about zero (-11 MW). Small yearly differences are within noise.</p></div>
+  <p class="sub">In the original F3 run the 2026 gain was also about zero (-11 MW).</p></div>
   <div class="card"><h3>Error over time, 30-day average of absolute error</h3>${lineChart([
     {name:"Yesterday",color:"var(--b)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.demand_yesterday_mw-r.demand_mw)})),"e",30)},
     {name:"Model F3",color:"var(--a)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.pred_mw-r.demand_mw)})),"e",30)},
     {name:"BPDB",color:"var(--c)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.bpdb_forecast_mw-r.demand_mw)})),"e",30)}],{yLabel:"MW"})}</div>
   <div class="card"><h3>What this does and does not show</h3><ul>
-  <li>The model beats "tomorrow = today" on this test period, but BPDB's same-morning forecast is still slightly better and has more information.</li>
+  <li>On this test period the model has a lower error than "tomorrow = today", but the overall gain is small and its interval touches zero. The BPDB forecast issued that morning does better (gain +129 MW), even though F3 is given the day's actual weather and BPDB is not.</li>
   <li>The 2025 to 2026 period was used for earlier work, so treat the result as an estimate, not a clean holdout.</li>
   <li>Wind and cloud come from four zones and are the actual same-day values, so a real forecast would be less accurate.</li>
   <li>In the original project the forecast-weather version (F1) scored better than this one (F3), which was unexpected and not investigated.</li></ul></div>`;

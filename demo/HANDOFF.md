@@ -1,3 +1,5 @@
+> **Superseded.** The raw data was lost, so the demo was rebuilt with the F3 recipe. See `demo/README.md` for what is current. The text below describes the earlier F1 plan.
+
 # Handoff: demo for the teacher (continue on the local machine)
 
 Branch: `claude/hopeful-ramanujan-uxbrjq`. Do not open a pull request unless asked.

@@ -9,7 +9,7 @@ nb.cells = [
 M("""
 # Bangladesh daily demand: data to model
 
-Loads the dataset CSV, looks at it, trains the same model as the HTML demo, compares it with "tomorrow = today" and the BPDB same-morning forecast, and writes the model as JSON.
+Loads the dataset CSV, looks at it, trains the same model as the HTML demo, compares it with "tomorrow = today" and the BPDB forecast issued that morning, and writes the model as JSON.
 
 **Caveats.** This is the F3 recipe: it uses the same-day wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet), which are not known the day before. The F1 model with weather forecasts could not be rebuilt. 2025 to 2026 was used earlier for load-shedding work, so it is not a clean holdout. This is a working result, not a final model.
 """),
@@ -24,17 +24,21 @@ CANDIDATES = ["daily_demo.csv", "data/daily_demo.csv", "demo/data/daily_demo.csv
 for root, _, files in os.walk("/kaggle/input") if os.path.isdir("/kaggle/input") else []:
     CANDIDATES += [os.path.join(root, f) for f in files if f == "daily_demo.csv"]
 
+# 1) a local or Kaggle copy, 2) the public GitHub copy, 3) upload (Colab) as the last resort.
+# float_precision="round_trip" reads the numbers exactly; the default fast parser can be off by 1e-14,
+# which is enough to change a retrained tree model.
 path = next((p for p in CANDIDATES if os.path.exists(p)), None)
-if path is None:
-    try:                                   # Colab upload dialog
-        from google.colab import files
-        up = files.upload(); path = next(iter(up))
-    except ImportError:
-        pass
 if path is not None:
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, float_precision="round_trip")
 else:
-    df = pd.read_csv(io.StringIO(urllib.request.urlopen(URL).read().decode()))
+    try:
+        text = urllib.request.urlopen(URL, timeout=60).read().decode()
+        df = pd.read_csv(io.StringIO(text), float_precision="round_trip")
+    except Exception as err:
+        print("Could not download the CSV:", err)
+        from google.colab import files          # only exists on Colab
+        up = files.upload()
+        df = pd.read_csv(io.BytesIO(next(iter(up.values()))), float_precision="round_trip")
 df["date"] = pd.to_datetime(df["date"])
 print(df.shape, df["date"].min().date(), "to", df["date"].max().date())
 df.head()
@@ -70,8 +74,8 @@ df["pred_retrained_mw"] = np.nan
 df.loc[has, "pred_retrained_mw"] = np.exp(model.predict(df.loc[has, FEATURES])) * df.loc[has, "m7_mw"]
 if "pred_mw" in df:
     diff = (df["pred_retrained_mw"] - df["pred_mw"]).abs()
-    print("difference vs the exported model's predictions (MW): mean", round(diff.mean(), 1), ", max", round(diff.max(), 1))
-    print("(not identical to the exported model. Gradient boosting is sensitive to tiny numeric differences, so a retrain from the CSV does not reproduce the trees exactly; its test scores are very close.)")
+    print("difference vs the exported model's predictions (MW): mean", round(diff.mean(), 3), ", max", round(diff.max(), 3))
+    print("(near zero when scikit-learn versions match; another version can give small differences)")
 '''),
 M("## 4. Evaluate on the test period\nOne shared set of test days is used for every method. MAPE is mean absolute percentage error. Gain is the drop in mean absolute error versus yesterday."),
 C('''
@@ -80,10 +84,10 @@ def score(col):
     e = (test[col] - test["demand_mw"]).abs()
     return pd.Series({"MAPE %": (e / test["demand_mw"]).mean() * 100, "MAE MW": e.mean()})
 res = pd.DataFrame({"Yesterday": score("demand_yesterday_mw"), "Model (retrained here)": score("pred_retrained_mw"),
-                    "BPDB same-morning": score("bpdb_forecast_mw")}).T
+                    "BPDB forecast issued that morning": score("bpdb_forecast_mw")}).T
 res["Gain vs yesterday MW"] = res.loc["Yesterday", "MAE MW"] - res["MAE MW"]
 print(len(test), "test days"); display(res.round(2))
-print("Original F3 run, docs/forecast_test.md (569 days): model 4.77%, yesterday 5.48%, BPDB 4.41%, gain +65 MW (95% CI +1 to +131). This dataset is a rebuild, so small differences are expected.")
+print("Original F3 run, docs/forecast_test.md (569 days): model 4.77%, yesterday 5.48%, BPDB 4.41%, gain +65 MW (95% CI +1 to +131). This dataset is a rebuild, so small differences are expected. The gain is small and its interval is near zero; the BPDB forecast, issued that morning, does better.")
 by = test.assign(year=test["date"].dt.year).groupby("year").apply(lambda g: pd.Series({
     "days": len(g),
     "yesterday MAPE %": ((g["demand_yesterday_mw"]-g["demand_mw"]).abs()/g["demand_mw"]).mean()*100,
