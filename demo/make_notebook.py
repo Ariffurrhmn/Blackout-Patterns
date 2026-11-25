@@ -9,7 +9,7 @@ nb.cells = [
 M("""
 # Bangladesh daily demand: data to model
 
-Loads the dataset CSV, looks at it, trains the same model as the HTML demo, compares it with "tomorrow = today" and the BPDB forecast issued that morning, and writes the model as JSON.
+Loads the same `daily_demo.csv` the HTML app loads in step 1, trains the model, compares it with "tomorrow = today" and the BPDB forecast issued that morning, and writes `model_f3.json`, the file the app uses in step 2.
 
 **Caveats.** This is the F3 recipe: it uses the same-day wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet), which are not known the day before. The F1 model with weather forecasts could not be rebuilt. 2025 to 2026 was used earlier for load-shedding work, so it is not a clean holdout. This is a working result, not a final model.
 """),
@@ -96,7 +96,7 @@ display(by.round(2))
 test.set_index("date")[["demand_mw","pred_retrained_mw","demand_yesterday_mw"]].iloc[-120:].plot(figsize=(11,4), title="Last 120 test days (MW)")
 plt.show()
 '''),
-M("## 5. Export the model as JSON\nThe HTML demo walks these trees in JavaScript. `_predictors` is a private scikit-learn attribute, so the export is checked against `predict` before it is written."),
+M("## 5. Export the model for the app\nThe app walks these trees in JavaScript. It reads `features`, `baseline`, `trees` and `trained_through`; its inputs are the 13 feature columns of `daily_demo.csv` and the prediction is `exp(sum) x m7_mw`. `_predictors` is a private scikit-learn attribute, so the export is checked against `predict` before it is written."),
 C('''
 import json, math
 def export(m):
@@ -107,7 +107,10 @@ def export(m):
         trees.append([{"v": float(n["value"]), "f": int(n["feature_idx"]), "t": float(n["num_threshold"]),
                        "l": int(n["left"]), "r": int(n["right"]), "leaf": bool(n["is_leaf"]),
                        "mgl": bool(n["missing_go_to_left"])} for n in nodes])
-    return {"features": FEATURES, "baseline": float(m._baseline_prediction.ravel()[0]), "trees": trees}
+    return {"name": "F3: gradient boosting on log(demand / 7-day mean), same-day reanalysis wind and cloud",
+            "trained_through": str(TRAIN_END.date()), "features": FEATURES,
+            "baseline": float(m._baseline_prediction.ravel()[0]), "trees": trees,
+            "target": "log(demand_t / m7_t)", "output": "exp(prediction) * m7_t"}
 
 def walk(mod, x):
     t = mod["baseline"]
@@ -124,9 +127,9 @@ sample = df.loc[has & ok].head(200)
 mx = max(abs(walk(exported, r.tolist()) - p) for r, p in zip(sample[FEATURES].values, model.predict(sample[FEATURES])))
 print("max difference, tree walk vs predict:", mx)
 assert mx < 1e-9
-with open("model_f3_retrained.json", "w") as f:
+with open("model_f3.json", "w") as f:
     json.dump(exported, f)
-print("wrote model_f3_retrained.json (on Colab, download it from the file panel)")
+print("wrote model_f3.json. Put it in demo/model/ and run: python demo/make_html.py (on Colab, download it from the file panel first)")
 '''),
 ]
 nb.metadata["kernelspec"] = {"display_name": "Python 3", "language": "python", "name": "python3"}

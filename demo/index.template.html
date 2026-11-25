@@ -3,330 +3,307 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bangladesh daily demand: data to model</title>
+<title>Electricity Demand Model</title>
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--ink:#1c1c1a;--mute:#6b6b66;--line:#dcdcd6;--a:#2a6fb0;--b:#d9822b;--c:#2f9e6b;--d:#b0443f;--warn:#fff4dc;--warnl:#e6c27a}
-@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#212120;--ink:#ecece8;--mute:#9a9a94;--line:#3a3a37;--a:#6aa8e6;--b:#eba15a;--c:#5cc795;--d:#e57d77;--warn:#33291a;--warnl:#6b5524}}
+:root{
+  --bg:#f6f6f4; --surface:#ffffff; --text:#1c1d1f; --muted:#62656b; --line:#e2e2de;
+  --accent:#1f5fa8; --accent-weak:#e6eef8; --grid:#ececea; --disabled:#a3a5aa;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#151617; --surface:#1e1f21; --text:#ececec; --muted:#9b9ea4; --line:#303236;
+    --accent:#6ea4e6; --accent-weak:#1f2c3c; --grid:#2a2c2f; --disabled:#5d6066;
+  }
+}
+:root{color-scheme:light dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:20px 24px 8px}
-h1{font-size:22px;margin:0 0 4px}
-.sub{color:var(--mute);margin:0}
-nav{display:flex;gap:4px;padding:8px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-nav button{background:none;border:0;padding:8px 14px;font:inherit;color:var(--mute);cursor:pointer;border-bottom:2px solid transparent}
-nav button.on{color:var(--ink);border-color:var(--a);font-weight:600}
-main{padding:16px 24px 40px;max-width:1100px;margin:auto}
-section{display:none}section.on{display:block}
-.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:0 0 14px}
-.card h3{margin:0 0 6px;font-size:16px}
-.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.step .n{font-size:26px;font-weight:700;color:var(--a)}
-.step .t{font-weight:600}
-.step small{color:var(--mute);display:block}
-.warn{background:var(--warn);border:1px solid var(--warnl);border-radius:8px;padding:10px 14px;margin:0 0 14px}
-.warn ul{margin:4px 0 0 18px;padding:0}
-svg{width:100%;height:auto;display:block}
-svg text{fill:var(--mute);font-size:11px}
-.legend{display:flex;gap:14px;font-size:13px;color:var(--mute);flex-wrap:wrap;margin-top:4px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left}
-th.s{cursor:pointer;user-select:none}
-th.s:hover{color:var(--a)}
-.scroll{overflow:auto}
-.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0}
-select,input[type=date],input[type=file],button.b{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
-button.b{cursor:pointer}
-input[type=range]{width:240px}
-.big{font-size:28px;font-weight:700}
-.kv{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:3px 0}
-.kv span:first-child{color:var(--mute)}
-.pill{padding:1px 8px;border-radius:10px;background:var(--line);font-size:12px}
-#status{font-size:13px;color:var(--mute)}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:960px;margin:0 auto;padding:48px 24px 72px}
+h1{font-size:26px;font-weight:600;margin:0 0 40px;letter-spacing:-.01em}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px;margin-bottom:24px}
+.step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.num{font-size:13px;font-weight:600;color:var(--accent);min-width:1.2em}
+h2{font-size:18px;font-weight:600;margin:0}
+.lead{color:var(--muted);margin:0 0 24px}
+button{font:inherit;cursor:pointer;border-radius:6px;padding:9px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff}
+button.secondary{background:transparent;color:var(--accent)}
+button:disabled{cursor:not-allowed;opacity:.5}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.status{color:var(--muted);font-size:14px}
+.error{color:#b3261e}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:32px 0 28px}
+.kpi .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .k{font-size:13px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:3fr 2fr;gap:28px}
+.chart h3{font-size:14px;font-weight:600;margin:0 0 8px}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{fill:var(--muted);font-size:11px;font-family:inherit}
+.form{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+input{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);font-variant-numeric:tabular-nums}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+input:disabled{color:var(--disabled);background:var(--bg)}
+.result{margin-top:28px;padding-top:24px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:end}
+.result .main .v{color:var(--accent);font-size:28px}
+.locked{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:6px;background:var(--bg);color:var(--muted);font-size:14px;margin-bottom:20px}
+.locked svg{flex:none}
+.is-locked .form{opacity:.55}
+.hidden{display:none!important}
+.foot{color:var(--muted);font-size:13px;margin-top:20px}
+@media (max-width:720px){
+  main{padding:28px 16px 48px}
+  h1{font-size:22px;margin-bottom:24px}
+  .step{padding:20px 16px}
+  .kpis,.result{grid-template-columns:repeat(2,1fr)}
+  .charts{grid-template-columns:1fr}
+  .form{grid-template-columns:1fr 1fr}
+}
+@media (max-width:420px){ .form{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
-<header>
-  <h1>Bangladesh daily electricity demand: from raw data to a model</h1>
-  <p class="sub">One page, no server. Data and the trained model are inside this file. <span id="status"></span></p>
-</header>
-<nav id="tabs"></nav>
 <main>
-<div class="warn"><b>Read before using the numbers.</b>
-<ul>
-<li>This is a working result, not a final or perfect model.</li>
-<li>This page uses the F3 recipe, rebuilt from re-downloaded public data. It takes the <b>same-day</b> wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet). That weather is not known the day before, so this is not a true day-ahead forecast. The earlier F1 model used weather forecasts that could not be collected again.</li>
-<li>The rebuild scores 4.80% on the frozen test; the original run reported 4.77%. The small gap is most likely a different NASA download (zone coordinates were not recorded).</li>
-<li>2025 to 2026 was used earlier for load-shedding work and five demand days were printed, so it is no longer a clean holdout.</li>
-<li>Gain over "tomorrow = today" for the built-in data (95% block bootstrap): overall +60 MW (-2 to +128, so it does not clearly exclude zero), 2025 +108 MW (+35 to +173), 2026 -21 MW (-142 to +95).</li>
-</ul></div>
+  <h1>Bangladesh Daily Electricity Demand</h1>
 
-<section id="pipeline"></section>
-<section id="analysis"></section>
-<section id="predict"></section>
-<section id="results"></section>
+  <section class="step" id="s1">
+    <div class="step-head"><span class="num">1</span><h2>Data</h2></div>
+    <p class="lead">Load the daily dataset to see what it contains.</p>
+    <div class="actions" id="loadBar">
+      <button id="loadBtn" type="button">Load dataset</button>
+      <button id="fileBtn" type="button" class="secondary">Choose CSV file</button>
+      <input id="file" type="file" accept=".csv,text/csv" class="hidden">
+      <span class="status" id="loadStatus"></span>
+    </div>
+    <div id="dataView" class="hidden">
+      <div class="kpis" id="kpis"></div>
+      <div class="charts">
+        <div class="chart"><h3>Daily demand, 7-day average (MW)</h3><div id="c1"></div></div>
+        <div class="chart"><h3>Average demand by month (MW)</h3><div id="c2"></div></div>
+      </div>
+    </div>
+  </section>
 
-<div class="card"><h3>Use a different CSV</h3>
-<p class="sub">Pick a CSV with the same columns as the built-in one. Everything on all tabs is recomputed in your browser; nothing is uploaded.</p>
-<input type="file" id="file" accept=".csv,text/csv"> <button class="b" id="reset">Back to built-in data</button></div>
+  <section class="step is-locked" id="s2">
+    <div class="step-head"><span class="num">2</span><h2>Predict</h2></div>
+    <p class="lead">Pick a day and adjust the inputs. The trained model estimates that day's demand.</p>
+    <div class="locked" id="lockMsg">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      Load the dataset in step 1 to unlock.
+    </div>
+    <form class="form" id="form" autocomplete="off" onsubmit="return false">
+      <div><label for="fDate">Day</label><input id="fDate" type="date" disabled></div>
+      <div><label for="fY1">Demand yesterday (MW)</label><input id="fY1" type="number" min="1" step="1" disabled></div>
+      <div><label for="fY7">Demand 7 days earlier (MW)</label><input id="fY7" type="number" min="1" step="1" disabled></div>
+      <div><label for="fM7">Average of previous 7 days (MW)</label><input id="fM7" type="number" min="1" step="1" disabled></div>
+      <div><label for="fWind">Wind on the day (m/s)</label><input id="fWind" type="number" min="0" step="0.1" disabled></div>
+      <div><label for="fCloud">Cloud cover on the day (%)</label><input id="fCloud" type="number" min="0" max="100" step="1" disabled></div>
+    </form>
+    <div class="result hidden" id="result"></div>
+    <p class="foot" id="modelNote"></p>
+  </section>
 </main>
 
 <script>
 const CSV_TEXT = /*__CSV__*/"";
 const MODEL = /*__MODEL__*/null;
-</script>
-<script>
-"use strict";
-const $ = (s, r=document) => r.querySelector(s);
-const fmt = (x, d=0) => (x==null||isNaN(x)) ? "n/a" : x.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
-const TABS = [["pipeline","Pipeline"],["analysis","Data analysis"],["predict","Predict"],["results","Results"]];
-const TEXTCOLS = new Set(["date","split","quality_flag"]);
-let DATA = [];          // array of row objects
-let SOURCE = "built-in";
+
+const $ = s => document.querySelector(s);
+const fmt = (v, d = 0) => Number.isFinite(v) ? v.toLocaleString("en-US", {minimumFractionDigits: d, maximumFractionDigits: d}) : "–";
+const TEXT_COLS = new Set(["date", "split", "quality_flag"]);
+const REQUIRED = ["date", "demand_mw", "demand_yesterday_mw", "m7_mw"].concat(MODEL ? MODEL.features : []);
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let ROWS = null, BY_DATE = null, ROW = null, DIRTY = new Set();
 
 /* ---------- CSV ---------- */
-function parseCSV(text){
-  const rows=[]; let cur=[], f="", q=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(q){ if(ch==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=ch; }
-    else if(ch==='"') q=true;
-    else if(ch===','){cur.push(f);f="";}
-    else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n') i++; cur.push(f);f=""; if(cur.length>1||cur[0]!=="") rows.push(cur); cur=[]; }
-    else f+=ch;
+function parseCSV(text) {
+  const rows = []; let cur = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ",") { cur.push(f); f = ""; }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; cur.push(f); f = ""; if (cur.length > 1 || cur[0] !== "") rows.push(cur); cur = []; }
+    else f += ch;
   }
-  if(f!==""||cur.length){cur.push(f);rows.push(cur);}
-  const head=rows.shift();
-  return rows.map(r=>{const o={};head.forEach((h,i)=>{const v=r[i]??""; o[h]=TEXTCOLS.has(h)?v:(v===""?NaN:parseFloat(v));});o.t=Date.parse(o.date);return o;});
+  if (f !== "" || cur.length) { cur.push(f); rows.push(cur); }
+  const head = (rows.shift() || []).map(h => h.trim());
+  const missing = REQUIRED.filter(c => !head.includes(c));
+  if (missing.length) throw new Error("Missing columns: " + missing.join(", "));
+  const out = rows.map(r => {
+    const o = {};
+    head.forEach((h, i) => { const v = (r[i] ?? "").trim(); o[h] = TEXT_COLS.has(h) ? v : (v === "" ? NaN : parseFloat(v)); });
+    return o;
+  }).filter(o => /^\d{4}-\d{2}-\d{2}$/.test(o.date));
+  if (!out.length) throw new Error("No rows with a valid date.");
+  out.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  return out;
 }
 
 /* ---------- model: tree walk, same rule as scikit-learn ---------- */
-function predictLog(x){
-  let total=MODEL.baseline;
-  for(const tree of MODEL.trees){
-    let i=0;
-    for(;;){
-      const n=tree[i];
-      if(n.leaf){total+=n.v;break;}
-      const v=x[n.f];
-      if(v===null||v===undefined||Number.isNaN(v)) i=n.mgl?n.l:n.r;
-      else i=(v<=n.t)?n.l:n.r;
+function predictLog(x) {
+  let total = MODEL.baseline;
+  for (const tree of MODEL.trees) {
+    let i = 0;
+    for (;;) {
+      const n = tree[i];
+      if (n.leaf) { total += n.v; break; }
+      const v = x[n.f];
+      i = Number.isNaN(v) ? (n.mgl ? n.l : n.r) : (v <= n.t ? n.l : n.r);
     }
   }
   return total;
 }
-const featVec = r => MODEL.features.map(k=>r[k]);
-const predictMW = (x,m7) => Math.exp(predictLog(x))*m7;
-const hasFeat = r => MODEL.features.every(k=>!Number.isNaN(r[k])) && !Number.isNaN(r.m7_mw);
+const usable = r => MODEL.features.every(k => Number.isFinite(r[k])) && Number.isFinite(r.m7_mw);
 
-/* ---------- stats ---------- */
-function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:NaN;}
-function rolling(rows,key,w){ // trailing mean over available values
-  const out=[]; const buf=[];
-  rows.forEach(r=>{const v=r[key]; buf.push(v); if(buf.length>w) buf.shift();
-    const ok=buf.filter(x=>!Number.isNaN(x)); out.push([r.t, ok.length>=Math.ceil(w/2)?mean(ok):NaN]);});
+/* ---------- charts (inline SVG) ---------- */
+function niceTicks(lo, hi, n) {
+  const step = (hi - lo) / n, p = Math.pow(10, Math.floor(Math.log10(step)));
+  const m = [1, 2, 2.5, 5, 10].find(k => k * p >= step) * p;
+  const out = []; for (let v = Math.ceil(lo / m) * m; v <= hi + 1e-9; v += m) out.push(v);
   return out;
 }
-function testRows(){ // one shared set of rows for every method
-  return DATA.filter(r=>r.split==="test"&&[r.demand_mw,r.pred_mw,r.demand_yesterday_mw,r.bpdb_forecast_mw].every(v=>!Number.isNaN(v)));
+function svgEl(w, h, body) { return `<svg viewBox="0 0 ${w} ${h}" role="img">${body}</svg>`; }
+function yAxis(ticks, y, x0, x1) {
+  return ticks.map(v => `<line x1="${x0}" x2="${x1}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/>` +
+    `<text x="${x0 - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`).join("");
 }
-function metrics(rows,key){
-  const e=rows.map(r=>r[key]-r.demand_mw);
-  return {n:rows.length, mape:mean(rows.map(r=>Math.abs(r[key]-r.demand_mw)/r.demand_mw))*100, mae:mean(e.map(Math.abs))};
-}
-
-/* ---------- SVG charts ---------- */
-const W=860,H=300,M={l:56,r:14,t:10,b:26};
-function niceTicks(lo,hi,n=5){const s=(hi-lo)/n;const p=Math.pow(10,Math.floor(Math.log10(s)));const m=[1,2,2.5,5,10].find(k=>k*p>=s)*p;const a=Math.floor(lo/m)*m;const out=[];for(let v=a;v<=hi+m*0.5;v+=m)out.push(v);return out;}
-function lineChart(series,opt={}){
-  const pts=series.flatMap(s=>s.pts.filter(p=>!Number.isNaN(p[1])));
-  if(!pts.length) return "<p class='sub'>No data.</p>";
-  let x0=Math.min(...pts.map(p=>p[0])),x1=Math.max(...pts.map(p=>p[0]));
-  let y0=Math.min(...pts.map(p=>p[1])),y1=Math.max(...pts.map(p=>p[1]));
-  const yt=niceTicks(y0,y1);y0=Math.min(y0,yt[0]);y1=Math.max(y1,yt[yt.length-1]);
-  const X=v=>M.l+(v-x0)/(x1-x0||1)*(W-M.l-M.r), Y=v=>H-M.b-(v-y0)/(y1-y0||1)*(H-M.t-M.b);
-  let g="";
-  yt.forEach(v=>{g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${M.l-6}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`;});
-  const d0=new Date(x0),d1=new Date(x1),span=(x1-x0)/864e5;
-  if(span>900){for(let y=d0.getUTCFullYear()+1;y<=d1.getUTCFullYear();y++){const t=Date.UTC(y,0,1);g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle">${y}</text>`;}}
-  else{const k=Math.max(1,Math.round(span/6));for(let i=0;i<=6;i++){const t=x0+i*k*864e5;if(t>x1)break;g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle">${new Date(t).toISOString().slice(5,10)}</text>`;}}
-  if(opt.yLabel) g+=`<text x="${M.l}" y="9">${opt.yLabel}</text>`;
-  series.forEach(s=>{
-    if(s.dots){s.pts.forEach(p=>{if(!Number.isNaN(p[1]))g+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="${s.r||3}" fill="${s.color}"/>`;});return;}
-    let d="",pen=false;s.pts.forEach(p=>{if(Number.isNaN(p[1])){pen=false;return;}d+=(pen?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1);pen=true;});
-    g+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.w||1.6}" ${s.dash?'stroke-dasharray="5 4"':""}/>`;
+function lineChart(rows, W) {
+  const H = 240, L = 52, R = 10, T = 10, B = 26;
+  const pts = []; const win = [];
+  rows.forEach(r => {
+    win.push(r.demand_mw); if (win.length > 7) win.shift();
+    const ok = win.filter(Number.isFinite);
+    if (ok.length >= 4) pts.push([Date.parse(r.date), ok.reduce((s, v) => s + v, 0) / ok.length]);
   });
-  if(opt.vline!=null&&opt.vline>=x0&&opt.vline<=x1) g+=`<line x1="${X(opt.vline)}" x2="${X(opt.vline)}" y1="${M.t}" y2="${H-M.b}" stroke="var(--mute)" stroke-dasharray="3 3"/>`;
-  const leg=`<div class="legend">${series.map(s=>`<span><i style="background:${s.color}"></i>${s.name}</span>`).join("")}</div>`;
-  return `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg>${leg}`;
+  if (pts.length < 2) return "";
+  const t0 = pts[0][0], t1 = pts[pts.length - 1][0];
+  const vs = pts.map(p => p[1]); const ticks = niceTicks(Math.min(...vs), Math.max(...vs), 4);
+  const lo = Math.min(ticks[0], Math.min(...vs)), hi = Math.max(ticks[ticks.length - 1], Math.max(...vs));
+  const x = t => L + (t - t0) / (t1 - t0) * (W - L - R), y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const path = pts.map((p, i) => (i ? "L" : "M") + x(p[0]).toFixed(1) + " " + y(p[1]).toFixed(1)).join("");
+  let xl = ""; const y0 = new Date(t0).getUTCFullYear(), y1 = new Date(t1).getUTCFullYear();
+  for (let yr = y0 + 1; yr <= y1; yr += W < 420 ? 2 : 1) { const tx = x(Date.UTC(yr, 0, 1)); xl += `<text x="${tx}" y="${H - 6}" text-anchor="middle">${yr}</text>`; }
+  return svgEl(W, H, yAxis(ticks, y, L, W - R) + xl +
+    `<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/>`);
 }
-function scatter(pts,xl,yl){
-  pts=pts.filter(p=>!Number.isNaN(p[0])&&!Number.isNaN(p[1]));
-  if(!pts.length) return "<p class='sub'>No data.</p>";
-  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
-  const xt=niceTicks(Math.min(...xs),Math.max(...xs)),yt=niceTicks(Math.min(...ys),Math.max(...ys));
-  const x0=xt[0],x1=xt[xt.length-1],y0=yt[0],y1=yt[yt.length-1];
-  const X=v=>M.l+(v-x0)/(x1-x0||1)*(W-M.l-M.r),Y=v=>H-M.b-(v-y0)/(y1-y0||1)*(H-M.t-M.b);
-  let g="";
-  yt.forEach(v=>g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${M.l-6}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`);
-  xt.forEach(v=>g+=`<text x="${X(v)}" y="${H-8}" text-anchor="middle">${fmt(v)}</text>`);
-  g+=`<text x="${M.l}" y="9">${yl} against ${xl}</text>`;
-  pts.forEach(p=>g+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="2.2" fill="var(--a)" fill-opacity=".35"/>`);
-  // least-squares line
-  const mx=mean(xs),my=mean(ys);let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p[0]-mx)*(p[1]-my);sxx+=(p[0]-mx)**2;});
-  const b=sxy/sxx,a=my-b*mx;
-  g+=`<line x1="${X(x0)}" y1="${Y(a+b*x0)}" x2="${X(x1)}" y2="${Y(a+b*x1)}" stroke="var(--b)" stroke-width="2"/>`;
-  const r=sxy/Math.sqrt(sxx*pts.reduce((s,p)=>s+(p[1]-my)**2,0));
-  return `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg><div class="legend"><span>${pts.length} days, correlation ${r.toFixed(2)}. Correlation is not cause.</span></div>`;
-}
-function barChart(items){
-  const mx=Math.max(...items.map(i=>i[1]),1),h=26;
-  let g="";items.forEach((it,k)=>{const w=(it[1]/mx)*(W-300);g+=`<text x="230" y="${k*h+17}" text-anchor="end" style="fill:var(--ink);font-size:13px">${it[0]}</text><rect x="240" y="${k*h+4}" width="${Math.max(w,1)}" height="16" rx="3" fill="var(--a)"/><text x="${246+w}" y="${k*h+17}" style="font-size:12px">${fmt(it[1])}</text>`;});
-  return `<svg viewBox="0 0 ${W} ${items.length*h+4}">${g}</svg>`;
+function monthChart(rows, W) {
+  const H = 240, L = 52, R = 6, T = 10, B = 26;
+  const sum = Array(12).fill(0), cnt = Array(12).fill(0);
+  rows.forEach(r => { if (Number.isFinite(r.demand_mw)) { const m = +r.date.slice(5, 7) - 1; sum[m] += r.demand_mw; cnt[m]++; } });
+  const avg = sum.map((s, i) => cnt[i] ? s / cnt[i] : NaN); const ok = avg.filter(Number.isFinite);
+  if (!ok.length) return "";
+  const ticks = niceTicks(0, Math.max(...ok), 4); const hi = Math.max(ticks[ticks.length - 1], Math.max(...ok));
+  const y = v => T + (hi - v) / hi * (H - T - B); const bw = (W - L - R) / 12;
+  const bars = avg.map((v, i) => Number.isFinite(v) ?
+    `<rect x="${L + i * bw + bw * .18}" y="${y(v)}" width="${bw * .64}" height="${y(0) - y(v)}" fill="var(--accent)" rx="1"><title>${MONTHS[i]}: ${fmt(v)} MW</title></rect>` : "").join("");
+  const lab = MONTHS.map((m, i) => i % 2 === 0 ? `<text x="${L + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${m}</text>` : "").join("");
+  return svgEl(W, H, yAxis(ticks, y, L, W - R) + bars + lab);
 }
 
-/* ---------- tabs ---------- */
-function renderTabs(){
-  $("#tabs").innerHTML=TABS.map(([id,l])=>`<button data-t="${id}">${l}</button>`).join("");
-  $("#tabs").onclick=e=>{const t=e.target.dataset.t;if(t)show(t);};
+/* ---------- step 1 ---------- */
+function showData() {
+  const d = ROWS.filter(r => Number.isFinite(r.demand_mw)).map(r => r.demand_mw);
+  const peak = Math.max(...d), avg = d.reduce((s, v) => s + v, 0) / d.length;
+  const kpi = (v, k) => `<div class="kpi"><div class="v">${v}</div><div class="k">${k}</div></div>`;
+  $("#kpis").innerHTML =
+    kpi(fmt(ROWS.length), "Days") +
+    kpi(ROWS[0].date.slice(0, 4) + "–" + ROWS[ROWS.length - 1].date.slice(0, 4), "Period") +
+    kpi(fmt(avg), "Average demand (MW)") +
+    kpi(fmt(peak), "Peak demand (MW)");
+  $("#dataView").classList.remove("hidden");
+  drawCharts();
 }
-function show(id){
-  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===id));
-  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));
-  try{localStorage.setItem("tab",id);}catch(e){}
+// Charts are drawn at the container's pixel width so axis text stays readable on phones.
+function drawCharts() {
+  if (!ROWS) return;
+  $("#c1").innerHTML = lineChart(ROWS, Math.max(260, $("#c1").clientWidth));
+  $("#c2").innerHTML = monthChart(ROWS, Math.max(240, $("#c2").clientWidth));
+}
+let lastW = 0;
+addEventListener("resize", () => { if (innerWidth !== lastW) { lastW = innerWidth; drawCharts(); } });
+
+/* ---------- step 2 ---------- */
+const F = { y1: "#fY1", y7: "#fY7", m7: "#fM7", wind: "#fWind", cloud: "#fCloud" };
+function unlock() {
+  $("#s2").classList.remove("is-locked");
+  $("#lockMsg").classList.add("hidden");
+  document.querySelectorAll("#form input").forEach(i => i.disabled = false);
+  const days = ROWS.filter(usable);
+  $("#fDate").min = days[0].date; $("#fDate").max = days[days.length - 1].date;
+  const test = days.filter(r => r.split === "test");
+  if (MODEL.trained_through) {
+    const scored = test.filter(r => Number.isFinite(r.demand_mw));
+    const mape = rs => rs.reduce((s, r) => s + Math.abs(r.p - r.demand_mw) / r.demand_mw, 0) / rs.length * 100;
+    const model = scored.map(r => ({ demand_mw: r.demand_mw, p: Math.exp(predictLog(MODEL.features.map(k => r[k]))) * r.m7_mw }));
+    const yest = scored.filter(r => Number.isFinite(r.demand_yesterday_mw)).map(r => ({ demand_mw: r.demand_mw, p: r.demand_yesterday_mw }));
+    $("#modelNote").textContent = `Gradient boosting, ${MODEL.trees.length} trees, trained on days up to ${MODEL.trained_through}.` +
+      (scored.length ? ` Average error after that date: ${fmt(mape(model), 1)}% (using yesterday's demand: ${fmt(mape(yest), 1)}%).` : "");
+  }
+  selectDay((test.length ? test : days)[(test.length ? test : days).length - 1].date);
+}
+function selectDay(date) {
+  ROW = BY_DATE.get(date) || null; DIRTY.clear(); $("#fDate").value = date;
+  if (!ROW || !usable(ROW)) {
+    Object.values(F).forEach(s => $(s).value = "");
+    $("#result").classList.remove("hidden");
+    $("#result").innerHTML = `<div class="status">No complete record for this day. Pick another day.</div>`;
+    return;
+  }
+  $(F.y1).value = Math.round(Math.exp(ROW.lr1) * ROW.m7_mw);
+  $(F.y7).value = Math.round(Math.exp(ROW.lr7) * ROW.m7_mw);
+  $(F.m7).value = Math.round(ROW.m7_mw);
+  $(F.wind).value = ROW.ra_wind_t.toFixed(1);
+  $(F.cloud).value = Math.round(ROW.ra_cloud_t);
+  predict();
+}
+function val(k) { return parseFloat($(F[k]).value); }
+function predict() {
+  if (!ROWS || !ROW) return;
+  const x = Object.fromEntries(MODEL.features.map(k => [k, ROW[k]]));
+  let m7 = ROW.m7_mw;
+  // Unedited fields use the stored feature values exactly; edited ones are rebuilt from the inputs.
+  if (DIRTY.has("y1") || DIRTY.has("y7") || DIRTY.has("m7")) {
+    const y1 = val("y1"), y7 = val("y7"); m7 = val("m7");
+    if (!(y1 > 0 && y7 > 0 && m7 > 0)) return showResult(NaN);
+    x.lr1 = Math.log(y1 / m7); x.lr7 = Math.log(y7 / m7); x.lm7 = Math.log(m7);
+  }
+  if (DIRTY.has("wind")) { const w = val("wind"); if (!(w >= 0)) return showResult(NaN); x.ra_wind_t = w; }
+  if (DIRTY.has("cloud")) { const c = val("cloud"); if (!(c >= 0 && c <= 100)) return showResult(NaN); x.ra_cloud_t = c; }
+  showResult(Math.exp(predictLog(MODEL.features.map(k => x[k]))) * m7);
+}
+function showResult(p) {
+  const r = ROW, kpi = (v, k, cls = "") => `<div class="kpi ${cls}"><div class="v">${v}</div><div class="k">${k}</div></div>`;
+  const err = Number.isFinite(p) && Number.isFinite(r.demand_mw) ? (p - r.demand_mw) / r.demand_mw * 100 : NaN;
+  $("#result").classList.remove("hidden");
+  $("#result").innerHTML = Number.isFinite(p) ?
+    kpi(fmt(p), "Predicted demand (MW)", "main") +
+    kpi(fmt(r.demand_mw), "Actual demand (MW)") +
+    kpi(Number.isFinite(err) ? (err > 0 ? "+" : "") + fmt(err, 1) + "%" : "–", "Prediction error") +
+    kpi(fmt(r.bpdb_forecast_mw), "BPDB forecast (MW)")
+    : `<div class="status">Enter positive values (cloud cover 0–100%).</div>`;
 }
 
-/* ---------- Pipeline ---------- */
-function renderPipeline(){
-  const tr=DATA.filter(r=>r.split==="train"&&!Number.isNaN(r.demand_mw)&&hasFeat(r)).length, te=testRows().length;
-  const steps=[
-    ["Sources","Raw files","BPDB daily reports (Mendeley, versions 2 and extended), BPDB same-morning forecast, same-day wind and cloud (NASA POWER). Mendeley and Zenodo files match data/MANIFEST_raw_sha256.txt; the NASA file was fetched again and does not."],
-    [fmt(2428),"Rows in combined table","2019-11-21 to 2026-08-03 (docs/cleaning_summary.md). 20 calendar days have no record."],
-    [fmt(202),"Days excluded, definition A","First-pass cleaning (src/clean.py): R2 max demand zero, R3 copied regions, R4, R5 outliers, R7 missing. Model uses definition B: 51 of 1,851 training days excluded."],
-    ["Target","Daily demand","Load-shedding did not beat \"tomorrow = today\", so the target is demand, in MW."],
-    [String(MODEL.features.length),"Features",MODEL.features.join(", ")],
-    [String(MODEL.trees.length),"Trees","Gradient boosting, learning rate 0.05, at most 15 leaves per tree. Output is log(demand / 7-day mean); prediction = exp(output) x 7-day mean."],
-    [fmt(tr),"Training days","Up to 2024-12-31. Days in this CSV with a demand value and every feature: "+fmt(tr)+"."],
-    [fmt(te),"Test days","2025-01-01 to 2026-08-03. "+fmt(DATA.filter(r=>r.split==="test"&&!Number.isNaN(r.demand_mw)).length)+" days have a demand value; "+fmt(te)+" also have a prediction, yesterday and the BPDB forecast."]
-  ];
-  $("#pipeline").innerHTML=`<div class="card"><h3>Pipeline</h3><p class="sub">Raw data to cleaned table, to features, to the model, to a single frozen test. Counts in grey text come from the project notes; counts that change with the CSV are computed from it.</p></div>
-  <div class="steps">${steps.map(s=>`<div class="card step"><div class="n">${s[0]}</div><div class="t">${s[1]}</div><small>${s[2]}</small></div>`).join("")}</div>
-  <div class="card"><h3>Cleaning definitions</h3><p class="sub">Two cleaning definitions exist. Definition A (202 days) is the first pass. Definition B is what every model result uses: R2, R4, R5 exclude training rows; R3 only masks regional-load features. See docs/cleaning_summary.md.</p></div>`;
+/* ---------- loading ---------- */
+function load(text, label) {
+  let rows;
+  try { rows = parseCSV(text); }
+  catch (e) { $("#loadStatus").innerHTML = `<span class="error">Could not load ${label}: ${e.message}</span>`; return; }
+  if (!rows.some(usable)) { $("#loadStatus").innerHTML = `<span class="error">Could not load ${label}: no complete rows for the model.</span>`; return; }
+  ROWS = rows; BY_DATE = new Map(rows.map(r => [r.date, r]));
+  $("#loadStatus").textContent = "Loaded " + label + ".";
+  $("#loadBtn").textContent = "Reload dataset";
+  showData(); unlock();
 }
-
-/* ---------- Data analysis ---------- */
-let sortKey="date",sortDir=1,page=0;
-function renderAnalysis(){
-  const flags={};DATA.forEach(r=>{const k=r.quality_flag||"no flag";flags[k]=(flags[k]||0)+1;});
-  const cols=["date","split","demand_mw","demand_yesterday_mw","bpdb_forecast_mw","shed_mw","quality_flag","ra_cloud_t","ra_wind_t","tmax_c_national","pred_mw"];
-  $("#analysis").innerHTML=`
-  <div class="card"><h3>Daily demand, 7-day average</h3>${lineChart([{name:"Demand (MW)",color:"var(--a)",pts:rolling(DATA,"demand_mw",7)}],{yLabel:"MW"})}</div>
-  <div class="card"><h3>Load shedding, 7-day average</h3><p class="sub">Shedding is demand that could not be supplied. Its prediction did not beat yesterday, so it is shown for context only.</p>${lineChart([{name:"Shedding (MW)",color:"var(--d)",pts:rolling(DATA,"shed_mw",7)}],{yLabel:"MW"})}</div>
-  <div class="card"><h3>Quality flags in this CSV</h3><p class="sub">Only three flags are encoded here, so these do not add up to the 202 excluded days.</p>${barChart(Object.entries(flags).sort((a,b)=>b[1]-a[1]))}</div>
-  <div class="card"><h3>Demand vs reanalysis cloud cover</h3>${scatter(DATA.map(r=>[r.ra_cloud_t,r.demand_mw]),"cloud cover (%)","demand (MW)")}</div>
-  <div class="card"><h3>Dataset preview</h3><p class="sub">Click a column to sort. ${fmt(DATA.length)} rows.</p><div id="tbl" class="scroll"></div>
-  <div class="row"><button class="b" id="prev">Previous</button><button class="b" id="next">Next</button><span id="pg"></span></div></div>`;
-  const draw=()=>{
-    const rows=[...DATA].sort((a,b)=>{const x=a[sortKey],y=b[sortKey];if(typeof x==="string")return sortDir*x.localeCompare(y);if(Number.isNaN(x))return 1;if(Number.isNaN(y))return -1;return sortDir*(x-y);});
-    const pages=Math.max(1,Math.ceil(rows.length/15));page=Math.min(page,pages-1);
-    $("#tbl").innerHTML=`<table><thead><tr>${cols.map(c=>`<th class="s" data-k="${c}">${c}${c===sortKey?(sortDir>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${rows.slice(page*15,page*15+15).map(r=>`<tr>${cols.map(c=>`<td>${TEXTCOLS.has(c)?r[c]:fmt(r[c],c.includes("wind")?1:0)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-    $("#pg").textContent=`page ${page+1} of ${pages}`;
-  };
-  draw();
-  $("#tbl").onclick=e=>{const k=e.target.dataset.k;if(!k)return;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=1;}draw();};
-  $("#prev").onclick=()=>{page=Math.max(0,page-1);draw();};
-  $("#next").onclick=()=>{page++;draw();};
-}
-
-/* ---------- Predict ---------- */
-let selDate=null;
-function renderPredict(){
-  const cands=DATA.filter(r=>r.split==="test"&&hasFeat(r)&&!Number.isNaN(r.demand_mw));
-  if(!cands.length){$("#predict").innerHTML="<div class='card'>No test rows with complete features in this CSV.</div>";return;}
-  if(!selDate||!cands.some(r=>r.date===selDate)) selDate=cands[Math.floor(cands.length/2)].date;
-  $("#predict").innerHTML=`<div class="card"><h3>Pick a test day</h3>
-  <div class="row"><label>Date <select id="pd">${cands.map(r=>`<option ${r.date===selDate?"selected":""}>${r.date}</option>`).join("")}</select></label>
-  <button class="b" id="pm">Previous day</button><button class="b" id="pn">Next day</button></div></div>
-  <div class="grid"><div class="card" id="pf"></div><div class="card" id="pr"></div></div>
-  <div class="card"><h3>Predicted vs actual, 60 days around the date</h3><div id="pc"></div></div>`;
-  const upd=()=>{
-    const r=DATA.find(x=>x.date===selDate);
-    const cmin=Math.min(...cands.map(c=>c.ra_cloud_t)),cmax=Math.max(...cands.map(c=>c.ra_cloud_t));
-    const wmin=Math.min(...cands.map(c=>c.ra_wind_t)),wmax=Math.max(...cands.map(c=>c.ra_wind_t));
-    $("#pf").innerHTML=`<h3>Model inputs</h3>`+MODEL.features.map(k=>`<div class="kv"><span>${k}</span><span>${fmt(r[k],3)}</span></div>`).join("")+`<div class="kv"><span>m7 (7-day mean, MW)</span><span>${fmt(r.m7_mw)}</span></div>
-    <p class="sub">Try other weather values. The model re-runs in your browser.</p>
-    <div class="row"><label>Same-day cloud (%) <input type="range" id="sc" min="${cmin}" max="${cmax}" step="any" value="${r.ra_cloud_t}"> <b id="vc"></b></label></div>
-    <div class="row"><label>Same-day wind (m/s) <input type="range" id="sw" min="${wmin}" max="${wmax}" step="any" value="${r.ra_wind_t}"> <b id="vw"></b></label></div>`;
-    const run=()=>{
-      const c=+$("#sc").value,w=+$("#sw").value;$("#vc").textContent=fmt(c,1);$("#vw").textContent=fmt(w,1);
-      const rr={...r,ra_cloud_t:c,ra_wind_t:w};const p=predictMW(featVec(rr),r.m7_mw);
-      const err=p-r.demand_mw;
-      $("#pr").innerHTML=`<h3>Prediction for ${r.date}</h3><div class="big">${fmt(p)} MW</div>
-      <p class="sub">Tree walk over ${MODEL.trees.length} trees. CSV value: ${fmt(r.pred_mw)} MW.</p>
-      <div class="kv"><span>Actual demand</span><span>${fmt(r.demand_mw)} MW</span></div>
-      <div class="kv"><span>Model error</span><span>${err>=0?"+":""}${fmt(err)} MW (${fmt(Math.abs(err)/r.demand_mw*100,2)}%)</span></div>
-      <div class="kv"><span>Yesterday (persistence)</span><span>${fmt(r.demand_yesterday_mw)} MW (error ${fmt(Math.abs(r.demand_yesterday_mw-r.demand_mw))})</span></div>
-      <div class="kv"><span>BPDB forecast (issued that morning)</span><span>${fmt(r.bpdb_forecast_mw)} MW (error ${fmt(Math.abs(r.bpdb_forecast_mw-r.demand_mw))})</span></div>`;
-    };
-    run();$("#sc").oninput=run;$("#sw").oninput=run;
-    const i=DATA.indexOf(r),win=DATA.slice(Math.max(0,i-30),i+31);
-    $("#pc").innerHTML=lineChart([
-      {name:"Actual",color:"var(--ink)",pts:win.map(x=>[x.t,x.demand_mw])},
-      {name:"Model (F3)",color:"var(--a)",pts:win.map(x=>[x.t,x.pred_mw]),dash:true},
-      {name:"Yesterday",color:"var(--b)",pts:win.map(x=>[x.t,x.demand_yesterday_mw]),w:1},
-      {name:"BPDB forecast",color:"var(--c)",pts:win.map(x=>[x.t,x.bpdb_forecast_mw]),w:1}],{yLabel:"MW",vline:r.t});
-  };
-  $("#pd").onchange=e=>{selDate=e.target.value;upd();};
-  const step=d=>{const i=cands.findIndex(r=>r.date===selDate)+d;if(i>=0&&i<cands.length){selDate=cands[i].date;$("#pd").value=selDate;upd();}};
-  $("#pm").onclick=()=>step(-1);$("#pn").onclick=()=>step(1);
-  upd();
-}
-
-/* ---------- Results ---------- */
-function renderResults(){
-  const rows=testRows();
-  if(!rows.length){$("#results").innerHTML="<div class='card'>No test rows with every method available.</div>";return;}
-  const M0=metrics(rows,"demand_yesterday_mw"),M1=metrics(rows,"pred_mw"),M2=metrics(rows,"bpdb_forecast_mw");
-  const line=(n,m,base)=>`<tr><td>${n}</td><td>${fmt(m.mape,2)}%</td><td>${fmt(m.mae)}</td><td>${base?fmt(M0.mae-m.mae):"0"}</td></tr>`;
-  const years=[...new Set(rows.map(r=>r.date.slice(0,4)))];
-  const yr=years.map(y=>{const s=rows.filter(r=>r.date.startsWith(y));const a=metrics(s,"demand_yesterday_mw"),b=metrics(s,"pred_mw"),c=metrics(s,"bpdb_forecast_mw");return `<tr><td>${y}</td><td>${s.length}</td><td>${fmt(a.mape,2)}%</td><td>${fmt(b.mape,2)}%</td><td>${fmt(c.mape,2)}%</td><td>${fmt(a.mae-b.mae)}</td></tr>`;}).join("");
-  $("#results").innerHTML=`<div class="card"><h3>Test period, ${rows.length} days with every method available</h3>
-  <p class="sub">Computed live from the loaded CSV on one shared set of days. MAPE is mean absolute percentage error. Gain is how many MW per day the average error shrinks versus "tomorrow = today" (lower error is better).</p>
-  <div class="scroll"><table><thead><tr><th>Method</th><th>MAPE</th><th>MAE (MW)</th><th>Gain vs yesterday (MW)</th></tr></thead><tbody>
-  ${line("Yesterday (persistence)",M0,false)}${line("Model F3",M1,true)}${line("BPDB forecast issued that morning (a real forecast; F3 uses the day's actual weather)",M2,true)}</tbody></table></div>
-  <p class="sub">Original F3 run (docs/forecast_test.md, 569 days): F3 4.77%, persistence 5.48%, BPDB 4.41%, gain +65 MW (95% block bootstrap +1 to +131, barely above zero). Intervals for this rebuild are in the box at the top. The earlier F1 model (day-ahead weather forecasts) scored 4.52% and could not be rebuilt. This page is a rebuild, so its numbers can differ slightly.</p></div>
-  <div class="card"><h3>By year</h3><div class="scroll"><table><thead><tr><th>Year</th><th>Days</th><th>Yesterday MAPE</th><th>F3 MAPE</th><th>BPDB MAPE</th><th>F3 gain (MW)</th></tr></thead><tbody>${yr}</tbody></table></div>
-  <p class="sub">In the original F3 run the 2026 gain was also about zero (-11 MW).</p></div>
-  <div class="card"><h3>Error over time, 30-day average of absolute error</h3>${lineChart([
-    {name:"Yesterday",color:"var(--b)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.demand_yesterday_mw-r.demand_mw)})),"e",30)},
-    {name:"Model F3",color:"var(--a)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.pred_mw-r.demand_mw)})),"e",30)},
-    {name:"BPDB",color:"var(--c)",pts:rolling(rows.map(r=>({t:r.t,e:Math.abs(r.bpdb_forecast_mw-r.demand_mw)})),"e",30)}],{yLabel:"MW"})}</div>
-  <div class="card"><h3>What this does and does not show</h3><ul>
-  <li>On this test period the model has a lower error than "tomorrow = today", but the overall gain is small and its interval touches zero. The BPDB forecast issued that morning does better (gain +129 MW), even though F3 is given the day's actual weather and BPDB is not.</li>
-  <li>The 2025 to 2026 period was used for earlier work, so treat the result as an estimate, not a clean holdout.</li>
-  <li>Wind and cloud come from four zones and are the actual same-day values, so a real forecast would be less accurate.</li>
-  <li>In the original project the forecast-weather version (F1) scored better than this one (F3), which was unexpected and not investigated.</li></ul></div>`;
-}
-
-/* ---------- load ---------- */
-function load(text,label){
-  DATA=parseCSV(text);SOURCE=label;
-  $("#status").textContent=`Data: ${label}, ${fmt(DATA.length)} rows.`;
-  renderPipeline();renderAnalysis();renderPredict();renderResults();
-}
-function init(){
-  renderTabs();
-  if(!MODEL){document.querySelector("main").insertAdjacentHTML("afterbegin","<div class='card'><b>No model is embedded.</b> Run make_html.py.</div>");return;}
-  if(CSV_TEXT) load(CSV_TEXT,"built-in");
-  else document.querySelector("main").insertAdjacentHTML("afterbegin","<div class='card'><b>No data is embedded.</b> Load a CSV below.</div>");
-  let t="pipeline";try{t=localStorage.getItem("tab")||t;}catch(e){}
-  show(TABS.some(x=>x[0]===t)?t:"pipeline");
-  $("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{load(rd.result,f.name);}catch(err){alert("Could not read this CSV: "+err.message);}};rd.readAsText(f);};
-  $("#reset").onclick=()=>{$("#file").value="";load(CSV_TEXT,"built-in");};
-}
-init();
+$("#loadBtn").addEventListener("click", () => load(CSV_TEXT, "daily_demo.csv"));
+$("#fileBtn").addEventListener("click", () => $("#file").click());
+$("#file").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader(); rd.onload = () => load(rd.result, f.name); rd.readAsText(f); e.target.value = "";
+});
+$("#fDate").addEventListener("change", e => { if (ROWS && e.target.value) selectDay(e.target.value); });
+Object.entries(F).forEach(([k, s]) => $(s).addEventListener("input", () => { DIRTY.add(k); predict(); }));
+if (!MODEL || !CSV_TEXT) { $("#loadBtn").disabled = !CSV_TEXT; $("#loadStatus").textContent = !MODEL ? "Model missing: run make_html.py." : "No bundled dataset: choose a CSV file."; if (!MODEL) $("#fileBtn").disabled = true; }
 </script>
 </body>
 </html>

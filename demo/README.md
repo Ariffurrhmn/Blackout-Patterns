@@ -22,13 +22,18 @@ The original final model (F1) used Open-Meteo weather forecasts that could not b
 python3 demo/make_html.py      # already run once; re-run after changing the CSV. Inlines the CSV and the model into demo/index.html
 ```
 
-Then double-click `demo/index.html`. No server, no internet. Tabs: Pipeline, Data analysis, Predict (pick a day, move the cloud and wind sliders, the model re-runs in the browser), Results (MAPE and gain computed live from the CSV). A file picker at the bottom loads a replacement CSV with the same columns.
+Then double-click `demo/index.html`. No server, no internet. Two steps:
+
+1. **Data.** Click *Load dataset* (or choose a CSV with the same columns). Shows the day count, period, average and peak demand, and two charts.
+2. **Predict.** Locked until step 1 has loaded data. Pick a day; the inputs are filled from the dataset and can be edited. The pre-trained model (embedded in the page) gives the predicted demand next to the actual demand and BPDB forecast. Nothing is trained in the browser.
 
 ## Run the notebook (Colab or Kaggle)
 
 1. Open `demo/notebook.ipynb` in Colab (File > Upload) or Kaggle (Create > Import notebook).
 2. Upload `daily_demo.csv` when asked (Kaggle: add it as a dataset). If no local file is found, the notebook downloads the CSV from this public repository; Colab's upload dialog is the last resort.
-3. Run all cells. It plots the data, retrains the same model (cutoff 2024-12-31), scores it against "yesterday" and the BPDB forecast issued that morning, and writes `model_f3_retrained.json`.
+3. Run all cells. It plots the data, trains the model (cutoff 2024-12-31), scores it against "yesterday" and the BPDB forecast issued that morning, and writes `model_f3.json`.
+
+The notebook is how the app's model is made. It reads the same `daily_demo.csv` the app loads in step 1 and writes `model_f3.json` in the format the app reads in step 2 (`features`, `baseline`, `trees`, `trained_through`; prediction = `exp(sum of trees) x m7_mw`). To use a newly trained model, copy it to `demo/model/model_f3.json` and run `python demo/make_html.py`. Run locally with scikit-learn 1.9.1, the notebook's file matches the committed one exactly.
 
 `make_notebook.py` regenerates the notebook file.
 
