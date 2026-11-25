@@ -1,0 +1,20 @@
+{
+  "max_abs_diff_log_scale": 0.0,
+  "rows_checked": 2340,
+  "trees": 300,
+  "features": [
+    "lr1",
+    "lr7",
+    "lm7",
+    "dow",
+    "sin1",
+    "cos1",
+    "sin2",
+    "cos2",
+    "ramadan",
+    "eid_fitr_win",
+    "eid_adha_win",
+    "fc_wind_t",
+    "fc_cloud_t"
+  ]
+}
