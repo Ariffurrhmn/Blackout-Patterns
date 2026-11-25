@@ -11,7 +11,7 @@ M("""
 
 Loads the dataset CSV, looks at it, trains the same model as the HTML demo, compares it with "tomorrow = today" and the BPDB same-morning forecast, and writes the model as JSON.
 
-**Caveats.** Wind and cloud forecasts cover four zones only (Dhaka, Chattogram, Rajshahi, Sylhet); lead time is about 0 to 24 hours. 2025 to 2026 was used earlier for load-shedding work, so it is not a clean holdout. This is a working result, not a final model.
+**Caveats.** This is the F3 recipe: it uses the same-day wind and cloud as they happened (NASA POWER, four zones: Dhaka, Chattogram, Rajshahi, Sylhet), which are not known the day before. The F1 model with weather forecasts could not be rebuilt. 2025 to 2026 was used earlier for load-shedding work, so it is not a clean holdout. This is a working result, not a final model.
 """),
 M("## 1. Load the data\nOn Colab or Kaggle, upload `daily_demo.csv` with the file picker (Colab) or add it as a dataset (Kaggle). If neither is found, the cell tries the public GitHub copy."),
 C('''
@@ -46,7 +46,7 @@ fig, ax = plt.subplots(3, 1, figsize=(11, 9))
 d = df.set_index("date")
 d["demand_mw"].rolling(7, min_periods=4).mean().plot(ax=ax[0], title="Daily demand, 7-day average (MW)")
 d["shed_mw"].rolling(7, min_periods=4).mean().plot(ax=ax[1], color="tab:red", title="Load shedding, 7-day average (MW)")
-ax[2].scatter(d["cloud_reanalysis_pct"], d["demand_mw"], s=4, alpha=.4)
+ax[2].scatter(d["ra_cloud_t"], d["demand_mw"], s=4, alpha=.4)
 ax[2].set(xlabel="reanalysis cloud cover (%)", ylabel="demand (MW)", title="Demand vs cloud cover (correlation is not cause)")
 plt.tight_layout(); plt.show()
 print(df["quality_flag"].fillna("no flag").replace("", "no flag").value_counts())
@@ -55,7 +55,7 @@ print("\\nMissing values per column:"); print(df.isna().sum()[lambda s: s > 0])
 M("## 3. Train the model\nSame settings and cutoff as the demo: gradient boosting, 300 trees, learning rate 0.05, at most 15 leaves, trained on days up to 2024-12-31. The target is `log(demand / 7-day mean)`; the prediction is `exp(output) x 7-day mean`."),
 C('''
 from sklearn.ensemble import HistGradientBoostingRegressor
-FEATURES = ["lr1","lr7","lm7","dow","sin1","cos1","sin2","cos2","ramadan","eid_fitr_win","eid_adha_win","fc_wind_t","fc_cloud_t"]
+FEATURES = ["lr1","lr7","lm7","dow","sin1","cos1","sin2","cos2","ramadan","eid_fitr_win","eid_adha_win","ra_wind_t","ra_cloud_t"]
 TRAIN_END = pd.Timestamp("2024-12-31")
 
 target = np.log(df["demand_mw"] / df["m7_mw"])
@@ -68,10 +68,10 @@ print("trained on", int(ok.sum()), "days")
 has = df[FEATURES].notna().all(axis=1) & df["m7_mw"].notna()
 df["pred_retrained_mw"] = np.nan
 df.loc[has, "pred_retrained_mw"] = np.exp(model.predict(df.loc[has, FEATURES])) * df.loc[has, "m7_mw"]
-if "pred_f1_mw" in df:
-    diff = (df["pred_retrained_mw"] - df["pred_f1_mw"]).abs()
-    print("max difference vs the exported model's predictions (MW):", round(diff.max(), 2),
-          "(small differences are expected across scikit-learn versions)")
+if "pred_mw" in df:
+    diff = (df["pred_retrained_mw"] - df["pred_mw"]).abs()
+    print("difference vs the exported model's predictions (MW): mean", round(diff.mean(), 1), ", max", round(diff.max(), 1))
+    print("(not identical to the exported model. Gradient boosting is sensitive to tiny numeric differences, so a retrain from the CSV does not reproduce the trees exactly; its test scores are very close.)")
 '''),
 M("## 4. Evaluate on the test period\nOne shared set of test days is used for every method. MAPE is mean absolute percentage error. Gain is the drop in mean absolute error versus yesterday."),
 C('''
@@ -83,7 +83,7 @@ res = pd.DataFrame({"Yesterday": score("demand_yesterday_mw"), "Model (retrained
                     "BPDB same-morning": score("bpdb_forecast_mw")}).T
 res["Gain vs yesterday MW"] = res.loc["Yesterday", "MAE MW"] - res["MAE MW"]
 print(len(test), "test days"); display(res.round(2))
-print("Reported in docs/forecast_test.md (569 days): model 4.52%, yesterday 5.48%, BPDB 4.41%, gain +110 MW (95% CI +59 to +163).")
+print("Original F3 run, docs/forecast_test.md (569 days): model 4.77%, yesterday 5.48%, BPDB 4.41%, gain +65 MW (95% CI +1 to +131). This dataset is a rebuild, so small differences are expected.")
 by = test.assign(year=test["date"].dt.year).groupby("year").apply(lambda g: pd.Series({
     "days": len(g),
     "yesterday MAPE %": ((g["demand_yesterday_mw"]-g["demand_mw"]).abs()/g["demand_mw"]).mean()*100,
@@ -120,9 +120,9 @@ sample = df.loc[has & ok].head(200)
 mx = max(abs(walk(exported, r.tolist()) - p) for r, p in zip(sample[FEATURES].values, model.predict(sample[FEATURES])))
 print("max difference, tree walk vs predict:", mx)
 assert mx < 1e-9
-with open("model_f1_retrained.json", "w") as f:
+with open("model_f3_retrained.json", "w") as f:
     json.dump(exported, f)
-print("wrote model_f1_retrained.json (on Colab, download it from the file panel)")
+print("wrote model_f3_retrained.json (on Colab, download it from the file panel)")
 '''),
 ]
 nb.metadata["kernelspec"] = {"display_name": "Python 3", "language": "python", "name": "python3"}
