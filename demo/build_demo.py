@@ -115,7 +115,11 @@ def main():
         js_log[i] = walk(model, df.loc[i, FEATURES].tolist())
     max_diff = float(np.nanmax(np.abs(py_log - js_log)))
     df["pred_f1_mw"] = np.where(mask, np.exp(js_log) * df["m7_mw"], np.nan)
-    df.round(4).to_csv(DEMO / "data" / "daily_demo.csv", index=False)
+    # Features stay at full precision: rounding them can move a row across a split threshold and
+    # change the prediction by tens of MW. Only MW and weather display columns are rounded.
+    for c in [c for c in df.columns if c.endswith("_mw") or c.endswith("_c_national") or c.endswith("_pct") or c.endswith("_ms")]:
+        df[c] = df[c].round(2)
+    df.to_csv(DEMO / "data" / "daily_demo.csv", index=False)
     (DEMO / "model" / "model_f1.json").write_text(json.dumps(model))
     check = {"max_abs_diff_log_scale": max_diff, "rows_checked": int(mask.sum()),
              "trees": len(model["trees"]), "features": FEATURES}
