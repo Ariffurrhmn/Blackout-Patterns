@@ -28,15 +28,16 @@ import forecast_round1 as FR  # noqa: E402
 DEMO = ROOT / "demo"
 TRAIN_END = pd.Timestamp("2024-12-31")
 TEST_START = pd.Timestamp("2025-01-01")
-FEATURES = Dm.feats_for(pd.DataFrame(columns=[]), "none") + ["fc_wind_t", "fc_cloud_t"]
+# F3: base features + same-day NASA POWER wind and cloud (four-zone mean). The F1 recipe used Open-Meteo
+# forecasts, which could not be re-collected, so this build uses the already-tested F3 recipe.
+FEATURES = Dm.feats_for(pd.DataFrame(columns=[]), "none") + ["ra_wind_t", "ra_cloud_t"]
 
 
 def build_table():
     t = E.prepare()
     f, D = Dm.build(t)
-    fc = FR.forecast_national(D.index)
     ra = FR.reanalysis_national4(D.index)
-    f["fc_wind_t"], f["fc_cloud_t"] = fc["fc_wind"], fc["fc_cloud"]
+    f["ra_wind_t"], f["ra_cloud_t"] = ra["WS10M"], ra["CLOUD_AMT"]
     bp = pd.read_csv(Dm.RAW / "bpdb_forecast_daily.csv", parse_dates=["date"]).set_index("date")["probable_max_demand_mw"]
     wx = Dm.weather_daily().reindex(D.index)
     df = pd.DataFrame(index=D.index)
@@ -49,8 +50,6 @@ def build_table():
          t["R7"].reindex(D.index).fillna(False).astype(bool),
          t["R5_residual_outlier"].reindex(D.index).fillna(False).astype(bool) if "R5_residual_outlier" in t else pd.Series(False, index=D.index)],
         ["max demand recorded as zero", "missing target", "residual outlier (kept)"], default="")
-    df["cloud_reanalysis_pct"] = ra["CLOUD_AMT"]
-    df["wind_reanalysis_ms"] = ra["WS10M"]
     df["tmax_c_national"] = wx["tmax_c"]
     df["rain_mm_national"] = wx["precip_mm"]
     df["m7_mw"] = f["m7"]
@@ -77,7 +76,7 @@ def export_model(df: pd.DataFrame):
              "l": int(n["left"]), "r": int(n["right"]), "leaf": bool(n["is_leaf"]),
              "mgl": bool(n["missing_go_to_left"])}
             for n in nodes])
-    model = {"name": "F1: gradient boosting on log(demand / 7-day mean), day-ahead wind and cloud",
+    model = {"name": "F3: gradient boosting on log(demand / 7-day mean), same-day reanalysis wind and cloud",
              "trained_through": "2024-12-31", "features": FEATURES,
              "baseline": float(m._baseline_prediction.ravel()[0]), "trees": trees,
              "target": "log(demand_t / m7_t)", "output": "exp(prediction) * m7_t"}
@@ -114,19 +113,19 @@ def main():
     for i in df.index[mask]:
         js_log[i] = walk(model, df.loc[i, FEATURES].tolist())
     max_diff = float(np.nanmax(np.abs(py_log - js_log)))
-    df["pred_f1_mw"] = np.where(mask, np.exp(js_log) * df["m7_mw"], np.nan)
+    df["pred_mw"] = np.where(mask, np.exp(js_log) * df["m7_mw"], np.nan)
     # Features stay at full precision: rounding them can move a row across a split threshold and
     # change the prediction by tens of MW. Only MW and weather display columns are rounded.
-    for c in [c for c in df.columns if c.endswith("_mw") or c.endswith("_c_national") or c.endswith("_pct") or c.endswith("_ms")]:
+    for c in [c for c in df.columns if c != "m7_mw" and (c.endswith("_mw") or c.endswith("_c_national"))]:
         df[c] = df[c].round(2)
     df.to_csv(DEMO / "data" / "daily_demo.csv", index=False)
-    (DEMO / "model" / "model_f1.json").write_text(json.dumps(model))
+    (DEMO / "model" / "model_f3.json").write_text(json.dumps(model))
     check = {"max_abs_diff_log_scale": max_diff, "rows_checked": int(mask.sum()),
              "trees": len(model["trees"]), "features": FEATURES}
     (DEMO / "model" / "export_check.json").write_text(json.dumps(check, indent=2))
     print(json.dumps(check, indent=2))
     print("rows:", len(df), "test rows with prediction:",
-          int(((pd.to_datetime(df["date"]) >= TEST_START) & df["pred_f1_mw"].notna()).sum()))
+          int(((pd.to_datetime(df["date"]) >= TEST_START) & df["pred_mw"].notna()).sum()))
 
 
 if __name__ == "__main__":

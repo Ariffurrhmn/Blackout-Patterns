@@ -1,6 +1,6 @@
 {
   "max_abs_diff_log_scale": 0.0,
-  "rows_checked": 2340,
+  "rows_checked": 2342,
   "trees": 300,
   "features": [
     "lr1",
@@ -14,7 +14,7 @@
     "ramadan",
     "eid_fitr_win",
     "eid_adha_win",
-    "fc_wind_t",
-    "fc_cloud_t"
+    "ra_wind_t",
+    "ra_cloud_t"
   ]
 }
