@@ -48,9 +48,9 @@ Sorted by mean skill over persistence. Gain is the mean reduction in absolute er
 - **Winner by the frozen rule:** R13, HGB predicting the day-to-day change, using 2022–2024 training data and the clean rows. Mean skill +0.071.
 - **The winner's interval includes zero** (gain +7.6 MW, 95% CI −0.9 to +16.6). On validation it is not clearly better than persistence.
 - **Fold 2 is a tie for R13** (skill −0.002). Its advantage comes from folds 1 and 3.
-- **Seven of the 17 recipes are worse than persistence on average.** EWMA and linear level models are clearly worse, because shedding changes in jumps and smoothing lags it.
+- **Nine of the 16 model recipes are worse than persistence on average.** EWMA and linear level models are clearly worse, because shedding changes in jumps and smoothing lags it.
 - **Predicting the change beats predicting the level** for the boosted trees (R13 vs R11, R12 vs R10). This is the one pattern that held in every comparison.
-- **Cleaning helps only a little.** Clean and raw training for the same recipe differ by about 1–3 MW (R14 vs R15 is the closest matched pair with a different window; R12 vs R10 is the diff-vs-level pair).
+- **Cleaning is mixed.** For the change model, clean training beats raw by about 2 MW (R14 +4.2 MW vs R15 +2.3 MW, same features and window). For the level model, raw training beats clean by about 5 MW (R09 +4.2 MW vs R10 −0.6 MW). So the cleaning rules do not help the level model.
 
 ## Cleaning audit (requested by the advisor)
 
