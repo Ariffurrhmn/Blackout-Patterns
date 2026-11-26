@@ -51,6 +51,12 @@ input:disabled{color:var(--disabled);background:var(--bg)}
 .is-locked .form{opacity:.55}
 .hidden{display:none!important}
 .foot{color:var(--muted);font-size:13px;margin-top:20px}
+.sub-h{font-size:14px;font-weight:600;margin:32px 0 8px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
+.tbl th{font-weight:600;color:var(--muted);font-size:13px}
+.tbl td.n,.tbl th.n{text-align:right}
+.tbl tr.best td{font-weight:600}
 @media (max-width:720px){
   main{padding:28px 16px 48px}
   h1{font-size:22px;margin-bottom:24px}
@@ -84,8 +90,27 @@ input:disabled{color:var(--disabled);background:var(--bg)}
     </div>
   </section>
 
+  <section class="step is-locked" id="s3">
+    <div class="step-head"><span class="num">2</span><h2>Load shedding</h2></div>
+    <p class="lead">Shedding is demand the grid could not supply. We first tried to predict it, day by day.</p>
+    <div class="locked" id="lockMsgShed">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      Load the dataset in step 1 to unlock.
+    </div>
+    <div id="shedView" class="hidden">
+      <div class="kpis" id="shedKpis" style="margin-top:0"></div>
+      <div class="charts">
+        <div class="chart"><h3>Daily shedding, 7-day average (MW)</h3><div id="c3"></div></div>
+        <div class="chart"><h3>Average shedding by year (MW)</h3><div id="c4"></div></div>
+      </div>
+      <h3 class="sub-h">Can it be predicted? Test days 2025-01-01 to 2026-08-03</h3>
+      <table class="tbl" id="shedTable"></table>
+      <p class="foot" id="shedNote"></p>
+    </div>
+  </section>
+
   <section class="step is-locked" id="s2">
-    <div class="step-head"><span class="num">2</span><h2>Predict</h2></div>
+    <div class="step-head"><span class="num">3</span><h2>Predict demand</h2></div>
     <p class="lead">Pick a day and adjust the inputs. The trained model estimates that day's demand.</p>
     <div class="locked" id="lockMsg">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
@@ -168,11 +193,11 @@ function yAxis(ticks, y, x0, x1) {
   return ticks.map(v => `<line x1="${x0}" x2="${x1}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/>` +
     `<text x="${x0 - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`).join("");
 }
-function lineChart(rows, W) {
+function lineChart(rows, W, key = "demand_mw") {
   const H = 240, L = 52, R = 10, T = 10, B = 26;
   const pts = []; const win = [];
   rows.forEach(r => {
-    win.push(r.demand_mw); if (win.length > 7) win.shift();
+    win.push(r[key]); if (win.length > 7) win.shift();
     const ok = win.filter(Number.isFinite);
     if (ok.length >= 4) pts.push([Date.parse(r.date), ok.reduce((s, v) => s + v, 0) / ok.length]);
   });
@@ -201,6 +226,53 @@ function monthChart(rows, W) {
   return svgEl(W, H, yAxis(ticks, y, L, W - R) + bars + lab);
 }
 
+function yearChart(rows, key, W) {
+  const H = 240, L = 52, R = 6, T = 10, B = 26;
+  const by = new Map();
+  rows.forEach(r => { if (Number.isFinite(r[key])) { const y = r.date.slice(0, 4), a = by.get(y) || [0, 0]; a[0] += r[key]; a[1]++; by.set(y, a); } });
+  const yrs = [...by.keys()].sort(), avg = yrs.map(y => by.get(y)[0] / by.get(y)[1]);
+  if (!yrs.length) return "";
+  const ticks = niceTicks(0, Math.max(...avg, 1), 4), hi = Math.max(ticks[ticks.length - 1], ...avg);
+  const y = v => T + (hi - v) / hi * (H - T - B), bw = (W - L - R) / yrs.length;
+  const bars = avg.map((v, i) => `<rect x="${L + i * bw + bw * .18}" y="${y(v)}" width="${bw * .64}" height="${Math.max(0, y(0) - y(v))}" fill="var(--accent)" rx="1"><title>${yrs[i]}: ${fmt(v)} MW (${by.get(yrs[i])[1]} days)</title></rect>`).join("");
+  const lab = yrs.map((yr, i) => `<text x="${L + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${W < 360 ? "'" + yr.slice(2) : yr}</text>`).join("");
+  return svgEl(W, H, yAxis(ticks, y, L, W - R) + bars + lab);
+}
+
+/* ---------- load shedding ---------- */
+// Model scores for shedding come from docs/test_results.md (src/test_run.py); they are not recomputed here.
+const SHED_MODELS = [
+  { name: "Model, trained once on data to 2024-12-31", mae: 129.25, gain: "−7.8 (−14.9 to +3.5)" },
+  { name: "Model, retrained at the start of each month", mae: 115.86, gain: "+5.6 (−1.8 to +14.7)" },
+];
+function prevDay(date) { const t = new Date(Date.parse(date) - 864e5); return t.toISOString().slice(0, 10); }
+function showShed() {
+  const s = ROWS.filter(r => Number.isFinite(r.shed_mw));
+  $("#s3").classList.remove("is-locked"); $("#lockMsgShed").classList.add("hidden"); $("#shedView").classList.remove("hidden");
+  if (!s.length) { $("#shedKpis").innerHTML = `<div class="status">This CSV has no shed_mw column.</div>`; $("#shedTable").innerHTML = ""; return; }
+  const kpi = (v, k) => `<div class="kpi"><div class="v">${v}</div><div class="k">${k}</div></div>`;
+  const worst = s.reduce((a, r) => r.shed_mw > a.shed_mw ? r : a);
+  const recent = s.filter(r => r.date >= "2022-01-01");
+  $("#shedKpis").innerHTML =
+    kpi(fmt(s.filter(r => r.shed_mw > 0).length / s.length * 100) + "%", "Days with shedding") +
+    kpi(fmt(recent.filter(r => r.shed_mw > 0).length / Math.max(1, recent.length) * 100) + "%", "Days with shedding since 2022") +
+    kpi(fmt(s.reduce((a, r) => a + r.shed_mw, 0) / s.length), "Average shedding (MW)") +
+    kpi(fmt(worst.shed_mw), "Worst day (MW)<br>" + worst.date);
+  // Score set: test days with today's and yesterday's shedding recorded.
+  const test = s.filter(r => r.split === "test").map(r => ({ a: r.shed_mw, y: (BY_DATE.get(prevDay(r.date)) || {}).shed_mw })).filter(r => Number.isFinite(r.y));
+  const mae = f => test.reduce((t, r) => t + Math.abs(f(r) - r.a), 0) / test.length;
+  const yMae = test.length ? mae(r => r.y) : NaN, zMae = test.length ? mae(() => 0) : NaN;
+  const row = (n, m, g, note, cls = "") => `<tr class="${cls}"><td>${n}${note ? ` <span class="status">${note}</span>` : ""}</td><td class="n">${fmt(m, 1)}</td><td class="n">${g}</td></tr>`;
+  $("#shedTable").innerHTML = `<tr><th>Method</th><th class="n">Average error (MW)</th><th class="n">Better than yesterday by (MW, 95% range)</th></tr>` +
+    row("Always zero", zMae, "–", "") +
+    row("Yesterday's shedding", yMae, "baseline", "") +
+    SHED_MODELS.map(m => row(m.name, m.mae, m.gain, "")).join("");
+  $("#shedNote").textContent = `Error is computed here from the data for the first two rows (${fmt(test.length)} days). ` +
+    `The two model rows are from the project's single test run (docs/test_results.md), not recomputed here. ` +
+    `Neither model is clearly better than "tomorrow = today": both ranges include zero. ` +
+    `Shedding jumps from day to day, and 2025 was much calmer than the 2022–2024 training years. That is why step 3 predicts demand instead.`;
+}
+
 /* ---------- step 1 ---------- */
 function showData() {
   const d = ROWS.filter(r => Number.isFinite(r.demand_mw)).map(r => r.demand_mw);
@@ -219,6 +291,10 @@ function drawCharts() {
   if (!ROWS) return;
   $("#c1").innerHTML = lineChart(ROWS, Math.max(260, $("#c1").clientWidth));
   $("#c2").innerHTML = monthChart(ROWS, Math.max(240, $("#c2").clientWidth));
+  if (ROWS.some(r => Number.isFinite(r.shed_mw))) {
+    $("#c3").innerHTML = lineChart(ROWS, Math.max(260, $("#c3").clientWidth), "shed_mw");
+    $("#c4").innerHTML = yearChart(ROWS, "shed_mw", Math.max(240, $("#c4").clientWidth));
+  }
 }
 let lastW = 0;
 addEventListener("resize", () => { if (innerWidth !== lastW) { lastW = innerWidth; drawCharts(); } });
@@ -293,7 +369,7 @@ function load(text, label) {
   ROWS = rows; BY_DATE = new Map(rows.map(r => [r.date, r]));
   $("#loadStatus").textContent = "Loaded " + label + ".";
   $("#loadBtn").textContent = "Reload dataset";
-  showData(); unlock();
+  showShed(); showData(); unlock();
 }
 $("#loadBtn").addEventListener("click", () => load(CSV_TEXT, "daily_demo.csv"));
 $("#fileBtn").addEventListener("click", () => $("#file").click());

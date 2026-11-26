@@ -22,10 +22,11 @@ The original final model (F1) used Open-Meteo weather forecasts that could not b
 python3 demo/make_html.py      # already run once; re-run after changing the CSV. Inlines the CSV and the model into demo/index.html
 ```
 
-Then double-click `demo/index.html`. No server, no internet. Two steps:
+Then double-click `demo/index.html`. No server, no internet. Three steps:
 
 1. **Data.** Click *Load dataset* (or choose a CSV with the same columns). Shows the day count, period, average and peak demand, and two charts.
-2. **Predict.** Locked until step 1 has loaded data. Pick a day; the inputs are filled from the dataset and can be edited. The pre-trained model (embedded in the page) gives the predicted demand next to the actual demand and BPDB forecast. Nothing is trained in the browser.
+2. **Load shedding.** Unlocks with step 1. How often and how much shedding happened (7-day average, average by year), and why it was not used as the target: on the 2025–26 test days "yesterday's shedding" (121.4 MW average error, computed in the page) is not clearly beaten by the shedding models (frozen 129.3 MW, monthly retrain 115.9 MW; those two figures are copied from `docs/test_results.md`).
+3. **Predict demand.** Locked until step 1 has loaded data. Pick a day; the inputs are filled from the dataset and can be edited. The pre-trained model (embedded in the page) gives the predicted demand next to the actual demand and BPDB forecast. Nothing is trained in the browser.
 
 ## Run the notebook (Colab or Kaggle)
 
